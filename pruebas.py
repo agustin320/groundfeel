@@ -251,4 +251,24 @@ ef = Efectos(CFG)
 correr({"SIM ON GROUND": 0, "GROUND VELOCITY": 0}, 0.5, ef)
 mx_c, _, _ = correr({"SIM ON GROUND": 1, "GROUND VELOCITY": 0}, 0.5, ef)
 caso("carga de vuelo sin toque falso", mx_c["aterrizaje"] == 0, f"aterrizaje {mx_c['aterrizaje']}")
+# 20. Aproximación (tren abajo, autothrust moviendo el N1): el throttle no tiene que pulsar prendiendo y apagando.
+def aproximacion(d, i):
+    d["TURB ENG N1:1"] = d["TURB ENG N1:2"] = 30 + 8 * math.sin(i * 0.025 * 2 * math.pi / 6)   # A/THR cada 6 s
+
+
+import math  # noqa: E402
+
+ef = Efectos(CFG)
+random.seed(5)
+d = dict(BASE, **{"SIM ON GROUND": 0, "AIRSPEED INDICATED": 140, "GROUND VELOCITY": 140, "GEAR CENTER POSITION": 1,
+                  "TRAILING EDGE FLAPS LEFT PERCENT": 1.0})
+saltos, prev, mx_thr = 0, 0, 0
+for i in range(int(60 * 40)):
+    tt = (i + 1) * 0.025
+    d["SIMULATION TIME"] = 1000 + tt
+    aproximacion(d, i)
+    _, s = ef.paso(dict(d), tt)
+    saltos += (s["throttle_1"] > 0) != (prev > 0)
+    prev, mx_thr = s["throttle_1"], max(mx_thr, s["throttle_1"])
+caso("aproximación sin pulsos en el throttle", saltos <= 4, f"{saltos} saltos prendido/apagado en 60 s, máximo {mx_thr}")
 print("\nTodas las pruebas pasaron.")

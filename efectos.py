@@ -43,6 +43,7 @@ class Efectos:
         self.rodaje_fis = RodajeFisico(cfg["rodaje_fisico"])
         self.sd_acum, self.t_fin_toque = 0.0, -99.0
         self.salida_prev = {"joystick": 0, "throttle_1": 0, "throttle_2": 0}
+        self.prendido = {"joystick": False, "throttle_1": False, "throttle_2": False}
         self.ritmo_pulsado = 1.0
         self.n1_motor_prev = {1: 0.0, 2: 0.0}
         self.t_arranque_motor = {1: -99.0, 2: -99.0}
@@ -259,7 +260,10 @@ class Efectos:
             self.spool = max(0.0, self.spool - dt * 0.8)
         if self.spool > 0:
             self.fase_spool += (2.0 + 10.0 * _clamp((n1 - 20) / 70)) * dt
-            v += c["empuje_inicial"] * self.spool * (0.5 + 0.5 * math.sin(2 * math.pi * self.fase_spool))
+            # Reason: en vuelo el autothrust mueve el N1 todo el tiempo en la aproximación y el empuje pulsante se
+            # sentía como pulsos sueltos en el throttle; en el aire queda al 30 %, como la fuerza de aceleración.
+            en_aire = 1.0 if en_tierra else 0.3
+            v += c["empuje_inicial"] * self.spool * en_aire * (0.5 + 0.5 * math.sin(2 * math.pi * self.fase_spool))
         # Fuerza de la aceleración real (en tierra se siente mucho más que en el aire).
         if acel > 1.0:
             fuerza = _clamp(acel / 10) * (1.0 if en_tierra else 0.3)
@@ -340,7 +344,7 @@ class Efectos:
         self.fase_pulsado += dt * ritmo
         self.ritmo_pulsado = ritmo
 
-        def mezclar(disp: str, motor_n: tuple[float, float] | None = None) -> int:
+        def mezclar(disp: str, motor_n: tuple[float, float] | None = None, clave: str = "joystick") -> int:
             w = mez[disp]
             # Con el modelo físico el joystick usa "rodaje" en vez de la "rodadura" heurística (throttle: igual).
             omitir = {"motores", "reversa", "rodadura" if fisico and disp == "joystick" else "rodaje"}
@@ -353,8 +357,14 @@ class Efectos:
             if disp == "joystick" and self.cfg.get("joystick_solo_en_tierra") and not d.get("SIM ON GROUND"):
                 return 0
             zm = self.cfg.get("zona_muerta", {}).get(disp, 0)
-            if total < self.cfg.get("umbral_efecto", 0.02):
+            # Histéresis: se prende al pasar el umbral y se apaga recién por debajo de la mitad. Reason: un efecto
+            # suave con textura aleatoria (tren abajo en la aproximación) oscilaba justo en el umbral y, con la zona
+            # muerta del throttle (20), el motor saltaba 0 ↔ 25 una y otra vez: se sentía como pulsos.
+            umbral = self.cfg.get("umbral_efecto", 0.02)
+            if total < (umbral * 0.5 if self.prendido[clave] else umbral):
+                self.prendido[clave] = False
                 return 0
+            self.prendido[clave] = True
             bruto = 255 * gan[disp] * _clamp(total)
             # Por debajo de la zona muerta el motor no puede vibrar "más suave": se pulsa al mínimo con un ciclo
             # proporcional (golpecitos cortos y espaciados), que se siente más leve que un zumbido continuo.
@@ -389,6 +399,7 @@ class Efectos:
             self.salida_prev[disp] = v
             return v
 
-        salida = {"joystick": con_empujon("joystick", mezclar("joystick")),"throttle_1": mezclar("throttle", (m1, r1)),
-                  "throttle_2": mezclar("throttle", (m2, r2))}
+        salida = {"joystick": con_empujon("joystick", mezclar("joystick")),
+                  "throttle_1": mezclar("throttle", (m1, r1), "throttle_1"),
+                  "throttle_2": mezclar("throttle", (m2, r2), "throttle_2")}
         return ef, salida
