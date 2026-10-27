@@ -12,6 +12,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import time
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -50,20 +51,41 @@ def _pedir(url: str, timeout: int) -> urllib.request.addinfourl:
     return urllib.request.urlopen(req, timeout=timeout)
 
 
-def buscar() -> Version | None:
-    """Última versión publicada si es más nueva que la instalada; None si no hay o no se pudo consultar."""
-    try:
-        with _pedir(API, 15) as r:
-            datos = json.load(r)
-    except Exception as ex:  # noqa: BLE001  (sin internet, límite de la API, etc.: se reintenta más tarde)
-        log.info("no pude consultar actualizaciones: %s", ex)
-        return None
+@dataclass
+class EstadoActualizacion:
+    """Lo que muestra la sección "Actualizaciones" de Ajustes."""
+    buscando: bool = False
+    ultima_consulta: float = 0.0       # time.time() de la última consulta que respondió
+    pendiente: Version | None = None   # versión nueva encontrada, todavía sin instalar
+    error: str = ""                    # por qué falló la última consulta ("" si anduvo)
+
+
+def _ultima_publicada() -> Version | None:
+    """Versión publicada si es más nueva que la instalada. Lanza excepción si no se pudo consultar."""
+    with _pedir(API, 15) as r:
+        datos = json.load(r)
     tag = datos.get("tag_name", "")
     asset = next((a for a in datos.get("assets", []) if a.get("name") == ASSET), None)
     if not tag or not asset or not es_mas_nueva(tag):
         return None
     sha = str(asset.get("digest", "")).removeprefix("sha256:")
     return Version(tag.lstrip("vV"), asset["browser_download_url"], sha, datos.get("body", ""))
+
+
+def consultar(estado: EstadoActualizacion) -> Version | None:
+    """Consulta GitHub y deja el resultado en `estado`. Devuelve la versión nueva, si hay."""
+    estado.buscando = True
+    try:
+        nueva = _ultima_publicada()
+    except Exception as ex:  # noqa: BLE001  (sin internet, límite de la API, etc.: se reintenta más tarde)
+        log.info("no pude consultar actualizaciones: %s", ex)
+        estado.error = str(ex)[:80]
+        return None
+    finally:
+        estado.buscando = False
+    estado.error, estado.ultima_consulta = "", time.time()
+    estado.pendiente = nueva or estado.pendiente
+    return nueva
 
 
 def aplicar(v: Version) -> bool:

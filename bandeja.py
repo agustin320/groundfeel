@@ -38,7 +38,7 @@ def mensaje(texto: str, estilo: int = MB_OK | MB_ICONINFO) -> int:
 class App:
     def __init__(self) -> None:
         self.vib = Vibracion()
-        self.pendiente: actualizador.Version | None = None
+        self.act = actualizador.EstadoActualizacion()
         self.ajustes_abiertos = False
         self.saliendo = False
         self.icono = pystray.Icon("VibracionURSA", Image.open(rutas.icono()), t("app"), self._menu())
@@ -64,9 +64,9 @@ class App:
             item(lambda _i: t("menu_inicio_windows"), self._autoarranque,
                  checked=lambda _i: instalacion.arranca_con_windows(), visible=rutas.EMPAQUETADO),
             pystray.Menu.SEPARATOR,
-            item(lambda _i: t("menu_actualizar_a", v=self.pendiente.numero) if self.pendiente else "",
-                 self._actualizar_ya, visible=lambda _i: self.pendiente is not None),
-            item(lambda _i: t("menu_buscar"), self._buscar_manual),
+            item(lambda _i: t("menu_actualizar_a", v=self.act.pendiente.numero) if self.act.pendiente else "",
+                 self.actualizar_ahora, visible=lambda _i: self.act.pendiente is not None),
+            item(lambda _i: t("menu_buscar"), lambda: self.buscar_ahora(avisar=True)),
             item(lambda _i: t("menu_registro"), lambda: os.startfile(rutas.archivo_log())),
             item(lambda _i: t("menu_desinstalar"), self._desinstalar, visible=rutas.EMPAQUETADO),
             item(lambda _i: t("menu_salir"), self._salir),
@@ -86,7 +86,7 @@ class App:
         def correr() -> None:
             from ventana_ajustes import VentanaAjustes   # Reason: tkinter sólo se carga si se abre la ventana.
             try:
-                VentanaAjustes(self.vib).mostrar()
+                VentanaAjustes(self.vib, self).mostrar()
             finally:
                 self.ajustes_abiertos = False
 
@@ -102,20 +102,24 @@ class App:
         instalacion.abrir_desinstalador()
 
     # ------------------------------------------------------------------ actualizaciones
-    def _buscar_manual(self) -> None:
+    def buscar_ahora(self, avisar: bool = False) -> None:
+        """Consulta GitHub en segundo plano (botón de Ajustes o menú). Con `avisar`, muestra una notificación."""
+        if self.act.buscando:
+            return
+
         def correr() -> None:
-            v = actualizador.buscar()
+            v = actualizador.consultar(self.act)
+            self.icono.update_menu()
             if v:
-                self.pendiente = v
-                self.icono.update_menu()
                 self.icono.notify(t("hay_version", v=v.numero), t("app"))
-            else:
+            elif avisar and not self.act.error:
                 self.icono.notify(t("ultima_version", v=__version__), t("app"))
         threading.Thread(target=correr, daemon=True).start()
 
-    def _actualizar_ya(self) -> None:
-        if self.pendiente:
-            self._aplicar(self.pendiente)
+    def actualizar_ahora(self) -> None:
+        if self.act.pendiente:
+            v, self.act.pendiente = self.act.pendiente, None
+            self._aplicar(v)
 
     def _aplicar(self, v: actualizador.Version) -> None:
         self.vib.detener()
@@ -129,7 +133,7 @@ class App:
 
     def _vigilar(self) -> None:
         """Refresca el menú y aplica actualizaciones sola cuando el simulador no está abierto."""
-        proxima = time.time() + 30
+        proxima = time.time() + 5
         while not self.saliendo:
             time.sleep(2)
             i18n.elegir(str(self.vib.cfg.datos.get("idioma", "auto")))
@@ -138,12 +142,11 @@ class App:
             # Reason: la búsqueda automática es la única conexión a internet; el usuario la puede apagar en Ajustes.
             if time.time() >= proxima and self.vib.cfg.datos.get("buscar_actualizaciones", True):
                 proxima = time.time() + CADA_ACTUALIZACION_S
-                self.pendiente = actualizador.buscar() or self.pendiente
+                actualizador.consultar(self.act)
             # Reason: nunca cortar la vibración en pleno vuelo; se actualiza con el sim cerrado.
-            if self.pendiente and not self.vib.estado.conectado and rutas.EMPAQUETADO:
-                log.info("aplicando actualización automática %s", self.pendiente.numero)
-                v, self.pendiente = self.pendiente, None
-                self._aplicar(v)
+            if self.act.pendiente and not self.vib.estado.conectado and rutas.EMPAQUETADO:
+                log.info("aplicando actualización automática %s", self.act.pendiente.numero)
+                self.actualizar_ahora()
 
     # ------------------------------------------------------------------ arranque
     def correr(self) -> None:

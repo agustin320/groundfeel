@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import ctypes
 import os
+import time
 import tkinter as tk
 from tkinter import ttk
 
@@ -22,8 +23,9 @@ NOMBRE_IDIOMA = {"en": "English", "es": "Español"}
 
 
 class VentanaAjustes:
-    def __init__(self, vib: Vibracion) -> None:
+    def __init__(self, vib: Vibracion, app: object | None = None) -> None:
         self.vib = vib
+        self.app = app   # la App de la bandeja: estado de actualizaciones (app.act) y acciones
         self.cfg = vib.cfg
         try:   # Reason: sin esto Windows escala la ventana como imagen y se ve borrosa en monitores 4K.
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
@@ -38,6 +40,9 @@ class VentanaAjustes:
         self.marco: ttk.Frame | None = None
         self._tarea_refresco: str | None = None
         self._armar()
+        # Si nunca se consultó y la búsqueda automática está prendida, se consulta al abrir (sin apretar nada).
+        if self.app and not self.app.act.ultima_consulta and self.cfg.datos.get("buscar_actualizaciones", True):
+            self.app.buscar_ahora()
 
     # ------------------------------------------------------------------ armado
     def _deslizador(self, padre: ttk.Frame, fila: int, texto: str, clave: tuple[str, ...]) -> None:
@@ -113,8 +118,6 @@ class VentanaAjustes:
         if rutas.EMPAQUETADO:
             self._casilla(opciones, 2, t("menu_inicio_windows"), instalacion.arranca_con_windows(),
                           instalacion.poner_arranque_con_windows)
-        self._casilla(opciones, 3, t("auto_actualizar"), bool(self.cfg.datos.get("buscar_actualizaciones", True)),
-                      lambda v: self.cfg.guardar("buscar_actualizaciones", valor=v))
         fila_idioma = ttk.Frame(opciones)
         fila_idioma.grid(row=4, column=0, columnspan=3, sticky="w", pady=(6, 0))
         ttk.Label(fila_idioma, text=t("idioma")).grid(row=0, column=0, padx=(0, 8))
@@ -125,13 +128,32 @@ class VentanaAjustes:
         combo.grid(row=0, column=1)
         combo.bind("<<ComboboxSelected>>", lambda _e: self._cambiar_idioma(IDIOMAS[combo.current()]))
 
+        act = ttk.LabelFrame(marco, text=t("actualizaciones"), padding=10)
+        act.grid(row=3, column=0, sticky="ew", pady=(10, 0))
+        ttk.Label(act, text=t("version_instalada", v=__version__)).grid(row=0, column=0, sticky="w")
+        self.lbl_act = ttk.Label(act)
+        self.lbl_act.grid(row=1, column=0, sticky="w", pady=(2, 6))
+        botones_act = ttk.Frame(act)
+        botones_act.grid(row=0, column=1, rowspan=2, sticky="e", padx=(16, 0))
+        self.btn_buscar = ttk.Button(botones_act, text=t("act_buscar"),
+                                     command=lambda: self.app and self.app.buscar_ahora())
+        self.btn_buscar.grid(row=0, column=0, padx=2)
+        self.btn_instalar = ttk.Button(botones_act, text=t("act_instalar"),
+                                       command=lambda: self.app and self.app.actualizar_ahora())
+        self.btn_instalar.grid(row=0, column=1, padx=2)
+        act.columnconfigure(0, weight=1)
+        self._casilla(act, 2, t("auto_actualizar"), bool(self.cfg.datos.get("buscar_actualizaciones", True)),
+                      lambda v: self.cfg.guardar("buscar_actualizaciones", valor=v))
+        ttk.Label(act, text=t("act_nota"), foreground="#666", wraplength=440).grid(row=3, column=0, columnspan=2,
+                                                                                    sticky="w")
+
         botones = ttk.Frame(marco)
-        botones.grid(row=3, column=0, sticky="e", pady=(12, 0))
+        botones.grid(row=4, column=0, sticky="e", pady=(12, 0))
         ttk.Button(botones, text=t("defecto"), command=self._restablecer).grid(row=0, column=0, padx=4)
         ttk.Button(botones, text=t("carpeta"),
                    command=lambda: os.startfile(rutas.datos_usuario())).grid(row=0, column=1, padx=4)
         ttk.Button(botones, text=t("cerrar"), command=self.cerrar).grid(row=0, column=2, padx=4)
-        ttk.Label(marco, text=t("aviso_simapppro"), foreground="#666").grid(row=4, column=0, sticky="w",
+        ttk.Label(marco, text=t("aviso_simapppro"), foreground="#666").grid(row=5, column=0, sticky="w",
                                                                               pady=(10, 0))
         self._refrescar()
 
@@ -153,7 +175,26 @@ class VentanaAjustes:
         self.lbl_disp.config(text=t("dispositivos", d=", ".join(e.dispositivos) or t("ninguno")))
         activos = [i18n.efecto(k) for k, v in e.activos.items() if v >= 0.05]
         self.lbl_ef.config(text=t("vibrando", e=", ".join(activos) if activos else "—"))
+        self._refrescar_actualizaciones()
         self._tarea_refresco = self.raiz.after(1000, self._refrescar)
+
+    def _refrescar_actualizaciones(self) -> None:
+        a = self.app.act if self.app else None
+        if a is None:
+            texto = t("act_sin_consultar")
+        elif a.buscando:
+            texto = t("act_buscando")
+        elif a.pendiente:
+            texto = t("act_nueva", v=a.pendiente.numero)
+        elif a.error:
+            texto = t("act_error", e=a.error)
+        elif a.ultima_consulta:
+            texto = t("act_al_dia", h=time.strftime("%H:%M", time.localtime(a.ultima_consulta)))
+        else:
+            texto = t("act_sin_consultar")
+        self.lbl_act.config(text=texto)
+        self.btn_buscar.state(["disabled"] if a is None or a.buscando else ["!disabled"])
+        self.btn_instalar.state(["!disabled"] if a and a.pendiente and rutas.EMPAQUETADO else ["disabled"])
 
     def cerrar(self) -> None:
         if self._tarea_refresco:
