@@ -1,0 +1,53 @@
+{
+  "_nota": "Intensidades 0..1 de cada efecto antes de la ganancia general. ganancia_general escala todo (0..1). El valor final va a los motores como 0..255.",
+  "ganancia_general": { "joystick": 0.20, "throttle": 1.0 },
+  "_nota_zona_muerta": "valor mínimo (0..255) desde el que cada motor empieza a girar; todo efecto arranca ahí",
+  "zona_muerta": { "joystick": 9, "throttle": 20 },
+  "umbral_efecto": 0.02,
+  "_nota_pulsado": "por debajo de 'pulsado_hasta' (en 0..255 sin zona muerta) el motor da golpecitos al mínimo en vez de zumbar: más suave",
+  "pulsado_hasta": { "joystick": 12, "throttle": 0 },
+  "empujon_arranque": { "joystick": 3, "throttle": 0 },
+  "pulsos_por_segundo": { "min": 0.5, "max": 6.0, "a_kt": 60.0 },
+  "toque_s": { "min": 0.05, "max": 0.10 },
+  "joystick_solo_en_tierra": true,
+  "rodadura": {
+    "separacion_juntas_m": 15.0,
+    "velocidad_rumor_max_kt": 140.0,
+    "golpe_juntas": 0.35,
+    "piso_lento": 0.0,
+    "arranque": 0.03,
+    "curva": 0.5,
+    "curva_juntas": 1.5,
+    "rumor_continuo": 0.30,
+    "factor_superficie": { "pavimento": 1.0, "pasto": 1.9, "ripio_tierra": 2.2, "otra": 1.3 },
+    "irregularidad_pasto": 0.6
+  },
+  "rodaje_modelo": "fisico",
+  "rodaje_fisico": {
+    "_nota": "Modelo físico del rodaje para el joystick (rodaje_modelo='fisico'; 'heuristico' vuelve al anterior). rugosidad_g0 en 1e-6 m3 (ISO 8608: A=16 pista lisa, B=64, C=256, D=1024)",
+    "rugosidad_g0": { "pavimento": 16.0, "pasto": 256.0, "ripio_tierra": 512.0, "otra": 64.0 },
+    "separacion_juntas_m": 15.0, "ancho_junta_m": 0.5, "altura_junta_m": 0.003,
+    "masa_cabina_kg": 7000.0, "masa_rueda_kg": 200.0,
+    "rigidez_amortiguador": 400000.0, "amortiguacion": 30000.0, "rigidez_neumatico": 2000000.0,
+    "corte_hz": 3.0, "ventana_s": 0.06,
+    "_nota_percepcion": "a_umbral (m/s2): por debajo la mano no lo siente. a_ref: aceleración que se siente al 100%. Calibrado: pista lisa a 140 kt = 0,7",
+    "a_umbral": 0.02, "a_ref": 0.67, "exponente_stevens": 0.8
+  },
+  "sacudones": { "ganancia": 0.9, "umbral_g": 0.04, "max_g": 0.45 },
+  "aterrizaje": { "vs_suave_fpm": 60.0, "vs_duro_fpm": 600.0, "maximo": 1.0, "duracion_s": 0.5 },
+  "tren": { "transito": 0.30, "golpe_traba": 0.55, "aire_tren_abajo": 0.10 },
+  "flaps": { "movimiento": 0.18 },
+  "speedbrake": { "aire": 0.45, "tierra": 0.20 },
+  "motores": { "minimo_ralenti": 0.045, "puesta_en_marcha": 0.12, "zumbido_tierra": 0.16, "zumbido_aire": 0.03, "reversa": 0.55, "n1_idle": 20.0 },
+  "frenos": { "_nota": "tiron_umbral en ft/s3: qué tan brusco hay que frenar para el golpe inicial",
+              "tiron_umbral": 12.0, "golpe_inicial": 0.45, "temblor": 0.28, "antibloqueo": 0.35, "golpe_detencion": 0.25 },
+  "aceleracion": { "_nota": "spool_umbral en % de N1 por segundo",
+                   "spool_umbral": 3.0, "empuje_inicial": 0.50, "fuerza": 0.30 },
+  "derrape": { "_nota": "velocidad lateral de las ruedas en ft/s: desde umbral empieza, en maximo es fuerza completa",
+               "umbral_fts": 2.5, "maximo_fts": 12.0, "fuerza": 0.55 },
+  "perdida": { "buffet": 0.7, "alpha_inicio_deg": 12.0, "alpha_full_deg": 16.0 },
+  "mezcla": {
+    "joystick": { "rodadura": 1.0, "rodaje": 1.0, "sacudones": 1.0, "aterrizaje": 1.0, "tren": 0.8, "flaps": 0.6, "speedbrake": 1.0, "motores": 0.25, "reversa": 0.35, "frenos": 0.9, "aceleracion": 0.35, "derrape": 1.0, "perdida": 1.0 },
+    "throttle": { "rodadura": 0.8, "sacudones": 0.65, "aterrizaje": 1.0, "tren": 0.8, "flaps": 0.5, "speedbrake": 0.9, "motores": 1.3, "reversa": 1.3, "frenos": 0.8, "aceleracion": 1.3, "derrape": 0.8, "perdida": 0.8 }
+  }
+}

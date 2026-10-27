@@ -1,0 +1,10 @@
+line-length = 120
+target-version = "py311"
+extend-exclude = ["venv"]
+
+[lint]
+select = ["E", "F", "W", "B", "UP"]
+
+[lint.per-file-ignores]
+# Las pruebas son escenarios largos y descriptivos.
+"pruebas.py" = ["E501", "B007", "B905"]

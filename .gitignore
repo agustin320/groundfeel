@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+*.log.*
+# SimConnect viene con el SDK de MSFS 2024; cada usuario copia la suya.
+SimConnect*.dll
