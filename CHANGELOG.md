@@ -1,8 +1,9 @@
 # Changelog / Registro de cambios
 
-## 1.4.0
+## 1.4.1
 
 **English**
+- **After an update the app tells you:** a notification says it was updated and the Settings window opens.
 - **Safer updates:** the updater only downloads from this project's GitHub releases and refuses to install unless the
   SHA-256 published by GitHub matches. Downloads go to a fresh private temporary folder.
 - **Installer:** "Start with Windows" is always removed on uninstall, even if it was turned on from Settings. Third-party
@@ -14,6 +15,7 @@
   counts tell new installs apart from updates without any telemetry.
 
 **Español**
+- **Después de actualizarse avisa:** una notificación dice que se actualizó y se abre la ventana de Ajustes.
 - **Actualizaciones más seguras:** sólo baja de los releases de este proyecto en GitHub y no instala si el SHA-256
   publicado por GitHub no coincide. La descarga va a una carpeta temporal nueva y privada.
 - **Instalador:** "Iniciar con Windows" se borra siempre al desinstalar, aunque se haya activado desde Ajustes. Se
