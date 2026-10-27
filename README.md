@@ -4,6 +4,8 @@
 
 📖 **[User guide](docs/USER_GUIDE.md)** · [Changelog](CHANGELOG.md)
 
+🚀 **Quick start:** [English](docs/quickstart/en.md) · [Español](docs/quickstart/es.md) · [中文](docs/quickstart/zh.md) · [हिन्दी](docs/quickstart/hi.md) · [Français](docs/quickstart/fr.md) · [العربية](docs/quickstart/ar.md) · [বাংলা](docs/quickstart/bn.md) · [Português](docs/quickstart/pt.md) · [Русский](docs/quickstart/ru.md) · [اردو](docs/quickstart/ur.md) · [Bahasa Indonesia](docs/quickstart/id.md) · [Deutsch](docs/quickstart/de.md) · [日本語](docs/quickstart/ja.md) · [मराठी](docs/quickstart/mr.md) · [తెలుగు](docs/quickstart/te.md) · [Türkçe](docs/quickstart/tr.md) · [தமிழ்](docs/quickstart/ta.md) · [Tiếng Việt](docs/quickstart/vi.md) · [한국어](docs/quickstart/ko.md) · [Italiano](docs/quickstart/it.md)
+
 Realistic vibration for the **WinWing URSA MINOR 32** (joystick L + throttle Metal R) in **Microsoft Flight Simulator 2024**.
 
 It replaces SimAppPro's vibration with effects computed from the aircraft's real state: ground roll by surface and speed, touchdown, wheel brakes with anti-skid, engine spool, reverse thrust, tire skid, landing gear, flaps, speedbrakes and stall buffet.
