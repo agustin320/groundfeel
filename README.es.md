@@ -1,0 +1,136 @@
+# Vibración URSA
+
+[English](README.md) · **Español**
+
+Vibración realista para el **WinWing URSA MINOR 32** (joystick L + throttle Metal R) en **Microsoft Flight Simulator 2024**.
+
+Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado real del avión: rodaje según la superficie y la velocidad, toque en pista, frenos con antibloqueo, spool de los motores, reversa, derrape, tren, flaps, frenos aerodinámicos y pérdida.
+
+## Requisitos
+
+- Windows 10/11.
+- WinWing URSA MINOR 32: joystick L y/o throttle Metal R.
+- **La vibración de SimAppPro tiene que estar apagada** para estos dispositivos. Si no, los dos programas se pisan.
+
+## Instalación
+
+1. Bajá `VibracionURSA.exe` de la [última versión](../../releases/latest).
+2. Abrilo. Se instala solo, sin pedir permisos de administrador, en `%LOCALAPPDATA%\Programs\VibracionURSA`. Queda en el menú Inicio y en "Aplicaciones instaladas".
+3. Listo. Vive en la **bandeja del sistema**, junto al reloj, y **arranca con Windows**. Cuando abrís el simulador se conecta solo.
+
+> Windows SmartScreen puede avisar que el programa no es de un editor conocido, porque no está firmado. Elegí "Más información → Ejecutar de todas formas".
+
+### Actualizaciones
+
+Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub y se actualiza sola cuando el simulador está cerrado: nunca en pleno vuelo. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones". Tus ajustes se conservan.
+
+### Desinstalar
+
+Menú de la bandeja → "Desinstalar…", o desde "Aplicaciones instaladas" de Windows. Tus ajustes quedan en `%APPDATA%\VibracionURSA` por si lo volvés a instalar.
+
+## Uso
+
+La interfaz está en castellano o en inglés según el idioma de Windows. Se puede cambiar en Ajustes → Idioma.
+
+Click derecho en el ícono de la bandeja:
+
+- **Ajustes**: intensidad del joystick, del throttle y del rodaje; si el joystick vibra sólo en tierra; pausa; iniciar con Windows. Muestra en vivo si el simulador está conectado, qué dispositivos encontró y qué está vibrando. Los cambios se aplican al instante.
+- **Pausar vibración**, **Ver registro**, **Buscar actualizaciones**, **Desinstalar**, **Salir**.
+
+En pausa del simulador no vibra nada.
+
+## Efectos
+
+| Efecto | Qué se siente | Dónde |
+|---|---|---|
+| Rodaje | Modelo físico: perfil de pista ISO 8608 más juntas de losas, tren de nariz con resortes, percepción de la mano. Pasto, ripio y tierra vibran mucho más que el asfalto. | Joystick |
+| Rodadura | Golpecitos de juntas y rumor que crecen con la velocidad. | Throttle |
+| Toque en pista | Golpe proporcional a la velocidad de descenso. | Ambos |
+| Frenos | Golpe inicial, temblor de ruedas que se hace más lento al frenar, pulsos de antibloqueo y un golpecito al detenerse. | Ambos |
+| Motores | Mínimo en ralentí, rumor durante la puesta en marcha, zumbido que crece con la potencia. Cada palanca sigue a su motor. | Throttle |
+| Spool / aceleración | Empuje al subir potencia y pulsación que acompaña la aceleración real. | Ambos |
+| Reversa | Vibración fuerte en la palanca de cada motor. Si el avión no la publica (A320 de FlyByWire), se deduce de N1 alto frenando en tierra. | Throttle |
+| Derrape | Vibración áspera cuando las ruedas van de costado. | Ambos |
+| Tren, flaps, frenos aerodinámicos, pérdida, turbulencia | Según su estado. | Ambos |
+
+Por defecto el joystick vibra **sólo en tierra** (`"joystick_solo_en_tierra": true`).
+
+## Ajustes avanzados
+
+Lo más común se cambia desde la ventana de Ajustes. Para el resto:
+
+- `config.json` trae los valores por defecto. Viene con cada versión, así que no lo edites.
+- Tus cambios van en `ajustes.json`, dentro de `%APPDATA%\VibracionURSA` (en la ventana de Ajustes: "Carpeta de ajustes"). Ahí guardás sólo lo que querés cambiar, con la misma estructura que `config.json`. Por ejemplo: `{"frenos": {"antibloqueo": 0.5}}`.
+- Los cambios se aplican al guardar, sin reiniciar. Las actualizaciones respetan tus ajustes.
+
+Claves principales:
+
+- `ganancia_general`: intensidad global de cada dispositivo (0 a 1).
+- `zona_muerta`: valor mínimo (0 a 255) desde el que gira cada motor. Todo efecto arranca ahí. Se mide con `herramientas\prueba_umbral.py`.
+- `pulsado_hasta` y `toque_s`: por debajo de la zona muerta, el joystick da toques cortos en lugar de un zumbido continuo.
+- `mezcla`: cuánto de cada efecto va al joystick y cuánto al throttle.
+- `rodaje_fisico`:
+  - `rugosidad_g0`: rugosidad de cada superficie.
+  - `a_umbral`: desde dónde se siente.
+  - `a_ref`: fuerza del rodaje.
+  - `altura_junta_m`: juntas de las losas.
+- `rodaje_modelo`: `"fisico"` (por defecto) o `"heuristico"`, el rodaje anterior basado en reglas.
+- Cada efecto tiene su bloque con sus intensidades: `frenos`, `motores`, `aceleracion`, `derrape`, etc.
+
+## Cómo funciona
+
+```
+SimConnect (cada frame) ──> sim_lector.py ──> efectos.py ──> motores.py ──> HID (WinWing)
+                                                 └─ rodaje_fisico.py
+```
+
+- `sim_lector.py`: lee las variables del simulador, sólo lectura. Se reconecta solo.
+- `efectos.py`: calcula cada efecto entre 0 y 1 y lo mezcla por motor. Detecta la pausa y compensa la zona muerta.
+- `rodaje_fisico.py`:
+  - Genera el perfil de la superficie como ruido filtrado con la densidad espectral de ISO 8608.
+  - Simula el tren de nariz como un cuarto de vehículo de dos masas, integrado cada 2,5 ms.
+  - Aplica a la aceleración de la cabina un umbral de detección y la ley de Stevens.
+- `motores.py`: protocolo HID de los motores, reporte `0x02` + `[pieza LE, 00, 00, 03, 49, índice, valor]`.
+  - Joystick L: pieza `0xBF07`, motor índice 0.
+  - Throttle Metal R: pieza `0xB910`, motores índices 14 y 16.
+- `motor_vibracion.py`:
+  - Lazo principal a 40 Hz, en un hilo.
+  - Recarga la configuración en caliente.
+  - Siempre apaga los motores al detenerse.
+  - Registro en `vibracion.log`: sólo anota cuando cambian los efectos activos.
+- `bandeja.py`: la app (entrada del `.exe`). Se apoya en `ventana_ajustes.py`, `instalacion.py` (instalación por usuario en HKCU), `actualizador.py` (GitHub Releases) e `i18n.py` (textos de la interfaz).
+- `config_usuario.py`: `config.json` (valores por defecto) más `ajustes.json` (lo que cambiaste vos).
+
+## Desarrollo
+
+```
+instalar.bat                            (una vez: entorno de Python y dependencias)
+venv\Scripts\python.exe bandeja.py      (la app de bandeja, desde el código; no se instala)
+venv\Scripts\python.exe vibracion.py    (sin bandeja, con consola; también --silencio y --con-simulador)
+venv\Scripts\python.exe pruebas.py      (pruebas sintéticas, sin simulador ni hardware)
+venv\Scripts\pyinstaller VibracionURSA.spec   (genera dist\VibracionURSA.exe)
+```
+
+Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despegue, crucero, pausa, aterrizaje suave contra duro, frenado, aceleración, motores, reversa, derrape y rodaje físico. Corren en GitHub Actions en cada push.
+
+**Publicar una versión:** subí `__version__` en `version.py`, hacé commit y empujá un tag igual (`git tag v1.0.1 && git push --tags`). GitHub Actions corre las pruebas, arma el `.exe` y lo publica en Releases. Las apps instaladas lo toman solas.
+
+`recursos/SimConnect.dll` es la librería cliente redistribuible del SDK de MSFS 2024, de Microsoft. Se incluye para que el programa funcione sin instalar el SDK.
+
+## Problemas comunes
+
+- **No vibra nada:**
+  - La ventana de Ajustes muestra si el simulador está conectado y qué dispositivos encontró.
+  - El detalle está en "Ver registro".
+  - Revisá que la vibración de SimAppPro esté apagada.
+- **Un motor quedó vibrando:** pasa si el programa se cierra de golpe, por ejemplo matándolo desde el Administrador de tareas. Volvé a abrirlo: al arrancar apaga los motores.
+- **Algo se siente demasiado fuerte o débil:** ajustalo en la ventana de Ajustes.
+
+## Créditos
+
+- El protocolo HID de los motores se basó en [ursa-minor-ffb](https://github.com/rtroncoso/ursa-minor-ffb) de rtroncoso (MIT).
+- Proyecto independiente, sin relación con WinWing ni con Microsoft.
+
+## Licencia
+
+MIT. Ver [LICENSE](LICENSE).

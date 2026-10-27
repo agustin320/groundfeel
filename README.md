@@ -1,134 +1,149 @@
-# Vibración URSA
+# URSA Rumble (Vibración URSA)
 
-Vibración realista para el **WinWing URSA MINOR 32** (joystick L + throttle Metal R) en **Microsoft Flight Simulator 2024**.
+**English** · [Español](README.es.md)
 
-Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado real del avión: rodaje según la superficie y la velocidad, toque en pista, frenos con antibloqueo, spool de los motores, reversa, derrape, tren, flaps, frenos aerodinámicos y pérdida.
+Realistic vibration for the **WinWing URSA MINOR 32** (joystick L + throttle Metal R) in **Microsoft Flight Simulator 2024**.
 
-> **English summary:** realistic rumble for the WinWing URSA MINOR 32 joystick and throttle in MSFS 2024. It reads the sim via SimConnect and drives the devices' vibration motors over HID. Ground roll on the joystick uses a physical model: an ISO 8608 runway profile and a two-mass nose-gear model. Download `VibracionURSA.exe` from Releases and run it: it installs itself per-user, lives in the system tray, starts with Windows and updates itself. Windows only. UI and docs are in Spanish.
+It replaces SimAppPro's vibration with effects computed from the aircraft's real state: ground roll by surface and speed, touchdown, wheel brakes with anti-skid, engine spool, reverse thrust, tire skid, landing gear, flaps, speedbrakes and stall buffet.
 
-## Requisitos
+## Requirements
 
 - Windows 10/11.
-- WinWing URSA MINOR 32: joystick L y/o throttle Metal R.
-- **La vibración de SimAppPro tiene que estar apagada** para estos dispositivos. Si no, los dos programas se pisan.
+- WinWing URSA MINOR 32: joystick L and/or throttle Metal R.
+- **SimAppPro's vibration must be turned off** for these devices, otherwise both programs fight over the motors.
 
-## Instalación
+## Install
 
-1. Bajá `VibracionURSA.exe` de la [última versión](../../releases/latest).
-2. Abrilo. Se instala solo, sin pedir permisos de administrador, en `%LOCALAPPDATA%\Programs\VibracionURSA`. Queda en el menú Inicio y en "Aplicaciones instaladas".
-3. Listo. Vive en la **bandeja del sistema**, junto al reloj, y **arranca con Windows**. Cuando abrís el simulador se conecta solo.
+1. Download `VibracionURSA.exe` from the [latest release](../../releases/latest).
+2. Run it. It installs itself for your user, without admin rights, in `%LOCALAPPDATA%\Programs\VibracionURSA`. It also appears in the Start menu and in "Installed apps".
+3. Done. It lives in the **system tray** next to the clock and **starts with Windows**. It connects by itself when the simulator opens.
 
-> Windows SmartScreen puede avisar que el programa no es de un editor conocido, porque no está firmado. Elegí "Más información → Ejecutar de todas formas".
+> Windows SmartScreen may warn that the publisher is unknown, because the program isn't code-signed. Click "More info → Run anyway".
 
-### Actualizaciones
+### Updates
 
-Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub y se actualiza sola cuando el simulador está cerrado: nunca en pleno vuelo. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones". Tus ajustes se conservan.
+Updates are automatic. Every 6 hours the app checks GitHub for a new version and updates itself while the simulator is closed, never mid-flight. You can also use "Check for updates" in the tray menu. Your settings are kept.
 
-### Desinstalar
+### Uninstall
 
-Menú de la bandeja → "Desinstalar…", o desde "Aplicaciones instaladas" de Windows. Tus ajustes quedan en `%APPDATA%\VibracionURSA` por si lo volvés a instalar.
+Tray menu → "Uninstall…", or from Windows "Installed apps". Your settings stay in `%APPDATA%\VibracionURSA` in case you reinstall.
 
-## Uso
+## Usage
 
-Click derecho en el ícono de la bandeja:
+The interface is in English or Spanish, following the Windows language. You can change it in Settings → Language.
 
-- **Ajustes**: intensidad del joystick, del throttle y del rodaje; si el joystick vibra sólo en tierra; pausa; iniciar con Windows. Muestra en vivo si el simulador está conectado, qué dispositivos encontró y qué está vibrando. Los cambios se aplican al instante.
-- **Pausar vibración**, **Ver registro**, **Buscar actualizaciones**, **Desinstalar**, **Salir**.
+Right-click the tray icon:
 
-En pausa del simulador no vibra nada.
+- **Settings**:
+  - Joystick, throttle and ground-roll intensity.
+  - Whether the joystick vibrates on the ground only.
+  - Pause, and start with Windows.
+  - A live view of the simulator connection, the devices found and which effects are vibrating.
+  - Changes apply instantly.
+- **Pause vibration**, **View log**, **Check for updates**, **Uninstall**, **Exit**.
 
-## Efectos
+Nothing vibrates while the simulator is paused.
 
-| Efecto | Qué se siente | Dónde |
+## Effects
+
+| Effect | What you feel | Where |
 |---|---|---|
-| Rodaje | Modelo físico: perfil de pista ISO 8608 más juntas de losas, tren de nariz con resortes, percepción de la mano. Pasto, ripio y tierra vibran mucho más que el asfalto. | Joystick |
-| Rodadura | Golpecitos de juntas y rumor que crecen con la velocidad. | Throttle |
-| Toque en pista | Golpe proporcional a la velocidad de descenso. | Ambos |
-| Frenos | Golpe inicial, temblor de ruedas que se hace más lento al frenar, pulsos de antibloqueo y un golpecito al detenerse. | Ambos |
-| Motores | Mínimo en ralentí, rumor durante la puesta en marcha, zumbido que crece con la potencia. Cada palanca sigue a su motor. | Throttle |
-| Spool / aceleración | Empuje al subir potencia y pulsación que acompaña la aceleración real. | Ambos |
-| Reversa | Vibración fuerte en la palanca de cada motor. Si el avión no la publica (A320 de FlyByWire), se deduce de N1 alto frenando en tierra. | Throttle |
-| Derrape | Vibración áspera cuando las ruedas van de costado. | Ambos |
-| Tren, flaps, frenos aerodinámicos, pérdida, turbulencia | Según su estado. | Ambos |
+| Ground roll | Physical model: an ISO 8608 runway profile plus slab joints, a nose gear with springs, and how the hand perceives vibration. Grass, gravel and dirt shake much more than asphalt. | Joystick |
+| Rolling | Joint bumps and a rumble that grow with speed. | Throttle |
+| Touchdown | A bump proportional to the descent rate. | Both |
+| Wheel brakes | Initial jolt, wheel tremor that slows down as you brake, anti-skid pulses and a small bump when stopping. | Both |
+| Engines | A minimum at idle, a rumble during engine start, and a hum that grows with power. Each lever follows its own engine. | Throttle |
+| Spool / acceleration | A push when power goes up and a pulsation that follows the real acceleration. | Both |
+| Reverse | Strong vibration on each engine's lever. If the aircraft doesn't publish it (FlyByWire A320), it's inferred from high N1 while decelerating on the ground. | Throttle |
+| Skid | A rough vibration when the tires slide sideways. | Both |
+| Gear, flaps, speedbrakes, stall, turbulence | According to their state. | Both |
 
-Por defecto el joystick vibra **sólo en tierra** (`"joystick_solo_en_tierra": true`).
+By default the joystick vibrates **on the ground only** (`"joystick_solo_en_tierra": true`).
 
-## Ajustes avanzados
+## Advanced settings
 
-Lo más común se cambia desde la ventana de Ajustes. Para el resto:
+The common options are in the Settings window. For everything else:
 
-- `config.json` trae los valores por defecto. Viene con cada versión, así que no lo edites.
-- Tus cambios van en `ajustes.json`, dentro de `%APPDATA%\VibracionURSA` (en la ventana de Ajustes: "Carpeta de ajustes"). Ahí guardás sólo lo que querés cambiar, con la misma estructura que `config.json`. Por ejemplo: `{"frenos": {"antibloqueo": 0.5}}`.
-- Los cambios se aplican al guardar, sin reiniciar. Las actualizaciones respetan tus ajustes.
+- `config.json` holds the defaults. It ships with every version, so don't edit it.
+- Your changes go in `ajustes.json`, inside `%APPDATA%\VibracionURSA` (Settings → "Settings folder").
+  - Put only what you want to change there, with the same structure as `config.json`. For example: `{"frenos": {"antibloqueo": 0.5}}`.
+  - Changes apply on save, without restarting. Updates keep your settings.
 
-Claves principales:
+Main keys (names are in Spanish):
 
-- `ganancia_general`: intensidad global de cada dispositivo (0 a 1).
-- `zona_muerta`: valor mínimo (0 a 255) desde el que gira cada motor. Todo efecto arranca ahí. Se mide con `herramientas\prueba_umbral.py`.
-- `pulsado_hasta` y `toque_s`: por debajo de la zona muerta, el joystick da toques cortos en lugar de un zumbido continuo.
-- `mezcla`: cuánto de cada efecto va al joystick y cuánto al throttle.
-- `rodaje_fisico`:
-  - `rugosidad_g0`: rugosidad de cada superficie.
-  - `a_umbral`: desde dónde se siente.
-  - `a_ref`: fuerza del rodaje.
-  - `altura_junta_m`: juntas de las losas.
-- `rodaje_modelo`: `"fisico"` (por defecto) o `"heuristico"`, el rodaje anterior basado en reglas.
-- Cada efecto tiene su bloque con sus intensidades: `frenos`, `motores`, `aceleracion`, `derrape`, etc.
+- `ganancia_general`: overall intensity per device (0 to 1).
+- `zona_muerta`: the minimum value (0 to 255) at which each motor starts spinning. Every effect starts there. Measure it with `herramientas\prueba_umbral.py`.
+- `pulsado_hasta` and `toque_s`: below the dead zone, the joystick gives short taps instead of a continuous hum.
+- `mezcla`: how much of each effect goes to the joystick and how much to the throttle.
+- `rodaje_fisico` (ground-roll model):
+  - `rugosidad_g0`: roughness per surface.
+  - `a_umbral`: where it starts being felt.
+  - `a_ref`: ground-roll strength.
+  - `altura_junta_m`: slab joint height.
+- `rodaje_modelo`: `"fisico"` (default) or `"heuristico"`, the older rule-based ground roll.
+- Each effect has its own block of intensities: `frenos`, `motores`, `aceleracion`, `derrape`, etc.
 
-## Cómo funciona
+## How it works
 
 ```
-SimConnect (cada frame) ──> sim_lector.py ──> efectos.py ──> motores.py ──> HID (WinWing)
-                                                 └─ rodaje_fisico.py
+SimConnect (every frame) ──> sim_lector.py ──> efectos.py ──> motores.py ──> HID (WinWing)
+                                                  └─ rodaje_fisico.py
 ```
 
-- `sim_lector.py`: lee las variables del simulador, sólo lectura. Se reconecta solo.
-- `efectos.py`: calcula cada efecto entre 0 y 1 y lo mezcla por motor. Detecta la pausa y compensa la zona muerta.
+- `sim_lector.py`: reads the simulator variables, read-only. It reconnects by itself.
+- `efectos.py`: computes each effect from 0 to 1 and mixes them per motor. It detects pause and compensates for the motors' dead zone.
 - `rodaje_fisico.py`:
-  - Genera el perfil de la superficie como ruido filtrado con la densidad espectral de ISO 8608.
-  - Simula el tren de nariz como un cuarto de vehículo de dos masas, integrado cada 2,5 ms.
-  - Aplica a la aceleración de la cabina un umbral de detección y la ley de Stevens.
-- `motores.py`: protocolo HID de los motores, reporte `0x02` + `[pieza LE, 00, 00, 03, 49, índice, valor]`.
-  - Joystick L: pieza `0xBF07`, motor índice 0.
-  - Throttle Metal R: pieza `0xB910`, motores índices 14 y 16.
+  - Generates the surface profile as noise filtered with the ISO 8608 spectral density.
+  - Simulates the nose gear as a two-mass quarter-car model, integrated every 2.5 ms.
+  - Applies a detection threshold and Stevens' power law to the cockpit acceleration.
+- `motores.py`: the motors' HID protocol, report `0x02` + `[part LE, 00, 00, 03, 49, index, value]`.
+  - Joystick L: part `0xBF07`, motor index 0.
+  - Throttle Metal R: part `0xB910`, motor indexes 14 and 16.
 - `motor_vibracion.py`:
-  - Lazo principal a 40 Hz, en un hilo.
-  - Recarga la configuración en caliente.
-  - Siempre apaga los motores al detenerse.
-  - Registro en `vibracion.log`: sólo anota cuando cambian los efectos activos.
-- `bandeja.py`: la app (entrada del `.exe`). Se apoya en `ventana_ajustes.py`, `instalacion.py` (instalación por usuario en HKCU) y `actualizador.py` (GitHub Releases).
-- `config_usuario.py`: `config.json` (valores por defecto) más `ajustes.json` (lo que cambiaste vos).
+  - Main loop at 40 Hz, in a thread.
+  - Reloads the configuration live.
+  - Always turns the motors off when it stops.
+- `bandeja.py`: the app (entry point of the `.exe`). It relies on:
+  - `ventana_ajustes.py`: the Settings window.
+  - `instalacion.py`: per-user install in HKCU.
+  - `actualizador.py`: updates from GitHub Releases.
+  - `i18n.py`: interface texts.
+- `config_usuario.py`: `config.json` (defaults) plus `ajustes.json` (your changes).
 
-## Desarrollo
+## Development
 
 ```
-instalar.bat                            (una vez: entorno de Python y dependencias)
-venv\Scripts\python.exe bandeja.py      (la app de bandeja, desde el código; no se instala)
-venv\Scripts\python.exe vibracion.py    (sin bandeja, con consola; también --silencio y --con-simulador)
-venv\Scripts\python.exe pruebas.py      (pruebas sintéticas, sin simulador ni hardware)
-venv\Scripts\pyinstaller VibracionURSA.spec   (genera dist\VibracionURSA.exe)
+instalar.bat                            (once: Python environment and dependencies)
+venv\Scripts\python.exe bandeja.py      (tray app from source; it doesn't install itself)
+venv\Scripts\python.exe vibracion.py    (console, no tray; also --silencio and --con-simulador)
+venv\Scripts\python.exe pruebas.py      (synthetic tests, no simulator or hardware needed)
+venv\Scripts\pyinstaller VibracionURSA.spec   (builds dist\VibracionURSA.exe)
 ```
 
-Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despegue, crucero, pausa, aterrizaje suave contra duro, frenado, aceleración, motores, reversa, derrape y rodaje físico. Corren en GitHub Actions en cada push.
+The tests run on GitHub Actions on every push.
 
-**Publicar una versión:** subí `__version__` en `version.py`, hacé commit y empujá un tag igual (`git tag v1.0.1 && git push --tags`). GitHub Actions corre las pruebas, arma el `.exe` y lo publica en Releases. Las apps instaladas lo toman solas.
+**Releasing:**
 
-`recursos/SimConnect.dll` es la librería cliente redistribuible del SDK de MSFS 2024, de Microsoft. Se incluye para que el programa funcione sin instalar el SDK.
+1. Bump `__version__` in `version.py` and commit.
+2. Push a matching tag: `git tag v1.0.1 && git push --tags`.
+3. GitHub Actions runs the tests, builds the `.exe` and publishes it to Releases. Installed apps pick it up by themselves.
 
-## Problemas comunes
+`recursos/SimConnect.dll` is the redistributable client library from Microsoft's MSFS 2024 SDK. It's bundled so the program works without the SDK installed.
 
-- **No vibra nada:**
-  - La ventana de Ajustes muestra si el simulador está conectado y qué dispositivos encontró.
-  - El detalle está en "Ver registro".
-  - Revisá que la vibración de SimAppPro esté apagada.
-- **Un motor quedó vibrando:** pasa si el programa se cierra de golpe, por ejemplo matándolo desde el Administrador de tareas. Volvé a abrirlo: al arrancar apaga los motores.
-- **Algo se siente demasiado fuerte o débil:** ajustalo en la ventana de Ajustes.
+## Troubleshooting
 
-## Créditos
+- **Nothing vibrates:**
+  - The Settings window shows whether the simulator is connected and which devices were found.
+  - "View log" has the details.
+  - Check that SimAppPro's vibration is off.
+- **A motor keeps vibrating:** this happens if the program is killed abruptly, for example from Task Manager. Open it again: it turns the motors off when it starts.
+- **Something feels too strong or too weak:** adjust it in the Settings window.
 
-- El protocolo HID de los motores se basó en [ursa-minor-ffb](https://github.com/rtroncoso/ursa-minor-ffb) de rtroncoso (MIT).
-- Proyecto independiente, sin relación con WinWing ni con Microsoft.
+## Credits
 
-## Licencia
+- The motors' HID protocol is based on [ursa-minor-ffb](https://github.com/rtroncoso/ursa-minor-ffb) by rtroncoso (MIT).
+- Independent project, not affiliated with WinWing or Microsoft.
 
-MIT. Ver [LICENSE](LICENSE).
+## License
+
+MIT. See [LICENSE](LICENSE).

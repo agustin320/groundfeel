@@ -17,19 +17,21 @@ import pystray
 from PIL import Image
 
 import actualizador
+import i18n
 import instalacion
 import rutas
+from config_usuario import Config
+from i18n import t
 from instancia import instancia_unica, liberar
 from motor_vibracion import Vibracion, configurar_log, log
 from version import __version__
 
-TITULO = "Vibración URSA"
 CADA_ACTUALIZACION_S = 6 * 3600
 MB_OK, MB_YESNO, MB_ICONINFO, MB_ICONQUESTION, MB_ICONERROR, IDYES = 0, 4, 0x40, 0x20, 0x10, 6
 
 
 def mensaje(texto: str, estilo: int = MB_OK | MB_ICONINFO) -> int:
-    return ctypes.windll.user32.MessageBoxW(None, texto, TITULO, estilo | 0x10000)  # MB_SETFOREGROUND
+    return ctypes.windll.user32.MessageBoxW(None, texto, t("app"), estilo | 0x10000)  # MB_SETFOREGROUND
 
 
 class App:
@@ -38,34 +40,35 @@ class App:
         self.pendiente: actualizador.Version | None = None
         self.ajustes_abiertos = False
         self.saliendo = False
-        self.icono = pystray.Icon("VibracionURSA", Image.open(rutas.icono()), TITULO, self._menu())
+        self.icono = pystray.Icon("VibracionURSA", Image.open(rutas.icono()), t("app"), self._menu())
 
     # ------------------------------------------------------------------ menú
     def _texto_estado(self, _item: object = None) -> str:
         e = self.vib.estado
         if e.error:
-            return f"Error: {e.error[:60]}"
-        sim = "Simulador conectado" if e.conectado else "Esperando al simulador"
-        disp = ", ".join(e.dispositivos) or "sin dispositivos"
+            return t("error", e=e.error[:60])
+        sim = t("sim_conectado") if e.conectado else t("sim_esperando")
+        disp = ", ".join(e.dispositivos) or t("sin_dispositivos")
         return f"{sim} · {disp}"
 
     def _menu(self) -> pystray.Menu:
+        # Reason: los textos son funciones para que un cambio de idioma en Ajustes se vea sin reiniciar.
         item = pystray.MenuItem
         return pystray.Menu(
-            item(lambda _i: f"{TITULO} {__version__}", None, enabled=False),
+            item(lambda _i: f"{t('app')} {__version__}", None, enabled=False),
             item(self._texto_estado, None, enabled=False),
             pystray.Menu.SEPARATOR,
-            item("Ajustes…", self._abrir_ajustes, default=True),
-            item("Pausar vibración", self._pausar, checked=lambda _i: self.vib.estado.pausado),
-            item("Iniciar con Windows", self._autoarranque, checked=lambda _i: instalacion.arranca_con_windows(),
-                 visible=rutas.EMPAQUETADO),
+            item(lambda _i: t("menu_ajustes"), self._abrir_ajustes, default=True),
+            item(lambda _i: t("menu_pausar"), self._pausar, checked=lambda _i: self.vib.estado.pausado),
+            item(lambda _i: t("menu_inicio_windows"), self._autoarranque,
+                 checked=lambda _i: instalacion.arranca_con_windows(), visible=rutas.EMPAQUETADO),
             pystray.Menu.SEPARATOR,
-            item(lambda _i: f"Actualizar a la versión {self.pendiente.numero}" if self.pendiente else "",
+            item(lambda _i: t("menu_actualizar_a", v=self.pendiente.numero) if self.pendiente else "",
                  self._actualizar_ya, visible=lambda _i: self.pendiente is not None),
-            item("Buscar actualizaciones", self._buscar_manual),
-            item("Ver registro", lambda: os.startfile(rutas.archivo_log())),
-            item("Desinstalar…", self._desinstalar, visible=rutas.EMPAQUETADO),
-            item("Salir", self._salir),
+            item(lambda _i: t("menu_buscar"), self._buscar_manual),
+            item(lambda _i: t("menu_registro"), lambda: os.startfile(rutas.archivo_log())),
+            item(lambda _i: t("menu_desinstalar"), self._desinstalar, visible=rutas.EMPAQUETADO),
+            item(lambda _i: t("menu_salir"), self._salir),
         )
 
     def _pausar(self) -> None:
@@ -94,8 +97,7 @@ class App:
         self.icono.stop()
 
     def _desinstalar(self) -> None:
-        if mensaje("¿Desinstalar Vibración URSA? Tus ajustes se guardan por si lo volvés a instalar.",
-                   MB_YESNO | MB_ICONQUESTION) != IDYES:
+        if mensaje(t("confirmar_desinstalar"), MB_YESNO | MB_ICONQUESTION) != IDYES:
             return
         self.saliendo = True
         self.vib.detener()
@@ -109,9 +111,9 @@ class App:
             if v:
                 self.pendiente = v
                 self.icono.update_menu()
-                self.icono.notify(f"Hay una versión nueva ({v.numero}). Elegí «Actualizar» en el menú.", TITULO)
+                self.icono.notify(t("hay_version", v=v.numero), t("app"))
             else:
-                self.icono.notify(f"Tenés la última versión ({__version__}).", TITULO)
+                self.icono.notify(t("ultima_version", v=__version__), t("app"))
         threading.Thread(target=correr, daemon=True).start()
 
     def _actualizar_ya(self) -> None:
@@ -126,14 +128,15 @@ class App:
         else:
             self.vib = Vibracion()
             self.vib.iniciar()
-            self.icono.notify("No se pudo actualizar; sigue la versión actual. Ver el registro.", TITULO)
+            self.icono.notify(t("no_actualizo"), t("app"))
 
     def _vigilar(self) -> None:
         """Refresca el menú y aplica actualizaciones sola cuando el simulador no está abierto."""
         proxima = time.time() + 30
         while not self.saliendo:
             time.sleep(2)
-            self.icono.title = f"{TITULO}\n{self._texto_estado()}"[:127]
+            i18n.elegir(str(self.vib.cfg.datos.get("idioma", "auto")))
+            self.icono.title = f"{t('app')}\n{self._texto_estado()}"[:127]
             self.icono.update_menu()
             if time.time() >= proxima:
                 proxima = time.time() + CADA_ACTUALIZACION_S
@@ -171,26 +174,24 @@ def apagar_motores() -> None:
 def main() -> None:
     args = sys.argv[1:]
     configurar_log()
+    i18n.elegir(str(Config().datos.get("idioma", "auto")))
     if "--desinstalar" in args:
-        if mensaje("¿Desinstalar Vibración URSA?", MB_YESNO | MB_ICONQUESTION) == IDYES:
+        if mensaje(t("confirmar_desinstalar"), MB_YESNO | MB_ICONQUESTION) == IDYES:
             # Reason: si la app está corriendo en la bandeja, se cierra primero para soltar los motores y el .exe.
             subprocess.run(["taskkill", "/im", os.path.basename(sys.executable), "/fi",
                             f"PID ne {os.getpid()}"], creationflags=instalacion.SIN_VENTANA, check=False)
             apagar_motores()   # Reason: matar el proceso deja los motores girando en el último valor.
             instalacion.desinstalar()
-            mensaje("Vibración URSA se desinstaló.")
+            mensaje(t("desinstalado"))
         return
     if not instalacion.esta_instalado_aca():
         if not instancia_unica():
-            mensaje("Vibración URSA ya está instalada y corriendo (ícono en la bandeja, junto al reloj).\n"
-                    "Las actualizaciones llegan solas.")
+            mensaje(t("ya_instalado"))
             return
         exe = instalacion.instalar()
         liberar()
         subprocess.Popen([str(exe), "--esperar"], close_fds=True)
-        mensaje("Listo: Vibración URSA quedó instalada.\n\nVive en la bandeja del sistema (junto al reloj), arranca "
-                "con Windows y se actualiza sola.\nAcordate de apagar la vibración de SimAppPro para el joystick y "
-                "el throttle.")
+        mensaje(t("instalado"))
         return
     if not instancia_unica(esperar_s=20 if "--esperar" in args else 0):
         return
