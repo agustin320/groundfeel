@@ -54,6 +54,8 @@ Name: "autostart"; Description: "{cm:Autostart}"
 
 [Files]
 Source: "dist\VibracionURSA\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"
+Source: "THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"
 
 [Icons]
 Name: "{userprograms}\URSA Rumble"; Filename: "{app}\VibracionURSA.exe"
@@ -65,9 +67,6 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 Filename: "{app}\VibracionURSA.exe"; Description: "{cm:Launch}"; Flags: nowait postinstall skipifsilent
 ; Actualización automática (silenciosa): volver a abrir la app sola.
 Filename: "{app}\VibracionURSA.exe"; Flags: nowait; Check: WizardSilent
-
-[UninstallDelete]
-Type: filesandordirs; Name: "{app}"
 
 [Code]
 const
@@ -114,6 +113,15 @@ function InitializeUninstall(): Boolean;
 begin
   CerrarApp();
   Result := True;
+end;
+
+{ Reason: "Iniciar con Windows" también se puede prender desde Ajustes, y ahí no lo registra el instalador:
+  se borra siempre al desinstalar. (No hay [UninstallDelete] de la carpeta: Inno borra lo que instaló y
+  borrar {app} entero sería peligroso si alguien instaló con /DIR= en una carpeta con otras cosas.) }
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    RegDeleteValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'VibracionURSA');
 end;
 
 procedure CurPageChanged(CurPageID: Integer);

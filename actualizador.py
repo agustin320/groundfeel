@@ -1,6 +1,7 @@
 """Actualizaciones desde GitHub Releases: compara versiones, baja el instalador nuevo y lo corre en silencio.
 
-Flujo: baja VibracionURSA-Setup.exe, verifica su SHA-256 contra el que publica GitHub, lo lanza con /VERYSILENT y
+Flujo: baja VibracionURSA-Update.exe (o -Setup.exe) sólo desde los releases de este repo, exige que GitHub publique su
+SHA-256 y que coincida (si falta, no actualiza), lo lanza con /VERYSILENT y
 esta app se cierra (apagando los motores). El instalador espera a que se cierre, reemplaza los archivos y vuelve a
 abrir la app. Es el mismo instalador que usa una persona a mano: nada de reemplazar .exe en caliente.
 """
@@ -9,7 +10,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 import subprocess
 import tempfile
 import time
@@ -22,7 +22,10 @@ from version import NOMBRE_APP, REPO, __version__
 
 log = logging.getLogger("vibracion")
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
-ASSET = f"{NOMBRE_APP}-Setup.exe"
+# Reason: el actualizador baja "-Update.exe" (el mismo instalador con otro nombre) para que las descargas de GitHub
+# distingan instalaciones nuevas ("-Setup.exe") de actualizaciones, sin telemetría. Si no está, usa el Setup.
+ASSETS = (f"{NOMBRE_APP}-Update.exe", f"{NOMBRE_APP}-Setup.exe")
+PREFIJO_DESCARGA = f"https://github.com/{REPO}/releases/download/"
 
 
 @dataclass
@@ -65,11 +68,17 @@ def _ultima_publicada() -> Version | None:
     with _pedir(API, 15) as r:
         datos = json.load(r)
     tag = datos.get("tag_name", "")
-    asset = next((a for a in datos.get("assets", []) if a.get("name") == ASSET), None)
+    por_nombre = {a.get("name"): a for a in datos.get("assets", [])}
+    asset = next((por_nombre[n] for n in ASSETS if n in por_nombre), None)
     if not tag or not asset or not es_mas_nueva(tag):
         return None
-    sha = str(asset.get("digest", "")).removeprefix("sha256:")
-    return Version(tag.lstrip("vV"), asset["browser_download_url"], sha, datos.get("body", ""))
+    url = str(asset.get("browser_download_url", ""))
+    sha = str(asset.get("digest", "")).removeprefix("sha256:").lower()
+    # Falla cerrado: sin SHA-256 publicado o con una URL que no sea de los releases de este repo, no se ofrece.
+    if not url.startswith(PREFIJO_DESCARGA) or len(sha) != 64:
+        log.warning("la versión %s no trae descarga verificable (url=%s, sha=%r); no se ofrece", tag, url, sha)
+        return None
+    return Version(tag.lstrip("vV"), url, sha, datos.get("body", ""))
 
 
 def consultar(estado: EstadoActualizacion) -> Version | None:
@@ -93,7 +102,11 @@ def aplicar(v: Version) -> bool:
     if not rutas.EMPAQUETADO:
         log.info("actualización %s disponible; desde el código fuente no se aplica", v.numero)
         return False
-    destino = Path(tempfile.gettempdir()) / f"{NOMBRE_APP}-Setup-{v.numero}.exe"
+    if not v.url.startswith(PREFIJO_DESCARGA) or len(v.sha256) != 64:
+        log.warning("actualización %s rechazada: descarga no verificable", v.numero)
+        return False
+    # Reason: carpeta temporal nueva y privada, así nadie puede dejar un .exe esperando con el nombre que vamos a usar.
+    destino = Path(tempfile.mkdtemp(prefix=f"{NOMBRE_APP}-")) / f"{NOMBRE_APP}-Setup-{v.numero}.exe"
     try:
         log.info("bajando la versión %s", v.numero)
         h = hashlib.sha256()
@@ -101,13 +114,13 @@ def aplicar(v: Version) -> bool:
             while bloque := r.read(1 << 16):
                 f.write(bloque)
                 h.update(bloque)
-        if v.sha256 and h.hexdigest() != v.sha256.lower():
+        if h.hexdigest() != v.sha256:
             raise ValueError("el instalador bajado no coincide con el publicado (SHA-256)")
     except Exception as ex:  # noqa: BLE001
         log.warning("no pude actualizar: %s", ex)
         destino.unlink(missing_ok=True)
         return False
     subprocess.Popen([str(destino), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"], close_fds=True,
-                     cwd=os.environ.get("TEMP"))
+                     cwd=str(destino.parent))
     log.info("instalando la versión %s; la app se reinicia sola", v.numero)
     return True

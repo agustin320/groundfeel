@@ -47,6 +47,10 @@ def ajustes_usuario() -> Path:
 
 def dll_simconnect_candidatas() -> list[Path]:
     """SimConnect.dll: la que viene empaquetada, la del repo o una copiada a mano junto al código."""
+    if EMPAQUETADO:
+        # Reason: la versión instalada sólo carga la DLL que trae adentro; buscar en una variable de entorno o en
+        # C:\MSFS 2024 SDK permitiría que otro programa o usuario le haga cargar una DLL ajena.
+        return [RECURSOS / "SimConnect.dll"]
     env = os.environ.get("SIMCONNECT_DLL")
     out = [Path(env)] if env else []
     out += [RECURSOS / "SimConnect.dll", FUENTE / "recursos" / "SimConnect.dll", FUENTE / "SimConnect.dll",

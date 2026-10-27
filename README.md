@@ -2,6 +2,8 @@
 
 **English** · [Español](README.es.md)
 
+📖 **[User guide](docs/USER_GUIDE.md)** · [Changelog](CHANGELOG.md)
+
 Realistic vibration for the **WinWing URSA MINOR 32** (joystick L + throttle Metal R) in **Microsoft Flight Simulator 2024**.
 
 It replaces SimAppPro's vibration with effects computed from the aircraft's real state: ground roll by surface and speed, touchdown, wheel brakes with anti-skid, engine spool, reverse thrust, tire skid, landing gear, flaps, speedbrakes and stall buffet.
@@ -22,7 +24,7 @@ It replaces SimAppPro's vibration with effects computed from the aircraft's real
 
 ### Updates
 
-Updates are automatic. Every 6 hours the app checks GitHub for a new version. When the simulator is closed, never mid-flight, it downloads the new installer, verifies its SHA-256 against the one GitHub publishes, and runs it silently. You can also use "Check for updates" in the tray menu, or turn automatic checks off in Settings. Your settings are kept.
+Updates are automatic. The app checks GitHub a few seconds after it starts and then every 6 hours. When the simulator is closed, never mid-flight, it downloads the new installer only from this repository's releases, requires the SHA-256 published by GitHub to match (if it is missing or different, it does not update), and runs it silently. You can also use "Check for updates" in the tray menu, or turn automatic checks off in Settings. Your settings are kept.
 
 ### Uninstall
 
@@ -152,6 +154,8 @@ The tests run on GitHub Actions on every push.
 
 ## Code signing policy
 
+> **Status: pending.** Builds are not code-signed yet; the application to SignPath Foundation has not been approved. This section describes the policy that will apply once it is.
+
 Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
 
 - Committers and reviewers: [agustin320](https://github.com/agustin320)
@@ -161,9 +165,9 @@ Only binaries built by GitHub Actions from this repository's source are signed. 
 
 ### Privacy
 
-This program does not send any personal data and has no telemetry; error reports are only sent if you submit the pre-filled GitHub issue yourself. Its only network connection is to GitHub (`api.github.com` and GitHub release downloads) to check for and download updates. You can turn this off in Settings ("Check for updates automatically"). GitHub's privacy statement applies to those requests: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
+This program does not send any personal data and has no telemetry; error reports are only sent if you submit the pre-filled GitHub issue yourself. Its only network connection is to GitHub (`api.github.com` and GitHub release downloads) to check for and download updates: a few seconds after start and every 6 hours. Like any web request, GitHub receives your IP address and the app version (in the User-Agent). You can turn this off in Settings ("Check for and install updates automatically"). GitHub's privacy statement applies to those requests: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
 
-The program reads the simulator through SimConnect and writes only to the WinWing devices' vibration motors. The installer adds a "start with Windows" entry, which is optional, and the uninstaller removes it.
+The program reads the simulator through SimConnect and writes only to the WinWing devices' vibration motors. "Start with Windows" adds a value under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` (optional, in the installer or in Settings); the uninstaller always removes it. The app folder, Start menu shortcut and that value are the only things installed. Third-party licenses: `THIRD-PARTY-NOTICES.txt`.
 
 ## Credits
 

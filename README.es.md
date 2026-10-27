@@ -2,6 +2,8 @@
 
 [English](README.md) · **Español**
 
+📖 **[Guía de usuario](docs/GUIA_DE_USUARIO.md)** · [Registro de cambios](CHANGELOG.md)
+
 Vibración realista para el **WinWing URSA MINOR 32** (joystick L + throttle Metal R) en **Microsoft Flight Simulator 2024**.
 
 Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado real del avión: rodaje según la superficie y la velocidad, toque en pista, frenos con antibloqueo, spool de los motores, reversa, derrape, tren, flaps, frenos aerodinámicos y pérdida.
@@ -22,7 +24,7 @@ Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado 
 
 ### Actualizaciones
 
-Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub. Con el simulador cerrado, nunca en pleno vuelo, baja el instalador nuevo, verifica su SHA-256 contra el que publica GitHub y lo corre en silencio. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones", o desactivar la búsqueda automática en Ajustes. Tus ajustes se conservan.
+Son automáticas. La app consulta GitHub unos segundos después de arrancar y después cada 6 horas. Con el simulador cerrado, nunca en pleno vuelo, baja el instalador nuevo sólo desde los releases de este repositorio, exige que coincida con el SHA-256 que publica GitHub (si falta o no coincide, no actualiza) y lo corre en silencio. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones", o desactivar la búsqueda automática en Ajustes. Tus ajustes se conservan.
 
 ### Desinstalar
 
@@ -141,13 +143,14 @@ Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despe
 
 La política oficial (Code signing policy) está en el [README en inglés](README.md#code-signing-policy). En resumen:
 
+- **Estado: pendiente.** Las versiones todavía no están firmadas; la solicitud a SignPath Foundation no está aprobada.
 - Firma de código gratuita provista por [SignPath.io](https://about.signpath.io/), certificado de [SignPath Foundation](https://signpath.org/).
 - Commiters, revisores y aprobadores: [agustin320](https://github.com/agustin320).
 - Sólo se firman binarios armados por GitHub Actions a partir del código de este repositorio, con aprobación manual de cada firma.
 
 ### Privacidad
 
-El programa no envía ningún dato personal. Su única conexión de red es a GitHub, para buscar y bajar actualizaciones, y se puede desactivar en Ajustes. Lee el simulador por SimConnect y sólo escribe en los motores de vibración de los dispositivos WinWing.
+El programa no envía ningún dato personal. Su única conexión de red es a GitHub, para buscar y bajar actualizaciones: unos segundos después de arrancar y cada 6 horas. Como cualquier pedido web, GitHub recibe tu IP y la versión de la app. Se puede desactivar en Ajustes. "Iniciar con Windows" agrega un valor en `HKCU\...\CurrentVersion\Run` (opcional, en el instalador o en Ajustes) y el desinstalador siempre lo borra. Licencias de terceros: `THIRD-PARTY-NOTICES.txt`. Lee el simulador por SimConnect y sólo escribe en los motores de vibración de los dispositivos WinWing.
 
 ## Créditos
 

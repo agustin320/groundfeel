@@ -296,4 +296,41 @@ import reportes  # noqa: E402
 os.environ.update(USERPROFILE=r"C:\Users\pepe.perez", USERNAME="pepe.perez", COMPUTERNAME="PC-DE-PEPE")
 saneado = reportes.sanear(r"error en C:\Users\pepe.perez\AppData\x.py usuario pepe.perez equipo PC-DE-PEPE")
 caso("reporte sin datos personales", "pepe" not in saneado.lower() and "PC-DE-PEPE" not in saneado, saneado)
+# 23. Actualizador: falla cerrado sin SHA-256 o con una descarga que no sea de los releases del repo.
+import io  # noqa: E402
+import json as _json  # noqa: E402
+
+import actualizador  # noqa: E402
+
+BUENO = f"https://github.com/{actualizador.REPO}/releases/download/v9.9.9/VibracionURSA-Update.exe"
+
+
+def respuesta(assets):
+    datos = {"tag_name": "v9.9.9", "body": "", "assets": assets}
+
+    class R(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+    return lambda url, timeout: R(_json.dumps(datos).encode())
+
+
+casos_act = {
+    "sin sha": [{"name": "VibracionURSA-Update.exe", "browser_download_url": BUENO}],
+    "url ajena": [{"name": "VibracionURSA-Update.exe", "browser_download_url": "https://evil.example/x.exe",
+                   "digest": "sha256:" + "a" * 64}],
+}
+original = actualizador._pedir
+rechazos = {}
+for nombre, assets in casos_act.items():
+    actualizador._pedir = respuesta(assets)
+    rechazos[nombre] = actualizador._ultima_publicada() is None
+actualizador._pedir = respuesta([{"name": "VibracionURSA-Update.exe", "browser_download_url": BUENO,
+                                  "digest": "sha256:" + "b" * 64}])
+ok = actualizador._ultima_publicada()
+actualizador._pedir = original
+caso("actualizador falla cerrado", all(rechazos.values()) and ok is not None and ok.url == BUENO,
+     f"rechazos {rechazos} / válido {ok.numero if ok else None}")
 print("\nTodas las pruebas pasaron.")

@@ -1,0 +1,43 @@
+URSA Rumble (Vibración URSA) - Third-party notices
+===================================================
+
+URSA Rumble is distributed under the MIT License (see LICENSE). The Windows build bundles the following
+third-party components, each under its own license:
+
+- Python 3.13 runtime - Python Software Foundation License Version 2
+  https://docs.python.org/3/license.html
+
+- PyInstaller bootloader 6.22 - GPL-2.0-or-later with the PyInstaller bootloader exception, which allows
+  distributing programs built with it under any license.
+  https://github.com/pyinstaller/pyinstaller/blob/develop/COPYING.txt
+
+- pystray 0.19.5 - GNU Lesser General Public License v3.0 (LGPL-3.0)
+  Source code: https://github.com/moses-palmer/pystray (unmodified). The full LGPL-3.0 and GPL-3.0 texts are
+  available at https://www.gnu.org/licenses/lgpl-3.0.txt and https://www.gnu.org/licenses/gpl-3.0.txt.
+  You may replace this library: build the program from the source in this repository (see README, "Development")
+  with any compatible pystray version.
+
+- Pillow 13.0 - MIT-CMU License (HPND)
+  https://github.com/python-pillow/Pillow/blob/main/LICENSE
+
+- hidapi (cython-hidapi) 0.15 - used under the BSD-style "HIDAPI" license option
+  https://github.com/trezor/cython-hidapi and https://github.com/libusb/hidapi/blob/master/LICENSE-orig.txt
+
+- Tcl/Tk (tkinter) - Tcl/Tk License (BSD-style)
+  https://www.tcl.tk/software/tcltk/license.html
+
+- OpenSSL 3 (bundled with the Python runtime) - Apache License 2.0
+  https://www.openssl.org/source/license.html
+
+- libffi, zlib, bzip2, liblzma, sqlite and expat (bundled with the Python runtime) - MIT / zlib / BSD-style /
+  public domain licenses, as listed in https://docs.python.org/3/license.html
+
+- SimConnect.dll - Microsoft Flight Simulator 2024 SDK client library, (c) Microsoft Corporation. Redistributed
+  unmodified as the runtime client library of the SDK so the program can talk to the simulator. All rights belong
+  to Microsoft. It is not covered by this project's MIT License.
+
+- Motor HID protocol - documented in ursa-minor-ffb by rtroncoso (MIT License),
+  https://github.com/rtroncoso/ursa-minor-ffb. The protocol was reimplemented here; no code was copied.
+
+WinWing, WINCTRL and URSA MINOR are trademarks of their respective owners. Microsoft Flight Simulator and
+SimConnect are trademarks of Microsoft Corporation. This project is independent and not affiliated with them.
