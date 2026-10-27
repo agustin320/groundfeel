@@ -54,6 +54,7 @@ class Efectos:
         self.amp_toque = 0.0
         self.tren_prev: float | None = None
         self.t_traba = -99.0
+        self.t_destrabe = -99.0
         self.flaps_prev: float | None = None
         self.ay_lenta = 0.0
         self.t_prev: float | None = None
@@ -136,19 +137,34 @@ class Efectos:
         return self.amp_toque * math.exp(-dt_toque / c["duracion_s"]) * (0.75 + 0.25 * math.sin(2 * math.pi * 14 * t))
 
     def _tren(self, d: dict, t: float) -> float:
+        """Tren de aterrizaje como en el avión real: golpes, no un zumbido mientras se mueve.
+
+        - Destrabe: al empezar a moverse se suelta el traba (uplock al bajar, downlock al subir): un golpe seco.
+        - Tránsito: casi nada; si se configura, un rumor muy leve del aire sobre el tren.
+        - Traba: al llegar abajo (downlock) o arriba (uplock) el golpe más fuerte, el "clunk" de la cabina.
+        - Con el tren abajo en vuelo, el aire sobre las ruedas da un rumor suave que crece con la velocidad.
+        Reason: antes vibraba parejo todo el tránsito (~10 s) y no se parecía a nada real.
+        """
         c = self.cfg["tren"]
         g = _norm01(d.get("GEAR CENTER POSITION", 1.0))
         ias = d.get("AIRSPEED INDICATED", 0.0)
         prev = self.tren_prev if self.tren_prev is not None else g
         self.tren_prev = g
-        en_transito = 0.02 < g < 0.98
+        if (prev >= 0.98 > g) or (prev <= 0.02 < g):
+            self.t_destrabe = t
         if (prev < 0.98 <= g) or (prev > 0.02 >= g):
             self.t_traba = t
+        por_aire = 0.6 + 0.4 * _clamp(ias / 200)   # con más velocidad el tren pelea más contra el aire
         v = 0.0
-        if en_transito:
-            v += c["transito"] * (0.5 + 0.5 * _clamp(ias / 200)) * (0.7 + 0.3 * math.sin(2 * math.pi * 11 * t))
-        if t - self.t_traba < 0.3:
-            v += c["golpe_traba"] * (1 - (t - self.t_traba) / 0.3)
+        dtd = t - self.t_destrabe
+        if dtd < 0.4:
+            v += c.get("golpe_destrabe", 0.35) * por_aire * math.exp(-dtd / 0.08)
+        dtt = t - self.t_traba
+        if dtt < 0.6:
+            # Golpe principal y un rebote chico ~0,12 s después (el mecanismo asentándose).
+            v += c["golpe_traba"] * por_aire * (math.exp(-dtt / 0.1) + 0.35 * math.exp(-abs(dtt - 0.12) / 0.04))
+        if 0.02 < g < 0.98:
+            v += c["transito"] * por_aire * (0.7 + 0.3 * random.random())
         if not d.get("SIM ON GROUND") and g >= 0.98:
             v += c["aire_tren_abajo"] * _clamp(ias / 250) ** 2 * (0.7 + 0.3 * random.random())
         return _clamp(v)
@@ -170,28 +186,47 @@ class Efectos:
             return _clamp(c["tierra"] * sp * _clamp(d.get("GROUND VELOCITY", 0.0) / 80)) * textura
         return _clamp(c["aire"] * sp * _clamp(d.get("AIRSPEED INDICATED", 0.0) / 300) ** 2 * 2.0) * textura
 
+    def _potencia(self, d: dict, n: int) -> float:
+        """Potencia del motor n en % (0..100), comparable entre tipos de avión.
+
+        Jets: N1. Pistón (ENGINE TYPE 0) y turbohélice (5): no tienen N1, se usa el % de RPM máximas. Reason: con sólo
+        N1 los efectos de motor no existían en un Cessna o un King Air.
+        """
+        if int(d.get("ENGINE TYPE", 1)) in (0, 5):
+            return d.get(f"GENERAL ENG PCT MAX RPM:{n}", 0.0)
+        return d.get(f"TURB ENG N1:{n}", 0.0)
+
+    def _ralenti(self, d: dict) -> float:
+        c = self.cfg["motores"]
+        return c.get("rpm_idle_pct", 26.0) if int(d.get("ENGINE TYPE", 1)) in (0, 5) else c["n1_idle"]
+
     def _motor(self, d: dict, n: int, t: float, dt: float) -> tuple[float, float]:
         """(zumbido, reversa) del motor n (1 o 2)."""
         c = self.cfg["motores"]
-        n1 = d.get(f"TURB ENG N1:{n}", 0.0)
+        if n > max(1, int(d.get("NUMBER OF ENGINES", 2))):
+            # Monomotor: la segunda palanca acompaña al único motor.
+            n = 1
+        n1 = self._potencia(d, n)
         dn1 = (n1 - self.n1_motor_prev[n]) / dt if dt > 0 else 0.0
         self.n1_motor_prev[n] = n1
-        # Puesta en marcha: mientras el motor gana vueltas hacia el ralentí, un rumor que crece con el N1.
-        idle = c["n1_idle"]
+        # Puesta en marcha: mientras el motor gana vueltas hacia el ralentí, un rumor que crece con la potencia.
+        idle = self._ralenti(d)
         if 2 < n1 < idle - 0.5 and dn1 > 0.05:
             self.t_arranque_motor[n] = t
         if n1 < idle - 0.5 and t - self.t_arranque_motor[n] < 1.0:
             return c["puesta_en_marcha"] * (0.3 + 0.7 * n1 / idle) * (0.75 + 0.25 * random.random()), 0.0
         if n1 < 15:
             return 0.0, 0.0
-        x = _clamp((n1 - c["n1_idle"]) / (100 - c["n1_idle"]))
+        x = _clamp((n1 - idle) / (100 - idle))
         # En ralentí queda un mínimo apenas perceptible; desde ahí crece con la potencia.
         piso = c["minimo_ralenti"]
         zumbido = (piso + (c["zumbido_tierra"] - piso) * x) if d.get("SIM ON GROUND") else c["zumbido_aire"] * x
         rev = _norm01(d.get(f"TURB ENG REVERSE NOZZLE PERCENT:{n}", 0.0))
         # Reason: el A320 de FBW no publica la tobera de reversa (quedó en 0 en el aterrizaje real del 26-10, con N1 77
         # frenando). Se infiere: en tierra, N1 alto y el avión desacelerando = reversa.
-        if d.get("SIM ON GROUND") and n1 > 35 and d.get("ACCELERATION BODY Z", 0.0) < -2.0:
+        # Sólo jets: un avión a pistón con RPM altas frenando no tiene reversa.
+        es_jet = int(d.get("ENGINE TYPE", 1)) == 1
+        if es_jet and d.get("SIM ON GROUND") and n1 > 35 and d.get("ACCELERATION BODY Z", 0.0) < -2.0:
             rev = max(rev, _clamp((n1 - 30) / 45))
         reversa = c["reversa"] * rev * (0.3 + 0.7 * x) * (0.7 + 0.3 * random.random()) if rev > 0.05 else 0.0
         return zumbido, reversa
@@ -244,7 +279,7 @@ class Efectos:
         """Aceleración dinámica: empuje inicial al subir potencia, pulsación que se acelera con las vueltas del motor y
         una fuerza que acompaña la aceleración real con variaciones irregulares."""
         c = self.cfg["aceleracion"]
-        n1 = max(d.get("TURB ENG N1:1", 0.0), d.get("TURB ENG N1:2", 0.0))
+        n1 = max(self._potencia(d, 1), self._potencia(d, 2))
         dn1 = (n1 - self.n1_prev) / dt if dt > 0 else 0.0
         self.n1_prev = n1
         acel = max(0.0, d.get("ACCELERATION BODY Z", 0.0))             # ft/s², positivo al acelerar
@@ -320,7 +355,8 @@ class Efectos:
             nombre_sup = "pavimento" if sup in PAVIMENTO else "pasto" if sup in PASTO else \
                 "ripio_tierra" if sup in RIPIO_TIERRA else "otra"
             self.rodaje_fis.cfg = self.cfg["rodaje_fisico"]
-            rodaje = self.rodaje_fis.paso(d.get("GROUND VELOCITY", 0.0), nombre_sup, bool(d.get("SIM ON GROUND")), dt)
+            rodaje = self.rodaje_fis.paso(d.get("GROUND VELOCITY", 0.0), nombre_sup, bool(d.get("SIM ON GROUND")), dt,
+                                          d.get("TOTAL WEIGHT", 0.0))
         ef = {
             "rodadura": self._rodadura(d, t, dt),
             "rodaje": rodaje,

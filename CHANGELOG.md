@@ -1,5 +1,29 @@
 # Changelog / Registro de cambios
 
+## 1.5.0
+
+**English**
+- **Any aircraft:** piston and turboprop engines now drive the engine effects (RPM instead of N1); single-engine
+  aircraft use both throttle motors; reverse is only inferred on jets.
+- **Ground roll by weight:** the nose-gear model scales with the aircraft's real weight (a Cessna feels quicker and
+  drier, an A350 heavier).
+- **Aircraft profiles** (`perfiles/*.json`), applied automatically by aircraft name. Settings shows the aircraft and
+  profile. Included: FlyByWire A32NX (reference) and iniBuilds A350 (to be tuned).
+- **Record flight** (tray menu / Settings) and `herramientas\reproducir.py` to tune profiles with real data.
+- **Landing gear feels real:** a bump when it unlocks and a "clunk" with a small rebound when it locks, instead of a
+  continuous vibration while it travels.
+
+**Español**
+- **Cualquier avión:** los motores a pistón y turbohélice manejan los efectos de motor (RPM en vez de N1); en
+  monomotores las dos palancas siguen al motor; la reversa sólo se deduce en jets.
+- **Rodaje según el peso:** el modelo del tren de nariz se escala con el peso real (un Cessna más rápido y seco, un
+  A350 más pesado).
+- **Perfiles por avión** (`perfiles/*.json`), que se aplican solos según el nombre del avión. Ajustes muestra el
+  avión y el perfil. Incluidos: FlyByWire A32NX (referencia) e iniBuilds A350 (a calibrar).
+- **Grabar vuelo** (menú de la bandeja / Ajustes) y `herramientas\reproducir.py` para afinar perfiles con datos reales.
+- **Tren de aterrizaje real:** un golpe al destrabarse y un "clunk" con rebote al trabarse, en vez de vibrar todo el
+  recorrido.
+
 ## 1.4.1
 
 **English**

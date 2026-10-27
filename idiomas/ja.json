@@ -47,7 +47,10 @@
     "aviso_simapppro": "ジョイスティックとスロットルの SimAppPro の振動をオフにするのを忘れずに。",
     "reportar": "問題を報告",
     "error_inesperado": "URSA Rumble で予期しないエラーが発生しました。メニューの「問題を報告」から送信できます。送信前に内容をすべて確認できます。",
-    "actualizado": "URSA Rumble をバージョン {v} に更新しました。"
+    "actualizado": "URSA Rumble をバージョン {v} に更新しました。",
+    "avion": "機体：{a} · プロファイル：{p}",
+    "perfil_generico": "汎用",
+    "grabar": "フライトを記録（この機体の調整用）"
   },
   "efectos": {
     "rodaje": "地上走行",

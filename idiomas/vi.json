@@ -47,7 +47,10 @@
     "aviso_simapppro": "Hãy nhớ tắt rung của SimAppPro cho joystick và cần ga.",
     "reportar": "Báo cáo sự cố",
     "error_inesperado": "URSA Rumble gặp lỗi không mong muốn. Dùng “Báo cáo sự cố” trong menu để gửi; bạn sẽ xem toàn bộ nội dung trước khi gửi.",
-    "actualizado": "URSA Rumble đã được cập nhật lên phiên bản {v}."
+    "actualizado": "URSA Rumble đã được cập nhật lên phiên bản {v}.",
+    "avion": "Máy bay: {a} · cấu hình: {p}",
+    "perfil_generico": "chung",
+    "grabar": "Ghi lại chuyến bay (để tinh chỉnh máy bay này)"
   },
   "efectos": {
     "rodaje": "lăn bánh",

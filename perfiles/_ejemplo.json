@@ -1,0 +1,9 @@
+{
+  "_nota": "Plantilla: los archivos que empiezan con _ se ignoran. Copiá este archivo con el nombre del avión (por ejemplo inibuilds-a350.json) y dejá en 'ajustes' sólo lo que cambia respecto de config.json. 'coincide' se busca, sin mayúsculas, en el nombre del avión que muestra Ajustes → Estado.",
+  "nombre": "Ejemplo",
+  "coincide": ["texto que aparece en el nombre del avión"],
+  "ajustes": {
+    "motores": { "reversa": 0.6 },
+    "rodaje_fisico": { "altura_junta_m": 0.004 }
+  }
+}

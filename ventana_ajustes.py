@@ -86,6 +86,8 @@ class VentanaAjustes:
         self.lbl_disp.grid(row=1, column=0, sticky="w")
         self.lbl_ef = ttk.Label(estado, wraplength=420)
         self.lbl_ef.grid(row=2, column=0, sticky="w")
+        self.lbl_avion = ttk.Label(estado, wraplength=420)
+        self.lbl_avion.grid(row=3, column=0, sticky="w")
 
         inten = ttk.LabelFrame(marco, text=t("intensidad"), padding=10)
         inten.grid(row=1, column=0, sticky="ew", pady=10)
@@ -115,6 +117,7 @@ class VentanaAjustes:
                                           bool(self.cfg.obtener("joystick_solo_en_tierra")),
                                           lambda v: self.cfg.guardar("joystick_solo_en_tierra", valor=v))
         self._casilla(opciones, 1, t("pausar"), self.vib.estado.pausado, self.vib.pausar)
+        self._casilla(opciones, 5, t("grabar"), self.vib.grabador.grabando, self.vib.grabar)
         if rutas.EMPAQUETADO:
             self._casilla(opciones, 2, t("menu_inicio_windows"), instalacion.arranca_con_windows(),
                           instalacion.poner_arranque_con_windows)
@@ -183,6 +186,8 @@ class VentanaAjustes:
         activos = [i18n.efecto(k) for k, v in e.activos.items() if v >= 0.05]
         self.lbl_ef.config(text=t("vibrando", e=", ".join(activos) if activos else "—"),
                            foreground=AZUL if activos else GRIS)
+        self.lbl_avion.config(text=t("avion", a=e.avion or "—", p=e.perfil or t("perfil_generico"))
+                              if e.conectado else "", foreground=GRIS)
         self._refrescar_actualizaciones()
         self._tarea_refresco = self.raiz.after(1000, self._refrescar)
 

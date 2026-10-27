@@ -194,8 +194,8 @@ At walking pace you barely feel anything. The ground roll gets stronger and quic
 
 | What happens | What you feel | Where |
 |---|---|---|
-| Gear moving up or down | A vibration while it travels, stronger at higher airspeed | Throttle (and joystick if not ground-only) |
-| Gear locking up or down | A short bump | Throttle (and joystick if not ground-only) |
+| Gear starting to move (unlocking) | A dry bump, stronger at higher airspeed; then nothing while it travels | Throttle (and joystick if not ground-only) |
+| Gear locking up or down | The main "clunk", with a small rebound | Throttle (and joystick if not ground-only) |
 | Flying with the gear down | A light rumble that grows with airspeed | Throttle (and joystick if not ground-only) |
 
 ### Flaps and speedbrakes

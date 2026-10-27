@@ -11,9 +11,11 @@ import time
 from dataclasses import dataclass, field
 from logging.handlers import RotatingFileHandler
 
+import perfiles
 import reportes
 import rutas
-from config_usuario import Config
+from config_usuario import Config, fusionar
+from grabador import Grabador
 from efectos import EFECTOS, Efectos
 from motores import Motor
 from sim_lector import LectorSim
@@ -43,6 +45,8 @@ class Estado:
     activos: dict[str, float] = field(default_factory=dict)
     pausado: bool = False
     error: str = ""
+    avion: str = ""     # nombre que informa el simulador (TITLE)
+    perfil: str = ""    # perfil aplicado ("" = genérico)
 
 
 class Vibracion:
@@ -56,6 +60,15 @@ class Vibracion:
         self._sim: LectorSim | None = None
         self.t_sin_sim = time.time()
         self.visto_sim = False
+        self._perfiles = perfiles.cargar()
+        self._perfil_ajustes: dict = {}
+        self.grabador = Grabador()
+
+    def grabar(self, si: bool) -> None:
+        if si:
+            self.grabador.empezar(self.estado.avion)
+        else:
+            self.grabador.terminar()
 
     # ------------------------------------------------------------------ control
     def iniciar(self) -> None:
@@ -68,6 +81,7 @@ class Vibracion:
         self._parar.set()
         if self._hilo:
             self._hilo.join(espera)
+        self.grabador.terminar()
         self._apagar_todo()
 
     def corriendo(self) -> bool:
@@ -115,9 +129,19 @@ class Vibracion:
                 t0 = time.time()
                 if t0 - t_cfg > 2:
                     t_cfg = t0
-                    if self.cfg.recargar():
-                        ef.cfg = self.cfg.datos
-                        log.info("configuración recargada")
+                    recargo = self.cfg.recargar()
+                    avion = sim.avion()
+                    if avion != self.estado.avion:
+                        self.estado.avion = avion
+                        p = perfiles.elegir(avion, self._perfiles)
+                        self._perfil_ajustes = p.ajustes if p else {}
+                        self.estado.perfil = p.nombre if p else ""
+                        log.info("avión: %s · perfil: %s", avion or "?", self.estado.perfil or "genérico")
+                        recargo = True
+                    if recargo:
+                        # defecto <- perfil del avión <- ajustes del usuario (sus intensidades siempre mandan)
+                        ef.cfg = fusionar(fusionar(self.cfg.defecto, self._perfil_ajustes), self.cfg.usuario)
+                        log.info("configuración aplicada")
                 conectado = sim.conectado.is_set() and sim.frescura() < 1.0
                 if conectado != conectado_prev:
                     log.info("simulador %s", "conectado" if conectado else "sin datos (motores apagados)")
@@ -125,6 +149,8 @@ class Vibracion:
                 self.estado.conectado = conectado
                 if conectado:
                     self.visto_sim, self.t_sin_sim = True, t0
+                if conectado:
+                    self.grabador.escribir(t0, sim.datos())
                 if conectado and not self.estado.pausado:
                     efectos, salida = ef.paso(sim.datos(), t0)
                 else:

@@ -36,15 +36,33 @@ class RodajeFisico:
     def _g0(self, superficie: str) -> float:
         return self.cfg["rugosidad_g0"].get(superficie, self.cfg["rugosidad_g0"]["otra"]) * 1e-6
 
-    def paso(self, gs_kt: float, superficie: str, en_tierra: bool, dt: float) -> float:
+    def _parametros(self, peso_lb: float) -> tuple[float, float, float, float, float]:
+        """(masa cabina, masa rueda, rigidez amortiguador, amortiguación, rigidez neumático) para este avión.
+
+        Los valores de config.json son de un A320 (~66 t, ~7 t sobre la rueda de nariz). Con el peso real se escalan:
+        un avión liviano tiene un tren más chico y más duro en proporción (vibra más rápido y seco), uno pesado más
+        lento
+        y grave. Reason: con valores fijos de A320 el rodaje de un Cessna se sentía igual al de un A350.
+        """
+        c = self.cfg
+        ms, mu = c["masa_cabina_kg"], c["masa_rueda_kg"]
+        ks, cs, kt = c["rigidez_amortiguador"], c["amortiguacion"], c["rigidez_neumatico"]
+        if not c.get("escalar_por_peso", True) or peso_lb <= 0:
+            return ms, mu, ks, cs, kt
+        ms_avion = min(15000.0, max(60.0, peso_lb * 0.4536 * c.get("fraccion_peso_nariz", 0.1)))
+        r = ms_avion / ms
+        # k ∝ r^0.85 -> frecuencia propia ∝ r^-0.075 (liviano: algo más rápido); amortiguación ∝ sqrt(k·m) ∝ r^0.925
+        # (mismo factor de amortiguamiento). Con exponentes mayores un Cessna saturaba el motor a 10 kt (medido).
+        return ms_avion, mu * r ** 0.85, ks * r ** 0.85, cs * r ** 0.925, kt * r ** 0.85
+
+    def paso(self, gs_kt: float, superficie: str, en_tierra: bool, dt: float, peso_lb: float = 0.0) -> float:
         c = self.cfg
         if not en_tierra or dt <= 0:
             self.__init__(c)
             return 0.0
         v = max(0.0, gs_kt) * KT_A_MS
         g0 = self._g0(superficie)
-        ms, mu = c["masa_cabina_kg"], c["masa_rueda_kg"]
-        ks, cs, kt = c["rigidez_amortiguador"], c["amortiguacion"], c["rigidez_neumatico"]
+        ms, mu, ks, cs, kt = self._parametros(peso_lb)
         n = max(1, int(round(dt / SUBPASO)))
         h = dt / n
         for _ in range(n):

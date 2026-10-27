@@ -11,10 +11,11 @@ import time
 
 import rutas
 
-FLOAT64 = 4
-PERIODO_VISUAL_FRAME = 2
+FLOAT64, STRING256 = 4, 9
+PERIODO_VISUAL_FRAME, PERIODO_SEGUNDO = 2, 4
 RECV_QUIT, RECV_SIMOBJECT_DATA = 3, 8
 GRUPO = 10
+GRUPO_AVION = 11   # nombre del avión (texto): aparte, una vez por segundo
 
 VARIABLES: dict[str, str] = {
     "SIM ON GROUND": "Bool",
@@ -40,6 +41,14 @@ VARIABLES: dict[str, str] = {
     "SIMULATION TIME": "Seconds",
     # Velocidad lateral respecto del fuselaje: en tierra, si es alta, las ruedas están derrapando.
     "VELOCITY BODY X": "Feet per second",
+    # Tipo de avión (perfiles): 0 pistón, 1 jet, 2 sin motor, 3 helicóptero, 5 turbohélice.
+    "ENGINE TYPE": "Enum",
+    "NUMBER OF ENGINES": "Number",
+    # Potencia en aviones a pistón/turbohélice (no tienen N1): % de las RPM máximas.
+    "GENERAL ENG PCT MAX RPM:1": "Percent",
+    "GENERAL ENG PCT MAX RPM:2": "Percent",
+    # Peso real: escala la masa del tren de nariz del modelo de rodaje.
+    "TOTAL WEIGHT": "Pounds",
 }
 
 
@@ -62,6 +71,7 @@ class LectorSim:
         self.nombre = nombre
         self.h = C.c_void_p()
         self._vals: dict[str, float] = {}
+        self._avion = ""
         self._t_ultimo = 0.0
         self._lock = threading.Lock()
         self.conectado = threading.Event()
@@ -74,6 +84,11 @@ class LectorSim:
     def datos(self) -> dict[str, float]:
         with self._lock:
             return dict(self._vals)
+
+    def avion(self) -> str:
+        """Nombre del avión cargado (TITLE), o "" si todavía no llegó."""
+        with self._lock:
+            return self._avion
 
     def frescura(self) -> float:
         return time.time() - self._t_ultimo if self._t_ultimo else 1e9
@@ -88,6 +103,10 @@ class LectorSim:
                     self.dll.SimConnect_AddToDataDefinition(self.h, GRUPO, v.encode(), VARIABLES[v].encode(),
                                                             FLOAT64, C.c_float(0), C.c_uint32(i))
                 self.dll.SimConnect_RequestDataOnSimObject(self.h, GRUPO, GRUPO, 0, PERIODO_VISUAL_FRAME, 0, 0, 0, 0)
+                self.dll.SimConnect_AddToDataDefinition(self.h, GRUPO_AVION, b"TITLE", None, STRING256,
+                                                        C.c_float(0), C.c_uint32(0))
+                self.dll.SimConnect_RequestDataOnSimObject(self.h, GRUPO_AVION, GRUPO_AVION, 0, PERIODO_SEGUNDO,
+                                                           0, 0, 0, 0)
                 self.conectado.set()
                 self._bombear()
             except Exception:  # noqa: BLE001  (sim cerrado o caído: se reintenta)
@@ -112,10 +131,15 @@ class LectorSim:
                 rid = p.contents.dwID
                 if rid == RECV_QUIT:
                     raise ConnectionError("el simulador se cerró")
-                if rid == RECV_SIMOBJECT_DATA and int.from_bytes(raw[12:16], "little") == GRUPO:
+                pedido = int.from_bytes(raw[12:16], "little") if rid == RECV_SIMOBJECT_DATA else -1
+                if pedido == GRUPO:
                     valores = (C.c_double * n).from_buffer_copy(raw[40:40 + 8 * n])
                     with self._lock:
                         self._vals = dict(zip(self._vars, valores, strict=True))
                         self._t_ultimo = time.time()
+                elif pedido == GRUPO_AVION:
+                    titulo = raw[40:40 + 256].split(b"\0", 1)[0].decode("utf-8", errors="replace").strip()
+                    with self._lock:
+                        self._avion = titulo
             if not hubo:
                 time.sleep(0.004)

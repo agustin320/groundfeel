@@ -72,6 +72,14 @@ Nothing vibrates while the simulator is paused.
 | Skid | A rough vibration when the tires slide sideways. | Both |
 | Gear, flaps, speedbrakes, stall, turbulence | According to their state. | Both |
 
+### Aircraft support
+
+Any aircraft works. The effects come from data every aircraft publishes, and the app adapts to it:
+
+- **Engine type:** jets follow N1, while piston and turboprop aircraft follow propeller/engine RPM. Single-engine aircraft drive both throttle motors. Reverse thrust is inferred only on jets.
+- **Weight:** the ground-roll model scales the nose gear with the aircraft's real weight, so a Cessna rattles quicker and drier than an A350.
+- **Aircraft profiles** (`perfiles/*.json`) fine-tune the defaults. They apply automatically when the loaded aircraft's name matches; Settings → Status shows the aircraft and the active profile. Your own settings always win over a profile. See `perfiles/_ejemplo.json` to write one.
+- **Recording a flight** (tray menu or Settings → "Record flight") saves the simulator data to `%APPDATA%\VibracionURSA\grabaciones\`. It contains no personal data and stays on your PC. `herramientas\reproducir.py` replays it to tune a profile. Recordings shared through an issue help add profiles for more aircraft.
 By default the joystick vibrates **on the ground only** (`"joystick_solo_en_tierra": true`).
 
 ## Advanced settings

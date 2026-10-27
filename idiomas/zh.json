@@ -47,7 +47,10 @@
     "aviso_simapppro": "请记得在 SimAppPro 中关闭摇杆和油门的振动。",
     "reportar": "报告问题",
     "error_inesperado": "URSA Rumble 遇到意外错误。请在菜单中使用“报告问题”发送；发送前您可以查看全部内容。",
-    "actualizado": "URSA Rumble 已更新到版本 {v}。"
+    "actualizado": "URSA Rumble 已更新到版本 {v}。",
+    "avion": "飞机：{a} · 配置：{p}",
+    "perfil_generico": "通用",
+    "grabar": "录制飞行（用于调校此飞机）"
   },
   "efectos": {
     "rodaje": "地面滑行",

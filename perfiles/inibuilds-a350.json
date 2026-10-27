@@ -1,0 +1,6 @@
+{
+  "_nota": "Primer perfil a calibrar con grabaciones reales (Ajustes → Grabar vuelo). Por ahora usa los valores por defecto; el peso real del avión ya ajusta solo el modelo de rodaje.",
+  "nombre": "iniBuilds A350",
+  "coincide": ["A350"],
+  "ajustes": {}
+}

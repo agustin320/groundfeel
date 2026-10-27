@@ -1,0 +1,6 @@
+{
+  "_nota": "Los valores por defecto (config.json) se calibraron con este avión en vuelos reales; el perfil sólo lo identifica. La reversa se deduce porque el A32NX no publica la tobera.",
+  "nombre": "FlyByWire A32NX",
+  "coincide": ["FlyByWire", "A32NX"],
+  "ajustes": {}
+}

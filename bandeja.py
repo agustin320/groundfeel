@@ -77,6 +77,8 @@ class App:
             pystray.Menu.SEPARATOR,
             item(lambda _i: t("menu_ajustes"), self._abrir_ajustes, default=True),
             item(lambda _i: t("menu_pausar"), self._pausar, checked=lambda _i: self.vib.estado.pausado),
+            item(lambda _i: t("grabar"), lambda: self.vib.grabar(not self.vib.grabador.grabando),
+                 checked=lambda _i: self.vib.grabador.grabando),
             item(lambda _i: t("menu_inicio_windows"), self._autoarranque,
                  checked=lambda _i: instalacion.arranca_con_windows(), visible=rutas.EMPAQUETADO),
             pystray.Menu.SEPARATOR,

@@ -67,6 +67,14 @@ En pausa del simulador no vibra nada.
 | Derrape | Vibración áspera cuando las ruedas van de costado. | Ambos |
 | Tren, flaps, frenos aerodinámicos, pérdida, turbulencia | Según su estado. | Ambos |
 
+### Aviones
+
+Funciona con cualquier avión. Los efectos salen de datos que todos los aviones publican, y la app se adapta:
+
+- **Tipo de motor:** los jets siguen el N1; los aviones a pistón y los turbohélices siguen las RPM. En un monomotor, las dos palancas siguen al único motor. La reversa sólo se deduce en jets.
+- **Peso:** el modelo de rodaje escala el tren de nariz con el peso real, así que un Cessna vibra más rápido y seco que un A350.
+- **Perfiles por avión** (`perfiles/*.json`): afinan los valores por defecto y se aplican solos cuando coincide el nombre del avión cargado. En Ajustes → Estado se ven el avión y el perfil activo. Tus ajustes siempre mandan sobre el perfil. Para escribir uno, mirá `perfiles/_ejemplo.json`.
+- **Grabar un vuelo** (menú de la bandeja o Ajustes → "Grabar vuelo") guarda los datos del simulador en `%APPDATA%\VibracionURSA\grabaciones\`. No tiene datos personales y no sale de tu PC. `herramientas\reproducir.py` lo reproduce para afinar un perfil. Las grabaciones compartidas en un issue ayudan a sumar perfiles de más aviones.
 Por defecto el joystick vibra **sólo en tierra** (`"joystick_solo_en_tierra": true`).
 
 ## Ajustes avanzados

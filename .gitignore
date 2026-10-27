@@ -9,3 +9,6 @@ dist/
 ajustes.json
 # La SimConnect.dll versionada es recursos/SimConnect.dll; copias sueltas en la raíz no se suben.
 /SimConnect*.dll
+grabaciones/
+errores/
+version_anterior.txt

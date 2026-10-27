@@ -101,6 +101,21 @@ def subir_tren(d, i):
 mx, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 170}, 3.0, None, subir_tren)
 caso("tren en tránsito", mx["tren"] > 0.15, f"máximo tren {mx['tren']:.2f}")
 
+# 7b. Bajar el tren (8 s): dos golpes (destrabe y traba) y casi nada en el medio, no un zumbido parejo.
+ef_t = Efectos(CFG)
+d_t = dict(BASE, **{"SIM ON GROUND": 0, "AIRSPEED INDICATED": 170, "GEAR CENTER POSITION": 0.0})
+serie_t = []
+for i in range(int(10 * 40)):
+    tt = (i + 1) * 0.025
+    d_t["SIMULATION TIME"] = 1000 + tt
+    d_t["GEAR CENTER POSITION"] = _clamp01 = min(1.0, max(0.0, (tt - 1.0) / 8.0))
+    e_t, _ = ef_t.paso(dict(d_t), tt)
+    serie_t.append(e_t["tren"])
+picos = sum(1 for a, b in zip(serie_t, serie_t[1:]) if a < 0.2 <= b)
+medio = max(serie_t[int(3 * 40):int(8 * 40)])
+caso("tren: golpes al destrabar y trabar", picos == 2 and medio < 0.05,
+     f"{picos} golpes, máximo en el medio del recorrido {medio:.3f}")
+
 # 8. Speedbrake en vuelo a 300 kt vibra más que sin speedbrake
 mx_sb, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 300, "SPOILERS LEFT POSITION": 1.0, "GEAR CENTER POSITION": 0})
 caso("speedbrake", mx_sb["speedbrake"] > 0.2, f"máximo speedbrake {mx_sb['speedbrake']:.2f}")
@@ -333,4 +348,44 @@ ok = actualizador._ultima_publicada()
 actualizador._pedir = original
 caso("actualizador falla cerrado", all(rechazos.values()) and ok is not None and ok.url == BUENO,
      f"rechazos {rechazos} / válido {ok.numero if ok else None}")
+# 24. Avión a pistón: los efectos de motor siguen las RPM (no hay N1) y frenar con RPM altas no es reversa.
+piston = {"ENGINE TYPE": 0, "NUMBER OF ENGINES": 1, "TURB ENG N1:1": 0, "TURB ENG N1:2": 0,
+          "GENERAL ENG PCT MAX RPM:1": 80, "GENERAL ENG PCT MAX RPM:2": 0}
+e_pi, s_pi, _ = correr(piston)
+e_pf, _, _ = correr(dict(piston, **{"GROUND VELOCITY": 30, "ACCELERATION BODY Z": -6.0}))
+caso("pistón: motor por RPM, sin reversa", e_pi["motores"] > 0.05 and s_pi["throttle_2"] > 0 and e_pf["reversa"] == 0,
+     f"motores {e_pi['motores']:.2f}, palanca 2 {s_pi['throttle_2']:.0f}, reversa frenando {e_pf['reversa']}")
+
+# 25. Perfiles: elige por el nombre del avión; el usuario manda sobre el perfil.
+import perfiles  # noqa: E402
+from config_usuario import fusionar  # noqa: E402
+
+lista = [perfiles.Perfil("iniBuilds A350", ["A350"], {"motores": {"reversa": 0.9}}),
+         perfiles.Perfil("FlyByWire A320", ["A32NX", "FlyByWire A320"], {})]
+p_a350 = perfiles.elegir("iniBuilds A350-900 Aerolineas Argentinas", lista)
+p_nada = perfiles.elegir("Cessna 172 Skyhawk", lista)
+final = fusionar(fusionar(CFG, p_a350.ajustes), {"motores": {"reversa": 0.2}})
+caso("perfiles por avión", p_a350.nombre == "iniBuilds A350" and p_nada is None
+     and final["motores"]["reversa"] == 0.2 and final["motores"]["zumbido_tierra"] == CFG["motores"]["zumbido_tierra"],
+     f"A350 -> {p_a350.nombre}, Cessna -> {p_nada}, reversa final {final['motores']['reversa']}")
+
+# 26. Grabador: graba, se lee igual y se puede reproducir.
+import sys  # noqa: E402
+import tempfile  # noqa: E402
+
+import grabador  # noqa: E402
+
+grabador.carpeta = lambda: Path(tempfile.mkdtemp())
+g = grabador.Grabador()
+arch = g.empezar("Prueba 737")
+for i in range(80):
+    g.escribir(g._t0 + i * 0.025, dict(BASE, **{"GROUND VELOCITY": 20.0, "SIMULATION TIME": 1000 + i * 0.025}))
+g.terminar()
+cab, frames = grabador.leer(arch)
+sys.path.insert(0, str(Path(__file__).parent / "herramientas"))
+from reproducir import reproducir  # noqa: E402
+
+res = reproducir(arch)
+caso("grabar y reproducir", cab["avion"] == "Prueba 737" and len(frames) == 80 and res["frames"] == 80
+     and res["efectos"]["rodaje"]["max"] > 0, f"{len(frames)} frames, rodaje máx {res['efectos']['rodaje']['max']}")
 print("\nTodas las pruebas pasaron.")

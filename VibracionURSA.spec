@@ -35,6 +35,7 @@ a = Analysis(
         ("recursos/SimConnect.dll", "."),
         ("recursos/icono.ico", "."),
         ("idiomas/*.json", "idiomas"),
+        ("perfiles/*.json", "perfiles"),
     ],
     hiddenimports=["pystray._win32"],
     excludes=["pygame", "numpy"],

@@ -47,7 +47,10 @@
     "aviso_simapppro": "Denk daran, die Vibration von SimAppPro für Joystick und Schubhebel auszuschalten.",
     "reportar": "Problem melden",
     "error_inesperado": "In URSA Rumble ist ein unerwarteter Fehler aufgetreten. Wähle „Problem melden“ im Menü, um ihn zu senden; du siehst vorher alles, was gesendet wird.",
-    "actualizado": "URSA Rumble wurde auf Version {v} aktualisiert."
+    "actualizado": "URSA Rumble wurde auf Version {v} aktualisiert.",
+    "avion": "Flugzeug: {a} · Profil: {p}",
+    "perfil_generico": "allgemein",
+    "grabar": "Flug aufzeichnen (um dieses Flugzeug abzustimmen)"
   },
   "efectos": {
     "rodaje": "Rollen am Boden",

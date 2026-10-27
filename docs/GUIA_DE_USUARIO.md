@@ -196,8 +196,8 @@ A paso de hombre casi no se siente nada. El rodaje se vuelve más fuerte y más 
 
 | Qué pasa | Qué se siente | Dónde |
 |---|---|---|
-| Tren subiendo o bajando | Una vibración mientras se mueve, más fuerte con más velocidad | Throttle (y joystick si no está en "sólo en tierra") |
-| Tren trabando arriba o abajo | Un golpe corto | Throttle (y joystick si no está en "sólo en tierra") |
+| Tren empezando a moverse (se destraba) | Un golpe seco, más fuerte con más velocidad; después nada mientras se mueve | Throttle (y joystick si no está en "sólo en tierra") |
+| Tren trabando arriba o abajo | El "clunk" principal, con un rebote chico | Throttle (y joystick si no está en "sólo en tierra") |
 | Volar con el tren abajo | Un rumor suave que crece con la velocidad | Throttle (y joystick si no está en "sólo en tierra") |
 
 ### Flaps y frenos aerodinámicos

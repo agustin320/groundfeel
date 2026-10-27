@@ -47,7 +47,10 @@
     "aviso_simapppro": "تذكّر إيقاف اهتزاز SimAppPro لعصا التحكم ومقبض الدفع.",
     "reportar": "الإبلاغ عن مشكلة",
     "error_inesperado": "واجه URSA Rumble خطأً غير متوقع. استخدم «الإبلاغ عن مشكلة» من القائمة لإرساله؛ سترى كل شيء قبل الإرسال.",
-    "actualizado": "تم تحديث URSA Rumble إلى الإصدار {v}."
+    "actualizado": "تم تحديث URSA Rumble إلى الإصدار {v}.",
+    "avion": "الطائرة: {a} · الملف: {p}",
+    "perfil_generico": "عام",
+    "grabar": "تسجيل الرحلة (لضبط هذه الطائرة)"
   },
   "efectos": {
     "rodaje": "الدرج",

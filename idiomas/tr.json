@@ -47,7 +47,10 @@
     "aviso_simapppro": "Joystick ve gaz kolu için SimAppPro titreşimini kapatmayı unutmayın.",
     "reportar": "Sorun bildir",
     "error_inesperado": "URSA Rumble beklenmeyen bir hatayla karşılaştı. Göndermek için menüden “Sorun bildir”i kullanın; gönderilmeden önce her şeyi görebilirsiniz.",
-    "actualizado": "URSA Rumble {v} sürümüne güncellendi."
+    "actualizado": "URSA Rumble {v} sürümüne güncellendi.",
+    "avion": "Uçak: {a} · profil: {p}",
+    "perfil_generico": "genel",
+    "grabar": "Uçuşu kaydet (bu uçağı ayarlamak için)"
   },
   "efectos": {
     "rodaje": "yer hareketi",

@@ -47,7 +47,10 @@
     "aviso_simapppro": "Ricordati di disattivare la vibrazione di SimAppPro per joystick e manetta.",
     "reportar": "Segnala un problema",
     "error_inesperado": "URSA Rumble ha avuto un errore imprevisto. Usa «Segnala un problema» nel menu per inviarlo; vedrai tutto prima dell'invio.",
-    "actualizado": "URSA Rumble è stato aggiornato alla versione {v}."
+    "actualizado": "URSA Rumble è stato aggiornato alla versione {v}.",
+    "avion": "Aereo: {a} · profilo: {p}",
+    "perfil_generico": "generico",
+    "grabar": "Registra il volo (per regolare questo aereo)"
   },
   "efectos": {
     "rodaje": "rullaggio",
