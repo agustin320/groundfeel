@@ -14,6 +14,8 @@ from pathlib import Path
 
 from version import NOMBRE_APP
 
+__all__ = ["Path"]
+
 EMPAQUETADO = bool(getattr(sys, "frozen", False))
 FUENTE = Path(__file__).resolve().parent
 RECURSOS = Path(getattr(sys, "_MEIPASS", FUENTE))

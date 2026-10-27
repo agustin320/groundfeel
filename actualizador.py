@@ -1,14 +1,17 @@
-"""Actualizaciones desde GitHub Releases: compara versiones, baja el .exe nuevo y lo reemplaza en caliente.
+"""Actualizaciones desde GitHub Releases: compara versiones, baja el instalador nuevo y lo corre en silencio.
 
-Windows no deja borrar un .exe en uso, pero sí renombrarlo: el actual pasa a .old, el nuevo ocupa su lugar y se
-relanza con --esperar (espera a que este proceso suelte la instancia única). Al arrancar, el nuevo borra el .old.
+Flujo: baja VibracionURSA-Setup.exe, verifica su SHA-256 contra el que publica GitHub, lo lanza con /VERYSILENT y
+esta app se cierra (apagando los motores). El instalador espera a que se cierre, reemplaza los archivos y vuelve a
+abrir la app. Es el mismo instalador que usa una persona a mano: nada de reemplazar .exe en caliente.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import os
 import subprocess
-import sys
+import tempfile
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,13 +21,14 @@ from version import NOMBRE_APP, REPO, __version__
 
 log = logging.getLogger("vibracion")
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
-ASSET = f"{NOMBRE_APP}.exe"
+ASSET = f"{NOMBRE_APP}-Setup.exe"
 
 
 @dataclass
 class Version:
     numero: str
-    url_exe: str
+    url: str
+    sha256: str
     notas: str
 
 
@@ -40,56 +44,48 @@ def es_mas_nueva(remota: str, local: str = __version__) -> bool:
     return _tupla(remota) > _tupla(local)
 
 
+def _pedir(url: str, timeout: int) -> urllib.request.addinfourl:
+    req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json",
+                                               "User-Agent": f"{NOMBRE_APP}/{__version__}"})
+    return urllib.request.urlopen(req, timeout=timeout)
+
+
 def buscar() -> Version | None:
     """Última versión publicada si es más nueva que la instalada; None si no hay o no se pudo consultar."""
-    req = urllib.request.Request(API, headers={"Accept": "application/vnd.github+json",
-                                               "User-Agent": f"{NOMBRE_APP}/{__version__}"})
     try:
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with _pedir(API, 15) as r:
             datos = json.load(r)
     except Exception as ex:  # noqa: BLE001  (sin internet, límite de la API, etc.: se reintenta más tarde)
         log.info("no pude consultar actualizaciones: %s", ex)
         return None
     tag = datos.get("tag_name", "")
-    url = next((a["browser_download_url"] for a in datos.get("assets", []) if a.get("name") == ASSET), "")
-    if not tag or not url or not es_mas_nueva(tag):
+    asset = next((a for a in datos.get("assets", []) if a.get("name") == ASSET), None)
+    if not tag or not asset or not es_mas_nueva(tag):
         return None
-    return Version(tag.lstrip("vV"), url, datos.get("body", ""))
-
-
-def limpiar_restos() -> None:
-    """Borra el .exe viejo que dejó una actualización anterior."""
-    viejo = rutas.exe_instalado().with_suffix(".old")
-    try:
-        viejo.unlink(missing_ok=True)
-    except OSError:
-        pass
+    sha = str(asset.get("digest", "")).removeprefix("sha256:")
+    return Version(tag.lstrip("vV"), asset["browser_download_url"], sha, datos.get("body", ""))
 
 
 def aplicar(v: Version) -> bool:
-    """Baja e instala la versión nueva y relanza el programa. True si quedó todo listo para salir."""
-    exe = rutas.exe_instalado()
-    if not rutas.EMPAQUETADO or Path(sys.executable).resolve() != exe.resolve():
-        log.info("actualización %s disponible, pero sólo se aplica en la versión instalada", v.numero)
+    """Baja el instalador, lo verifica y lo lanza. True si quedó corriendo (la app tiene que cerrarse ya)."""
+    if not rutas.EMPAQUETADO:
+        log.info("actualización %s disponible; desde el código fuente no se aplica", v.numero)
         return False
-    nuevo, viejo = exe.with_suffix(".new"), exe.with_suffix(".old")
+    destino = Path(tempfile.gettempdir()) / f"{NOMBRE_APP}-Setup-{v.numero}.exe"
     try:
         log.info("bajando la versión %s", v.numero)
-        req = urllib.request.Request(v.url_exe, headers={"User-Agent": f"{NOMBRE_APP}/{__version__}"})
-        with urllib.request.urlopen(req, timeout=120) as r, open(nuevo, "wb") as f:
+        h = hashlib.sha256()
+        with _pedir(v.url, 120) as r, open(destino, "wb") as f:
             while bloque := r.read(1 << 16):
                 f.write(bloque)
-        if nuevo.stat().st_size < 1_000_000:
-            raise ValueError("el archivo bajado es demasiado chico")
-        viejo.unlink(missing_ok=True)
-        exe.rename(viejo)
-        nuevo.rename(exe)
+                h.update(bloque)
+        if v.sha256 and h.hexdigest() != v.sha256.lower():
+            raise ValueError("el instalador bajado no coincide con el publicado (SHA-256)")
     except Exception as ex:  # noqa: BLE001
         log.warning("no pude actualizar: %s", ex)
-        nuevo.unlink(missing_ok=True)
-        if viejo.exists() and not exe.exists():
-            viejo.rename(exe)
+        destino.unlink(missing_ok=True)
         return False
-    subprocess.Popen([str(exe), "--esperar"], close_fds=True)
-    log.info("actualizado a %s, reiniciando", v.numero)
+    subprocess.Popen([str(destino), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"], close_fds=True,
+                     cwd=os.environ.get("TEMP"))
+    log.info("instalando la versión %s; la app se reinicia sola", v.numero)
     return True

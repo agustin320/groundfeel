@@ -14,19 +14,23 @@ It replaces SimAppPro's vibration with effects computed from the aircraft's real
 
 ## Install
 
-1. Download `VibracionURSA.exe` from the [latest release](../../releases/latest).
-2. Run it. It installs itself for your user, without admin rights, in `%LOCALAPPDATA%\Programs\VibracionURSA`. It also appears in the Start menu and in "Installed apps".
-3. Done. It lives in the **system tray** next to the clock and **starts with Windows**. It connects by itself when the simulator opens.
+1. Download `VibracionURSA-Setup.exe` from the [latest release](../../releases/latest).
+2. Run it. It's a standard installer (Inno Setup) and installs for your user only, without admin rights, in `%LOCALAPPDATA%\Programs\VibracionURSA`. It also appears in the Start menu and in "Installed apps".
+3. Done. It lives in the **system tray** next to the clock and **starts with Windows** (an installer option you can untick). It connects by itself when the simulator opens.
 
-> Windows SmartScreen may warn that the publisher is unknown, because the program isn't code-signed. Click "More info → Run anyway".
+> Until the builds are code-signed (see [Code signing policy](#code-signing-policy)), Windows SmartScreen may warn that the publisher is unknown: click "More info → Run anyway". Each release is built by GitHub Actions from this repository's source; the SHA-256 of every file is shown on the release page.
 
 ### Updates
 
-Updates are automatic. Every 6 hours the app checks GitHub for a new version and updates itself while the simulator is closed, never mid-flight. You can also use "Check for updates" in the tray menu. Your settings are kept.
+Updates are automatic. Every 6 hours the app checks GitHub for a new version. When the simulator is closed, never mid-flight, it downloads the new installer, verifies its SHA-256 against the one GitHub publishes, and runs it silently. You can also use "Check for updates" in the tray menu, or turn automatic checks off in Settings. Your settings are kept.
 
 ### Uninstall
 
 Tray menu → "Uninstall…", or from Windows "Installed apps". Your settings stay in `%APPDATA%\VibracionURSA` in case you reinstall.
+
+### Antivirus
+
+Some antivirus products flagged the first versions (1.0.x) with generic behavior detections such as `PDM:Trojan.Win32.Generic`. Those versions installed themselves by copying the `.exe`, which looks like what malware does. Since 1.1.0 the app uses a standard installer and isn't packed as a self-extracting single file. If your antivirus still complains, please open an issue.
 
 ## Usage
 
@@ -105,7 +109,7 @@ SimConnect (every frame) ──> sim_lector.py ──> efectos.py ──> motore
   - Always turns the motors off when it stops.
 - `bandeja.py`: the app (entry point of the `.exe`). It relies on:
   - `ventana_ajustes.py`: the Settings window.
-  - `instalacion.py`: per-user install in HKCU.
+  - `instalacion.py`: start with Windows and the uninstaller. The installer itself is `instalador.iss` (Inno Setup).
   - `actualizador.py`: updates from GitHub Releases.
   - `i18n.py`: interface texts.
 - `config_usuario.py`: `config.json` (defaults) plus `ajustes.json` (your changes).
@@ -117,7 +121,8 @@ instalar.bat                            (once: Python environment and dependenci
 venv\Scripts\python.exe bandeja.py      (tray app from source; it doesn't install itself)
 venv\Scripts\python.exe vibracion.py    (console, no tray; also --silencio and --con-simulador)
 venv\Scripts\python.exe pruebas.py      (synthetic tests, no simulator or hardware needed)
-venv\Scripts\pyinstaller VibracionURSA.spec   (builds dist\VibracionURSA.exe)
+venv\Scripts\pyinstaller VibracionURSA.spec   (builds dist\VibracionURSA\)
+ISCC /DVersion=1.1.0 instalador.iss          (builds dist\VibracionURSA-Setup.exe; needs Inno Setup 6)
 ```
 
 The tests run on GitHub Actions on every push.
@@ -126,7 +131,7 @@ The tests run on GitHub Actions on every push.
 
 1. Bump `__version__` in `version.py` and commit.
 2. Push a matching tag: `git tag v1.0.1 && git push --tags`.
-3. GitHub Actions runs the tests, builds the `.exe` and publishes it to Releases. Installed apps pick it up by themselves.
+3. GitHub Actions runs the tests, builds the program and the installer, signs both with SignPath (once configured; each signing request is approved manually) and publishes the installer to Releases. Installed apps pick it up by themselves.
 
 `recursos/SimConnect.dll` is the redistributable client library from Microsoft's MSFS 2024 SDK. It's bundled so the program works without the SDK installed.
 
@@ -138,6 +143,21 @@ The tests run on GitHub Actions on every push.
   - Check that SimAppPro's vibration is off.
 - **A motor keeps vibrating:** this happens if the program is killed abruptly, for example from Task Manager. Open it again: it turns the motors off when it starts.
 - **Something feels too strong or too weak:** adjust it in the Settings window.
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+- Committers and reviewers: [agustin320](https://github.com/agustin320)
+- Approvers: [agustin320](https://github.com/agustin320)
+
+Only binaries built by GitHub Actions from this repository's source are signed. Every signing request is approved manually.
+
+### Privacy
+
+This program does not send any personal data. Its only network connection is to GitHub (`api.github.com` and GitHub release downloads) to check for and download updates. You can turn this off in Settings ("Check for updates automatically"). GitHub's privacy statement applies to those requests: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
+
+The program reads the simulator through SimConnect and writes only to the WinWing devices' vibration motors. The installer adds a "start with Windows" entry, which is optional, and the uninstaller removes it.
 
 ## Credits
 

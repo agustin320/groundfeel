@@ -1,35 +1,120 @@
 name: release
 
-# Al subir un tag vX.Y.Z: pruebas, build del .exe y publicación en Releases (de donde se actualiza la app instalada).
+# Al subir un tag vX.Y.Z: pruebas, build, firma con SignPath (cuando esté configurada), instalador Inno Setup y
+# publicación en Releases (de donde se actualiza la app instalada).
+#
+# Firma: con el secret SIGNPATH_API_TOKEN y las variables SIGNPATH_ORGANIZATION_ID, SIGNPATH_PROJECT_SLUG y
+# SIGNPATH_SIGNING_POLICY_SLUG cargadas, se firman el programa y el instalador (dos pedidos, cada uno con aprobación
+# manual en SignPath). Sin eso, se publica sin firmar.
 on:
   push:
     tags: ["v*"]
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
     runs-on: windows-latest
+    timeout-minutes: 360
+    env:
+      FIRMAR: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - name: El tag coincide con version.py
+        id: version
         shell: pwsh
         run: |
           $v = python -c "from version import __version__; print(__version__)"
           if ("v$v" -ne "${{ github.ref_name }}") { throw "tag ${{ github.ref_name }} != version.py $v" }
+          "numero=$v" >> $env:GITHUB_OUTPUT
       - name: Dependencias
-        run: pip install -r requirements.txt pyinstaller ruff
+        run: |
+          pip install -r requirements.txt pyinstaller ruff
+          choco install innosetup -y --no-progress
       - name: Revisión y pruebas
         run: |
           ruff check .
           python pruebas.py
-      - name: Build del .exe
+      - name: Build del programa
         run: pyinstaller --noconfirm VibracionURSA.spec
+
+      # ---- firma del programa (antes de meterlo en el instalador)
+      - name: Subir el programa sin firmar
+        id: programa
+        if: env.FIRMAR == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: programa-sin-firmar
+          path: dist/VibracionURSA/VibracionURSA.exe
+      - name: Firmar el programa (SignPath, espera la aprobación)
+        if: env.FIRMAR == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: programa
+          github-artifact-id: ${{ steps.programa.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 10800
+          output-artifact-directory: firmado-programa
+      - name: Usar el programa firmado
+        if: env.FIRMAR == 'true'
+        shell: pwsh
+        run: Copy-Item firmado-programa/VibracionURSA.exe dist/VibracionURSA/VibracionURSA.exe -Force
+
+      - name: Instalador (Inno Setup)
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DVersion=${{ steps.version.outputs.numero }}" instalador.iss
+          if ($LASTEXITCODE) { throw "ISCC falló" }
+
+      # ---- firma del instalador
+      - name: Subir el instalador sin firmar
+        id: instalador
+        if: env.FIRMAR == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: instalador-sin-firmar
+          path: dist/VibracionURSA-Setup.exe
+      - name: Firmar el instalador (SignPath, espera la aprobación)
+        if: env.FIRMAR == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: instalador
+          github-artifact-id: ${{ steps.instalador.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 10800
+          output-artifact-directory: firmado-instalador
+      - name: Usar el instalador firmado y verificar las firmas
+        if: env.FIRMAR == 'true'
+        shell: pwsh
+        run: |
+          Copy-Item firmado-instalador/VibracionURSA-Setup.exe dist/VibracionURSA-Setup.exe -Force
+          foreach ($f in 'dist/VibracionURSA-Setup.exe', 'dist/VibracionURSA/VibracionURSA.exe') {
+            $s = Get-AuthenticodeSignature $f
+            if ($s.Status -ne 'Valid') { throw "$f no quedó firmado: $($s.Status)" }
+            "$f firmado por $($s.SignerCertificate.Subject)"
+          }
+
       - name: Publicar release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create ${{ github.ref_name }} dist/VibracionURSA.exe --title "Vibración URSA ${{ github.ref_name }}" --generate-notes
+        shell: pwsh
+        run: |
+          $notas = @"
+          **Download / Descarga:** ``VibracionURSA-Setup.exe``
+
+          Code signing policy: https://github.com/${{ github.repository }}#code-signing-policy
+          "@
+          gh release create ${{ github.ref_name }} dist/VibracionURSA-Setup.exe --title "URSA Rumble ${{ github.ref_name }}" --notes $notas --generate-notes

@@ -1,14 +1,15 @@
-"""App de bandeja del sistema (entrada del .exe): instala, corre la vibración en segundo plano y se actualiza sola.
+"""App de bandeja del sistema (entrada del .exe): corre la vibración en segundo plano y se actualiza sola.
 
-Uso: VibracionURSA.exe              (la primera vez se instala; después vive en la bandeja)
-     VibracionURSA.exe --esperar    (relevo tras una actualización: espera a que cierre la copia anterior)
-     VibracionURSA.exe --desinstalar
+La instala el instalador estándar (instalador.iss, Inno Setup). Uso:
+     VibracionURSA.exe              (vive en la bandeja; si ya hay una copia corriendo, no hace nada)
+     VibracionURSA.exe --esperar    (tras una actualización: espera a que termine de cerrar la copia anterior)
+     VibracionURSA.exe --salir      (le pide a la copia en marcha que cierre apagando los motores; lo usa el
+                                     desinstalador)
 """
 from __future__ import annotations
 
 import ctypes
 import os
-import subprocess
 import sys
 import threading
 import time
@@ -22,7 +23,7 @@ import instalacion
 import rutas
 from config_usuario import Config
 from i18n import t
-from instancia import instancia_unica, liberar
+from instancia import esperar_pedido_de_salida, instancia_unica, pedir_salida
 from motor_vibracion import Vibracion, configurar_log, log
 from version import __version__
 
@@ -97,12 +98,8 @@ class App:
         self.icono.stop()
 
     def _desinstalar(self) -> None:
-        if mensaje(t("confirmar_desinstalar"), MB_YESNO | MB_ICONQUESTION) != IDYES:
-            return
-        self.saliendo = True
-        self.vib.detener()
-        instalacion.desinstalar()
-        self.icono.stop()
+        # Reason: el desinstalador de Inno Setup cierra esta copia con --salir (motores apagados) y pregunta solo.
+        instalacion.abrir_desinstalador()
 
     # ------------------------------------------------------------------ actualizaciones
     def _buscar_manual(self) -> None:
@@ -138,7 +135,8 @@ class App:
             i18n.elegir(str(self.vib.cfg.datos.get("idioma", "auto")))
             self.icono.title = f"{t('app')}\n{self._texto_estado()}"[:127]
             self.icono.update_menu()
-            if time.time() >= proxima:
+            # Reason: la búsqueda automática es la única conexión a internet; el usuario la puede apagar en Ajustes.
+            if time.time() >= proxima and self.vib.cfg.datos.get("buscar_actualizaciones", True):
                 proxima = time.time() + CADA_ACTUALIZACION_S
                 self.pendiente = actualizador.buscar() or self.pendiente
             # Reason: nunca cortar la vibración en pleno vuelo; se actualiza con el sim cerrado.
@@ -158,44 +156,20 @@ class App:
         def al_aparecer(icono: pystray.Icon) -> None:
             icono.visible = True
             threading.Thread(target=self._vigilar, daemon=True, name="vigilar").start()
+            threading.Thread(target=esperar_pedido_de_salida, args=(self._salir,), daemon=True,
+                             name="pedido-salida").start()
 
         self.icono.run(setup=al_aparecer)
-
-
-def apagar_motores() -> None:
-    from motores import Motor
-    for nombre in ("joystick", "throttle"):
-        try:
-            Motor(nombre).cerrar()
-        except Exception:  # noqa: BLE001  (no enchufado)
-            pass
 
 
 def main() -> None:
     args = sys.argv[1:]
     configurar_log()
     i18n.elegir(str(Config().datos.get("idioma", "auto")))
-    if "--desinstalar" in args:
-        if mensaje(t("confirmar_desinstalar"), MB_YESNO | MB_ICONQUESTION) == IDYES:
-            # Reason: si la app está corriendo en la bandeja, se cierra primero para soltar los motores y el .exe.
-            subprocess.run(["taskkill", "/im", os.path.basename(sys.executable), "/fi",
-                            f"PID ne {os.getpid()}"], creationflags=instalacion.SIN_VENTANA, check=False)
-            apagar_motores()   # Reason: matar el proceso deja los motores girando en el último valor.
-            instalacion.desinstalar()
-            mensaje(t("desinstalado"))
-        return
-    if not instalacion.esta_instalado_aca():
-        if not instancia_unica():
-            mensaje(t("ya_instalado"))
-            return
-        exe = instalacion.instalar()
-        liberar()
-        subprocess.Popen([str(exe), "--esperar"], close_fds=True)
-        mensaje(t("instalado"))
-        return
+    if "--salir" in args:
+        sys.exit(0 if pedir_salida() else 1)
     if not instancia_unica(esperar_s=20 if "--esperar" in args else 0):
         return
-    actualizador.limpiar_restos()
     log.info("app de bandeja %s iniciada", __version__)
     App().correr()
 

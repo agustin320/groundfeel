@@ -36,20 +36,8 @@ TEXTOS: dict[str, dict[str, str]] = {
     "ultima_version": {"es": "Tenés la última versión ({v}).", "en": "You have the latest version ({v})."},
     "no_actualizo": {"es": "No se pudo actualizar; sigue la versión actual. Ver el registro.",
                      "en": "The update failed; the current version keeps running. See the log."},
-    "confirmar_desinstalar": {"es": "¿Desinstalar Vibración URSA? Tus ajustes se guardan por si lo volvés a instalar.",
-                              "en": "Uninstall URSA Rumble? Your settings are kept in case you reinstall."},
-    "desinstalado": {"es": "Vibración URSA se desinstaló.", "en": "URSA Rumble was uninstalled."},
-    "ya_instalado": {"es": "Vibración URSA ya está instalada y corriendo (ícono en la bandeja, junto al reloj).\n"
-                           "Las actualizaciones llegan solas.",
-                     "en": "URSA Rumble is already installed and running (tray icon, next to the clock).\n"
-                           "Updates arrive automatically."},
-    "instalado": {"es": "Listo: Vibración URSA quedó instalada.\n\nVive en la bandeja del sistema (junto al reloj), "
-                        "arranca con Windows y se actualiza sola.\nAcordate de apagar la vibración de SimAppPro para "
-                        "el joystick y el throttle.",
-                  "en": "Done: URSA Rumble is installed.\n\nIt lives in the system tray (next to the clock), starts "
-                        "with Windows and updates itself.\nRemember to turn off SimAppPro's vibration for the joystick "
-                        "and the throttle."},
-    "falta_simconnect": {"es": "No encontré SimConnect.dll.", "en": "SimConnect.dll not found."},
+    "auto_actualizar": {"es": "Buscar actualizaciones automáticamente (GitHub)",
+                        "en": "Check for updates automatically (GitHub)"},
     # Ventana de ajustes
     "titulo_ajustes": {"es": "Vibración URSA {v} — Ajustes", "en": "URSA Rumble {v} — Settings"},
     "estado": {"es": "Estado", "en": "Status"},
@@ -60,8 +48,6 @@ TEXTOS: dict[str, dict[str, str]] = {
     "pausar": {"es": "Pausar la vibración", "en": "Pause vibration"},
     "idioma": {"es": "Idioma", "en": "Language"},
     "idioma_auto": {"es": "Automático (Windows)", "en": "Automatic (Windows)"},
-    "reabrir": {"es": "El idioma se aplica al reabrir esta ventana.", "en": "The language applies when you reopen "
-                                                                           "this window."},
     "defecto": {"es": "Valores por defecto", "en": "Restore defaults"},
     "carpeta": {"es": "Carpeta de ajustes", "en": "Settings folder"},
     "cerrar": {"es": "Cerrar", "en": "Close"},

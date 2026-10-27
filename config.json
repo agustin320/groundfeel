@@ -1,6 +1,8 @@
 {
   "_nota": "Intensidades 0..1 de cada efecto antes de la ganancia general. ganancia_general escala todo (0..1). El valor final va a los motores como 0..255.",
   "idioma": "auto",
+  "_nota_privacidad": "buscar_actualizaciones: la única conexión a internet del programa (GitHub Releases). false = nunca se conecta solo.",
+  "buscar_actualizaciones": true,
   "ganancia_general": { "joystick": 0.20, "throttle": 1.0 },
   "_nota_zona_muerta": "valor mínimo (0..255) desde el que cada motor empieza a girar; todo efecto arranca ahí",
   "zona_muerta": { "joystick": 9, "throttle": 20 },

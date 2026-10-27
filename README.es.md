@@ -14,19 +14,23 @@ Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado 
 
 ## Instalación
 
-1. Bajá `VibracionURSA.exe` de la [última versión](../../releases/latest).
-2. Abrilo. Se instala solo, sin pedir permisos de administrador, en `%LOCALAPPDATA%\Programs\VibracionURSA`. Queda en el menú Inicio y en "Aplicaciones instaladas".
-3. Listo. Vive en la **bandeja del sistema**, junto al reloj, y **arranca con Windows**. Cuando abrís el simulador se conecta solo.
+1. Bajá `VibracionURSA-Setup.exe` de la [última versión](../../releases/latest).
+2. Abrilo. Es un instalador estándar (Inno Setup). Instala sólo para tu usuario, sin pedir permisos de administrador, en `%LOCALAPPDATA%\Programs\VibracionURSA`. Queda en el menú Inicio y en "Aplicaciones instaladas".
+3. Listo. Vive en la **bandeja del sistema**, junto al reloj, y **arranca con Windows** (es una opción del instalador que podés destildar). Cuando abrís el simulador se conecta solo.
 
-> Windows SmartScreen puede avisar que el programa no es de un editor conocido, porque no está firmado. Elegí "Más información → Ejecutar de todas formas".
+> Hasta que las versiones salgan firmadas (ver [Política de firma de código](#política-de-firma-de-código)), Windows SmartScreen puede avisar que el editor no es conocido. Elegí "Más información → Ejecutar de todas formas". Cada versión la arma GitHub Actions a partir del código de este repositorio, y en la página de la versión figura el SHA-256 de cada archivo.
 
 ### Actualizaciones
 
-Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub y se actualiza sola cuando el simulador está cerrado: nunca en pleno vuelo. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones". Tus ajustes se conservan.
+Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub. Con el simulador cerrado, nunca en pleno vuelo, baja el instalador nuevo, verifica su SHA-256 contra el que publica GitHub y lo corre en silencio. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones", o desactivar la búsqueda automática en Ajustes. Tus ajustes se conservan.
 
 ### Desinstalar
 
 Menú de la bandeja → "Desinstalar…", o desde "Aplicaciones instaladas" de Windows. Tus ajustes quedan en `%APPDATA%\VibracionURSA` por si lo volvés a instalar.
+
+### Antivirus
+
+Algunos antivirus marcaron las primeras versiones (1.0.x) con detecciones genéricas por comportamiento, como `PDM:Trojan.Win32.Generic`. Esas versiones se instalaban solas copiando el `.exe`, algo que se parece a lo que hace un programa malicioso. Desde la 1.1.0 se usa un instalador estándar y el programa ya no es un único archivo que se autodescomprime. Si tu antivirus igual se queja, abrí un issue.
 
 ## Uso
 
@@ -98,7 +102,7 @@ SimConnect (cada frame) ──> sim_lector.py ──> efectos.py ──> motores
   - Recarga la configuración en caliente.
   - Siempre apaga los motores al detenerse.
   - Registro en `vibracion.log`: sólo anota cuando cambian los efectos activos.
-- `bandeja.py`: la app (entrada del `.exe`). Se apoya en `ventana_ajustes.py`, `instalacion.py` (instalación por usuario en HKCU), `actualizador.py` (GitHub Releases) e `i18n.py` (textos de la interfaz).
+- `bandeja.py`: la app (entrada del `.exe`). Se apoya en `ventana_ajustes.py`, `instalacion.py` (arranque con Windows y desinstalador; el instalador es `instalador.iss`, Inno Setup), `actualizador.py` (GitHub Releases) e `i18n.py` (textos de la interfaz).
 - `config_usuario.py`: `config.json` (valores por defecto) más `ajustes.json` (lo que cambiaste vos).
 
 ## Desarrollo
@@ -108,12 +112,13 @@ instalar.bat                            (una vez: entorno de Python y dependenci
 venv\Scripts\python.exe bandeja.py      (la app de bandeja, desde el código; no se instala)
 venv\Scripts\python.exe vibracion.py    (sin bandeja, con consola; también --silencio y --con-simulador)
 venv\Scripts\python.exe pruebas.py      (pruebas sintéticas, sin simulador ni hardware)
-venv\Scripts\pyinstaller VibracionURSA.spec   (genera dist\VibracionURSA.exe)
+venv\Scripts\pyinstaller VibracionURSA.spec   (genera dist\VibracionURSA\)
+ISCC /DVersion=1.1.0 instalador.iss          (genera dist\VibracionURSA-Setup.exe; necesita Inno Setup 6)
 ```
 
 Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despegue, crucero, pausa, aterrizaje suave contra duro, frenado, aceleración, motores, reversa, derrape y rodaje físico. Corren en GitHub Actions en cada push.
 
-**Publicar una versión:** subí `__version__` en `version.py`, hacé commit y empujá un tag igual (`git tag v1.0.1 && git push --tags`). GitHub Actions corre las pruebas, arma el `.exe` y lo publica en Releases. Las apps instaladas lo toman solas.
+**Publicar una versión:** subí `__version__` en `version.py`, hacé commit y empujá un tag igual (`git tag v1.0.1 && git push --tags`). GitHub Actions corre las pruebas, arma el programa y el instalador, los firma con SignPath (cuando esté configurado; cada firma se aprueba a mano) y publica el instalador en Releases. Las apps instaladas lo toman solas.
 
 `recursos/SimConnect.dll` es la librería cliente redistribuible del SDK de MSFS 2024, de Microsoft. Se incluye para que el programa funcione sin instalar el SDK.
 
@@ -125,6 +130,18 @@ Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despe
   - Revisá que la vibración de SimAppPro esté apagada.
 - **Un motor quedó vibrando:** pasa si el programa se cierra de golpe, por ejemplo matándolo desde el Administrador de tareas. Volvé a abrirlo: al arrancar apaga los motores.
 - **Algo se siente demasiado fuerte o débil:** ajustalo en la ventana de Ajustes.
+
+## Política de firma de código
+
+La política oficial (Code signing policy) está en el [README en inglés](README.md#code-signing-policy). En resumen:
+
+- Firma de código gratuita provista por [SignPath.io](https://about.signpath.io/), certificado de [SignPath Foundation](https://signpath.org/).
+- Commiters, revisores y aprobadores: [agustin320](https://github.com/agustin320).
+- Sólo se firman binarios armados por GitHub Actions a partir del código de este repositorio, con aprobación manual de cada firma.
+
+### Privacidad
+
+El programa no envía ningún dato personal. Su única conexión de red es a GitHub, para buscar y bajar actualizaciones, y se puede desactivar en Ajustes. Lee el simulador por SimConnect y sólo escribe en los motores de vibración de los dispositivos WinWing.
 
 ## Créditos
 

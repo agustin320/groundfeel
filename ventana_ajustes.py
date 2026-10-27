@@ -113,8 +113,10 @@ class VentanaAjustes:
         if rutas.EMPAQUETADO:
             self._casilla(opciones, 2, t("menu_inicio_windows"), instalacion.arranca_con_windows(),
                           instalacion.poner_arranque_con_windows)
+        self._casilla(opciones, 3, t("auto_actualizar"), bool(self.cfg.datos.get("buscar_actualizaciones", True)),
+                      lambda v: self.cfg.guardar("buscar_actualizaciones", valor=v))
         fila_idioma = ttk.Frame(opciones)
-        fila_idioma.grid(row=3, column=0, columnspan=3, sticky="w", pady=(6, 0))
+        fila_idioma.grid(row=4, column=0, columnspan=3, sticky="w", pady=(6, 0))
         ttk.Label(fila_idioma, text=t("idioma")).grid(row=0, column=0, padx=(0, 8))
         etiquetas = [t("idioma_auto") if c == "auto" else NOMBRE_IDIOMA[c] for c in IDIOMAS]
         actual = str(self.cfg.obtener("idioma")) if "idioma" in self.cfg.datos else "auto"
