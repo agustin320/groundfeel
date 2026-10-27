@@ -72,16 +72,30 @@ Type: filesandordirs; Name: "{app}"
 [Code]
 const
   MUTEX_APP = 'Global\vibracion_ursa_unica';
+  EVENTO_SALIR = 'Local\vibracion_ursa_salir';   { mismo nombre que instancia.py }
+  EVENT_MODIFY_STATE = $0002;
 
-{ Pide a la app en marcha que cierre (apaga los motores) y espera hasta 15 s. }
-procedure CerrarApp(const Exe: String);
+function OpenEvent(Acceso: Cardinal; Heredar: Boolean; Nombre: String): THandle;
+  external 'OpenEventW@kernel32.dll stdcall';
+function SetEvent(Evento: THandle): Boolean;
+  external 'SetEvent@kernel32.dll stdcall';
+function CloseHandle(Objeto: THandle): Boolean;
+  external 'CloseHandle@kernel32.dll stdcall';
+
+{ Pide a la app en marcha (esté donde esté) que cierre apagando los motores, y espera hasta 15 s. }
+procedure CerrarApp();
 var
-  Codigo, i: Integer;
+  Evento: THandle;
+  i: Integer;
 begin
   if not CheckForMutexes(MUTEX_APP) then
     exit;
-  if FileExists(Exe) then
-    Exec(Exe, '--salir', '', SW_HIDE, ewWaitUntilTerminated, Codigo);
+  Evento := OpenEvent(EVENT_MODIFY_STATE, False, EVENTO_SALIR);
+  if Evento <> 0 then
+  begin
+    SetEvent(Evento);
+    CloseHandle(Evento);
+  end;
   for i := 1 to 50 do
   begin
     if not CheckForMutexes(MUTEX_APP) then
@@ -92,13 +106,13 @@ end;
 
 function InitializeSetup(): Boolean;
 begin
-  CerrarApp(ExpandConstant('{localappdata}\Programs\VibracionURSA\VibracionURSA.exe'));
+  CerrarApp();
   Result := True;
 end;
 
 function InitializeUninstall(): Boolean;
 begin
-  CerrarApp(ExpandConstant('{app}\VibracionURSA.exe'));
+  CerrarApp();
   Result := True;
 end;
 
