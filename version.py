@@ -1,4 +1,4 @@
 """Versión del programa y repositorio de donde salen las actualizaciones."""
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 REPO = "agustin320/vibracion-ursa"
 NOMBRE_APP = "VibracionURSA"

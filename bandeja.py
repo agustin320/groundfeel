@@ -35,13 +35,28 @@ def mensaje(texto: str, estilo: int = MB_OK | MB_ICONINFO) -> int:
     return ctypes.windll.user32.MessageBoxW(None, texto, t("app"), estilo | 0x10000)  # MB_SETFOREGROUND
 
 
+def _imagenes_estado() -> dict[str, Image.Image]:
+    """Ícono con un punto de color abajo a la derecha: verde conectado, gris esperando, naranja en pausa."""
+    from PIL import ImageDraw
+    base = Image.open(rutas.icono()).convert("RGBA").resize((64, 64))
+    out = {}
+    for nombre, color in (("conectado", (31, 170, 70)), ("esperando", (140, 140, 140)), ("pausa", (230, 150, 20))):
+        im = base.copy()
+        d = ImageDraw.Draw(im)
+        d.ellipse((38, 38, 62, 62), fill=color, outline=(255, 255, 255), width=3)
+        out[nombre] = im
+    return out
+
+
 class App:
     def __init__(self) -> None:
         self.vib = Vibracion()
         self.act = actualizador.EstadoActualizacion()
         self.ajustes_abiertos = False
         self.saliendo = False
-        self.icono = pystray.Icon("VibracionURSA", Image.open(rutas.icono()), t("app"), self._menu())
+        self.imagenes = _imagenes_estado()
+        self._estado_icono = "esperando"
+        self.icono = pystray.Icon("VibracionURSA", self.imagenes["esperando"], t("app"), self._menu())
 
     # ------------------------------------------------------------------ menú
     def _texto_estado(self, _item: object = None) -> str:
@@ -138,6 +153,11 @@ class App:
             time.sleep(2)
             i18n.elegir(str(self.vib.cfg.datos.get("idioma", "auto")))
             self.icono.title = f"{t('app')}\n{self._texto_estado()}"[:127]
+            e = self.vib.estado
+            estado = "pausa" if e.pausado else "conectado" if e.conectado else "esperando"
+            if estado != self._estado_icono:
+                self._estado_icono = estado
+                self.icono.icon = self.imagenes[estado]
             self.icono.update_menu()
             # Reason: la búsqueda automática es la única conexión a internet; el usuario la puede apagar en Ajustes.
             if time.time() >= proxima and self.vib.cfg.datos.get("buscar_actualizaciones", True):

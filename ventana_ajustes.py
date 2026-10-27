@@ -18,6 +18,7 @@ from i18n import t
 from motor_vibracion import Vibracion
 from version import __version__
 
+VERDE, AZUL, NARANJA, ROJO, GRIS = "#1a7f37", "#0969da", "#9a6700", "#cf222e", "#666666"
 IDIOMAS = ("auto", "en", "es")
 NOMBRE_IDIOMA = {"en": "English", "es": "Español"}
 
@@ -171,28 +172,32 @@ class VentanaAjustes:
     def _refrescar(self) -> None:
         e = self.vib.estado
         self.lbl_sim.config(text=("● " + t("sim_conectado") if e.conectado else "○ " + t("sim_esperando"))
-                            + ("  " + t("en_pausa") if e.pausado else ""))
-        self.lbl_disp.config(text=t("dispositivos", d=", ".join(e.dispositivos) or t("ninguno")))
+                            + ("  " + t("en_pausa") if e.pausado else ""),
+                            foreground=NARANJA if e.pausado else VERDE if e.conectado else GRIS)
+        # Reason: el URSA es joystick + throttle; si falta uno se avisa en naranja, si no hay ninguno en rojo.
+        self.lbl_disp.config(text=t("dispositivos", d=", ".join(e.dispositivos) or t("ninguno")),
+                             foreground=VERDE if len(e.dispositivos) >= 2 else NARANJA if e.dispositivos else ROJO)
         activos = [i18n.efecto(k) for k, v in e.activos.items() if v >= 0.05]
-        self.lbl_ef.config(text=t("vibrando", e=", ".join(activos) if activos else "—"))
+        self.lbl_ef.config(text=t("vibrando", e=", ".join(activos) if activos else "—"),
+                           foreground=AZUL if activos else GRIS)
         self._refrescar_actualizaciones()
         self._tarea_refresco = self.raiz.after(1000, self._refrescar)
 
     def _refrescar_actualizaciones(self) -> None:
         a = self.app.act if self.app else None
         if a is None:
-            texto = t("act_sin_consultar")
+            texto, color = t("act_sin_consultar"), GRIS
         elif a.buscando:
-            texto = t("act_buscando")
+            texto, color = t("act_buscando"), GRIS
         elif a.pendiente:
-            texto = t("act_nueva", v=a.pendiente.numero)
+            texto, color = t("act_nueva", v=a.pendiente.numero), AZUL
         elif a.error:
-            texto = t("act_error", e=a.error)
+            texto, color = t("act_error", e=a.error), ROJO
         elif a.ultima_consulta:
-            texto = t("act_al_dia", h=time.strftime("%H:%M", time.localtime(a.ultima_consulta)))
+            texto, color = t("act_al_dia", h=time.strftime("%H:%M", time.localtime(a.ultima_consulta))), VERDE
         else:
-            texto = t("act_sin_consultar")
-        self.lbl_act.config(text=texto)
+            texto, color = t("act_sin_consultar"), GRIS
+        self.lbl_act.config(text=texto, foreground=color)
         self.btn_buscar.state(["disabled"] if a is None or a.buscando else ["!disabled"])
         self.btn_instalar.state(["!disabled"] if a and a.pendiente and rutas.EMPAQUETADO else ["disabled"])
 
