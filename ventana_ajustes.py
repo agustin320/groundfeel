@@ -19,8 +19,6 @@ from motor_vibracion import Vibracion
 from version import __version__
 
 VERDE, AZUL, NARANJA, ROJO, GRIS = "#1a7f37", "#0969da", "#9a6700", "#cf222e", "#666666"
-IDIOMAS = ("auto", "en", "es")
-NOMBRE_IDIOMA = {"en": "English", "es": "Español"}
 
 
 class VentanaAjustes:
@@ -122,12 +120,14 @@ class VentanaAjustes:
         fila_idioma = ttk.Frame(opciones)
         fila_idioma.grid(row=4, column=0, columnspan=3, sticky="w", pady=(6, 0))
         ttk.Label(fila_idioma, text=t("idioma")).grid(row=0, column=0, padx=(0, 8))
-        etiquetas = [t("idioma_auto") if c == "auto" else NOMBRE_IDIOMA[c] for c in IDIOMAS]
+        opciones_idioma = [("auto", t("idioma_auto"))] + i18n.disponibles()
+        codigos = [c for c, _n in opciones_idioma]
+        etiquetas = [n for _c, n in opciones_idioma]
         actual = str(self.cfg.obtener("idioma")) if "idioma" in self.cfg.datos else "auto"
         combo = ttk.Combobox(fila_idioma, values=etiquetas, state="readonly", width=22)
-        combo.current(IDIOMAS.index(actual) if actual in IDIOMAS else 0)
+        combo.current(codigos.index(actual) if actual in codigos else 0)
         combo.grid(row=0, column=1)
-        combo.bind("<<ComboboxSelected>>", lambda _e: self._cambiar_idioma(IDIOMAS[combo.current()]))
+        combo.bind("<<ComboboxSelected>>", lambda _e: self._cambiar_idioma(codigos[combo.current()]))
 
         act = ttk.LabelFrame(marco, text=t("actualizaciones"), padding=10)
         act.grid(row=3, column=0, sticky="ew", pady=(10, 0))

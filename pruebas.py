@@ -271,4 +271,21 @@ for i in range(int(60 * 40)):
     saltos += (s["throttle_1"] > 0) != (prev > 0)
     prev, mx_thr = s["throttle_1"], max(mx_thr, s["throttle_1"])
 caso("aproximación sin pulsos en el throttle", saltos <= 4, f"{saltos} saltos prendido/apagado en 60 s, máximo {mx_thr}")
+# 21. Idiomas: los 20 archivos cargan, tienen todas las claves del inglés y los mismos marcadores ({v}, {e}...).
+import re  # noqa: E402
+
+import i18n  # noqa: E402
+
+base = i18n.IDIOMAS["en"]
+problemas = []
+for cod, datos in i18n.IDIOMAS.items():
+    for seccion in ("textos", "efectos"):
+        for clave, texto_en in base[seccion].items():
+            texto = datos.get(seccion, {}).get(clave)
+            if not texto:
+                problemas.append(f"{cod}:{clave} falta")
+            elif sorted(re.findall(r"{\w+}", texto)) != sorted(re.findall(r"{\w+}", texto_en)):
+                problemas.append(f"{cod}:{clave} marcadores distintos")
+caso("idiomas completos", len(i18n.IDIOMAS) == 20 and not problemas,
+     f"{len(i18n.IDIOMAS)} idiomas, problemas: {problemas[:5]}")
 print("\nTodas las pruebas pasaron.")
