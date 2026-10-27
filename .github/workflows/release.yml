@@ -1,0 +1,35 @@
+name: release
+
+# Al subir un tag vX.Y.Z: pruebas, build del .exe y publicación en Releases (de donde se actualiza la app instalada).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: El tag coincide con version.py
+        shell: pwsh
+        run: |
+          $v = python -c "from version import __version__; print(__version__)"
+          if ("v$v" -ne "${{ github.ref_name }}") { throw "tag ${{ github.ref_name }} != version.py $v" }
+      - name: Dependencias
+        run: pip install -r requirements.txt pyinstaller ruff
+      - name: Revisión y pruebas
+        run: |
+          ruff check .
+          python pruebas.py
+      - name: Build del .exe
+        run: pyinstaller --noconfirm VibracionURSA.spec
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create ${{ github.ref_name }} dist/VibracionURSA.exe --title "Vibración URSA ${{ github.ref_name }}" --generate-notes

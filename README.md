@@ -4,28 +4,38 @@ Vibración realista para el **WinWing URSA MINOR 32** (joystick L + throttle Met
 
 Reemplaza la vibración de SimAppPro por efectos calculados a partir del estado real del avión: rodaje según la superficie y la velocidad, toque en pista, frenos con antibloqueo, spool de los motores, reversa, derrape, tren, flaps, frenos aerodinámicos y pérdida.
 
-> **English summary:** realistic rumble for the WinWing URSA MINOR 32 joystick and throttle in MSFS 2024. It reads the sim via SimConnect and drives the devices' vibration motors over HID. Ground roll on the joystick uses a physical model: an ISO 8608 runway profile and a two-mass nose-gear model. Windows only. Comments and docs are in Spanish.
+> **English summary:** realistic rumble for the WinWing URSA MINOR 32 joystick and throttle in MSFS 2024. It reads the sim via SimConnect and drives the devices' vibration motors over HID. Ground roll on the joystick uses a physical model: an ISO 8608 runway profile and a two-mass nose-gear model. Download `VibracionURSA.exe` from Releases and run it: it installs itself per-user, lives in the system tray, starts with Windows and updates itself. Windows only. UI and docs are in Spanish.
 
 ## Requisitos
 
-- Windows 10/11 con Python 3.11 o superior.
-- MSFS 2024 y su SDK. Del SDK se usa `SimConnect.dll`.
+- Windows 10/11.
 - WinWing URSA MINOR 32: joystick L y/o throttle Metal R.
 - **La vibración de SimAppPro tiene que estar apagada** para estos dispositivos. Si no, los dos programas se pisan.
 
 ## Instalación
 
-1. Descargá o cloná este repositorio.
-2. Copiá `SimConnect.dll` a la carpeta del programa. Está en el SDK de MSFS 2024, en `SimConnect SDK\lib\SimConnect.dll`. Otra opción: definir la variable de entorno `SIMCONNECT_DLL` con su ruta.
-3. Doble click en `instalar.bat` (una sola vez).
+1. Bajá `VibracionURSA.exe` de la [última versión](../../releases/latest).
+2. Abrilo. Se instala solo, sin pedir permisos de administrador, en `%LOCALAPPDATA%\Programs\VibracionURSA`. Queda en el menú Inicio y en "Aplicaciones instaladas".
+3. Listo. Vive en la **bandeja del sistema**, junto al reloj, y **arranca con Windows**. Cuando abrís el simulador se conecta solo.
+
+> Windows SmartScreen puede avisar que el programa no es de un editor conocido, porque no está firmado. Elegí "Más información → Ejecutar de todas formas".
+
+### Actualizaciones
+
+Son automáticas. Cada 6 horas la app busca versiones nuevas en GitHub y se actualiza sola cuando el simulador está cerrado: nunca en pleno vuelo. También podés forzarlo desde el menú de la bandeja con "Buscar actualizaciones". Tus ajustes se conservan.
+
+### Desinstalar
+
+Menú de la bandeja → "Desinstalar…", o desde "Aplicaciones instaladas" de Windows. Tus ajustes quedan en `%APPDATA%\VibracionURSA` por si lo volvés a instalar.
 
 ## Uso
 
-1. Abrí el simulador.
-2. Doble click en `iniciar_vibracion.bat`. Se abre una ventana: dejala abierta.
-3. Para apagarlo, cerrá esa ventana. Los motores se apagan solos.
+Click derecho en el ícono de la bandeja:
 
-El programa se reconecta solo si el simulador todavía no abrió o si se reinicia. En pausa no vibra nada.
+- **Ajustes**: intensidad del joystick, del throttle y del rodaje; si el joystick vibra sólo en tierra; pausa; iniciar con Windows. Muestra en vivo si el simulador está conectado, qué dispositivos encontró y qué está vibrando. Los cambios se aplican al instante.
+- **Pausar vibración**, **Ver registro**, **Buscar actualizaciones**, **Desinstalar**, **Salir**.
+
+En pausa del simulador no vibra nada.
 
 ## Efectos
 
@@ -43,9 +53,15 @@ El programa se reconecta solo si el simulador todavía no abrió o si se reinici
 
 Por defecto el joystick vibra **sólo en tierra** (`"joystick_solo_en_tierra": true`).
 
-## Ajustes (`config.json`)
+## Ajustes avanzados
 
-Los cambios se aplican al guardar, sin reiniciar.
+Lo más común se cambia desde la ventana de Ajustes. Para el resto:
+
+- `config.json` trae los valores por defecto. Viene con cada versión, así que no lo edites.
+- Tus cambios van en `ajustes.json`, dentro de `%APPDATA%\VibracionURSA` (en la ventana de Ajustes: "Carpeta de ajustes"). Ahí guardás sólo lo que querés cambiar, con la misma estructura que `config.json`. Por ejemplo: `{"frenos": {"antibloqueo": 0.5}}`.
+- Los cambios se aplican al guardar, sin reiniciar. Las actualizaciones respetan tus ajustes.
+
+Claves principales:
 
 - `ganancia_general`: intensidad global de cada dispositivo (0 a 1).
 - `zona_muerta`: valor mínimo (0 a 255) desde el que gira cada motor. Todo efecto arranca ahí. Se mide con `herramientas\prueba_umbral.py`.
@@ -75,28 +91,38 @@ SimConnect (cada frame) ──> sim_lector.py ──> efectos.py ──> motores
 - `motores.py`: protocolo HID de los motores, reporte `0x02` + `[pieza LE, 00, 00, 03, 49, índice, valor]`.
   - Joystick L: pieza `0xBF07`, motor índice 0.
   - Throttle Metal R: pieza `0xB910`, motores índices 14 y 16.
-- `vibracion.py`:
-  - Lazo principal a 40 Hz.
-  - Una sola instancia a la vez.
-  - Recarga `config.json` en caliente.
-  - Apaga los motores al cerrar la ventana.
+- `motor_vibracion.py`:
+  - Lazo principal a 40 Hz, en un hilo.
+  - Recarga la configuración en caliente.
+  - Siempre apaga los motores al detenerse.
   - Registro en `vibracion.log`: sólo anota cuando cambian los efectos activos.
+- `bandeja.py`: la app (entrada del `.exe`). Se apoya en `ventana_ajustes.py`, `instalacion.py` (instalación por usuario en HKCU) y `actualizador.py` (GitHub Releases).
+- `config_usuario.py`: `config.json` (valores por defecto) más `ajustes.json` (lo que cambiaste vos).
 
-## Pruebas
+## Desarrollo
 
 ```
-venv\Scripts\python.exe pruebas.py
+instalar.bat                            (una vez: entorno de Python y dependencias)
+venv\Scripts\python.exe bandeja.py      (la app de bandeja, desde el código; no se instala)
+venv\Scripts\python.exe vibracion.py    (sin bandeja, con consola; también --silencio y --con-simulador)
+venv\Scripts\python.exe pruebas.py      (pruebas sintéticas, sin simulador ni hardware)
+venv\Scripts\pyinstaller VibracionURSA.spec   (genera dist\VibracionURSA.exe)
 ```
 
-Escenarios sintéticos sin simulador ni hardware. Algunos ejemplos: parado, carreteo en asfalto contra pasto, despegue, crucero, pausa, aterrizaje suave contra duro, frenado, aceleración, motores, reversa, derrape y rodaje físico. Corren también en GitHub Actions en cada push.
+Las pruebas cubren, entre otros: parado, carreteo en asfalto contra pasto, despegue, crucero, pausa, aterrizaje suave contra duro, frenado, aceleración, motores, reversa, derrape y rodaje físico. Corren en GitHub Actions en cada push.
+
+**Publicar una versión:** subí `__version__` en `version.py`, hacé commit y empujá un tag igual (`git tag v1.0.1 && git push --tags`). GitHub Actions corre las pruebas, arma el `.exe` y lo publica en Releases. Las apps instaladas lo toman solas.
+
+`recursos/SimConnect.dll` es la librería cliente redistribuible del SDK de MSFS 2024, de Microsoft. Se incluye para que el programa funcione sin instalar el SDK.
 
 ## Problemas comunes
 
 - **No vibra nada:**
-  - Fijate en `vibracion.log` si dice `simulador conectado` y `Motores: joystick, throttle`.
+  - La ventana de Ajustes muestra si el simulador está conectado y qué dispositivos encontró.
+  - El detalle está en "Ver registro".
   - Revisá que la vibración de SimAppPro esté apagada.
 - **Un motor quedó vibrando:** pasa si el programa se cierra de golpe, por ejemplo matándolo desde el Administrador de tareas. Volvé a abrirlo: al arrancar apaga los motores.
-- **Algo se siente demasiado fuerte o débil:** ajustá `config.json` y guardá.
+- **Algo se siente demasiado fuerte o débil:** ajustalo en la ventana de Ajustes.
 
 ## Créditos
 

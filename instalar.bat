@@ -1,5 +1,5 @@
 @echo off
-rem Crea el entorno de Python e instala las dependencias. Correr una sola vez.
+rem Para desarrollo: crea el entorno de Python e instala las dependencias. Usuarios: bajar el .exe de Releases.
 cd /d "%~dp0"
 where py >nul 2>nul || (echo Falta Python 3.11 o superior: https://www.python.org/downloads/ & pause & exit /b 1)
 if not exist venv\Scripts\python.exe (
@@ -7,10 +7,6 @@ if not exist venv\Scripts\python.exe (
 )
 venv\Scripts\python.exe -m pip install --upgrade pip >nul
 venv\Scripts\python.exe -m pip install -r requirements.txt || (echo Fallo la instalacion. & pause & exit /b 1)
-if not exist SimConnect.dll if not exist SimConnect2024.dll (
-  echo.
-  echo Falta SimConnect.dll: copiala del SDK de MSFS 2024 ^(SimConnect SDK\lib\SimConnect.dll^) a esta carpeta.
-)
 echo.
-echo Listo. Para usarlo: doble click en iniciar_vibracion.bat
+echo Listo. Para usarlo desde el codigo: iniciar_vibracion.bat (consola) o venv\Scripts\pythonw.exe bandeja.py
 pause

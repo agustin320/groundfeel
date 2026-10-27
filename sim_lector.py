@@ -6,19 +6,11 @@ Se reconecta solo si el simulador se cierra o todavía no está abierto. `datos(
 from __future__ import annotations
 
 import ctypes as C
-import os
 import threading
 import time
-from pathlib import Path
 
-RAIZ = Path(__file__).resolve().parent
-# Dónde buscar SimConnect.dll (no se incluye en el repo: viene con el SDK de MSFS 2024).
-CANDIDATOS_DLL = (
-    os.environ.get("SIMCONNECT_DLL", ""),
-    str(RAIZ / "SimConnect.dll"),
-    str(RAIZ / "SimConnect2024.dll"),
-    r"C:\MSFS 2024 SDK\SimConnect SDK\lib\SimConnect.dll",
-)
+import rutas
+
 FLOAT64 = 4
 PERIODO_VISUAL_FRAME = 2
 RECV_QUIT, RECV_SIMOBJECT_DATA = 3, 8
@@ -53,12 +45,12 @@ VARIABLES: dict[str, str] = {
 
 def cargar_simconnect() -> C.WinDLL:
     """Carga la primera SimConnect.dll que encuentre; si no hay, explica dónde conseguirla."""
-    for ruta in CANDIDATOS_DLL:
-        if ruta and Path(ruta).is_file():
-            return C.WinDLL(ruta)
+    for ruta in rutas.dll_simconnect_candidatas():
+        if ruta.is_file():
+            return C.WinDLL(str(ruta))
     raise FileNotFoundError(
         "No encontré SimConnect.dll. Copiala del SDK de MSFS 2024 (SimConnect SDK\\lib\\SimConnect.dll) a la carpeta "
-        "del programa, o indicá su ruta en la variable de entorno SIMCONNECT_DLL.")
+        "recursos\\ del programa, o indicá su ruta en la variable de entorno SIMCONNECT_DLL.")
 
 
 class RECV(C.Structure):
