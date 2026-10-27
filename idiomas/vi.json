@@ -44,7 +44,9 @@
     "defecto": "Khôi phục mặc định",
     "carpeta": "Thư mục cài đặt",
     "cerrar": "Đóng",
-    "aviso_simapppro": "Hãy nhớ tắt rung của SimAppPro cho joystick và cần ga."
+    "aviso_simapppro": "Hãy nhớ tắt rung của SimAppPro cho joystick và cần ga.",
+    "reportar": "Báo cáo sự cố",
+    "error_inesperado": "URSA Rumble gặp lỗi không mong muốn. Dùng “Báo cáo sự cố” trong menu để gửi; bạn sẽ xem toàn bộ nội dung trước khi gửi."
   },
   "efectos": {
     "rodaje": "lăn bánh",

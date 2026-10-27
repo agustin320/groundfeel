@@ -13,6 +13,7 @@ from tkinter import ttk
 
 import i18n
 import instalacion
+import reportes
 import rutas
 from i18n import t
 from motor_vibracion import Vibracion
@@ -150,6 +151,8 @@ class VentanaAjustes:
 
         botones = ttk.Frame(marco)
         botones.grid(row=4, column=0, sticky="e", pady=(12, 0))
+        ttk.Button(botones, text=t("reportar"),
+                   command=lambda: reportes.abrir_reporte(self.vib.estado)).grid(row=0, column=3, padx=4)
         ttk.Button(botones, text=t("defecto"), command=self._restablecer).grid(row=0, column=0, padx=4)
         ttk.Button(botones, text=t("carpeta"),
                    command=lambda: os.startfile(rutas.datos_usuario())).grid(row=0, column=1, padx=4)

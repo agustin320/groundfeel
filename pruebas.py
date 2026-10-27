@@ -288,4 +288,12 @@ for cod, datos in i18n.IDIOMAS.items():
                 problemas.append(f"{cod}:{clave} marcadores distintos")
 caso("idiomas completos", len(i18n.IDIOMAS) == 20 and not problemas,
      f"{len(i18n.IDIOMAS)} idiomas, problemas: {problemas[:5]}")
+# 22. Reportes: se tapan la carpeta de usuario, el usuario y el equipo antes de armar el issue.
+import os  # noqa: E402
+
+import reportes  # noqa: E402
+
+os.environ.update(USERPROFILE=r"C:\Users\pepe.perez", USERNAME="pepe.perez", COMPUTERNAME="PC-DE-PEPE")
+saneado = reportes.sanear(r"error en C:\Users\pepe.perez\AppData\x.py usuario pepe.perez equipo PC-DE-PEPE")
+caso("reporte sin datos personales", "pepe" not in saneado.lower() and "PC-DE-PEPE" not in saneado, saneado)
 print("\nTodas las pruebas pasaron.")

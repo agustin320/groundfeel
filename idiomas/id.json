@@ -44,7 +44,9 @@
     "defecto": "Kembalikan default",
     "carpeta": "Folder pengaturan",
     "cerrar": "Tutup",
-    "aviso_simapppro": "Jangan lupa matikan getaran SimAppPro untuk joystick dan throttle."
+    "aviso_simapppro": "Jangan lupa matikan getaran SimAppPro untuk joystick dan throttle.",
+    "reportar": "Laporkan masalah",
+    "error_inesperado": "URSA Rumble mengalami kesalahan tak terduga. Gunakan “Laporkan masalah” di menu untuk mengirimnya; Anda akan melihat semuanya sebelum terkirim."
   },
   "efectos": {
     "rodaje": "taxi di darat",

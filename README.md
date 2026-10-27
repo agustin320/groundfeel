@@ -44,7 +44,13 @@ Right-click the tray icon:
   - Pause, and start with Windows.
   - A live view of the simulator connection, the devices found and which effects are vibrating.
   - Changes apply instantly.
-- **Pause vibration**, **View log**, **Check for updates**, **Uninstall**, **Exit**.
+- **Pause vibration**, **View log**, **Check for updates**, **Report a problem**, **Uninstall**, **Exit**.
+
+### Reporting problems and errors
+
+"Report a problem" (tray menu or Settings) opens a pre-filled GitHub issue in your browser. It includes the app version, Windows version, devices found, the last unexpected error and the last log lines. Your user folder, user name and computer name are masked. You review everything and decide whether to submit it: nothing is sent automatically.
+
+If the app hits an unexpected error, it saves the details in `%APPDATA%\VibracionURSA\errores\` and shows a notification so you can report it.
 
 Nothing vibrates while the simulator is paused.
 
@@ -155,7 +161,7 @@ Only binaries built by GitHub Actions from this repository's source are signed. 
 
 ### Privacy
 
-This program does not send any personal data. Its only network connection is to GitHub (`api.github.com` and GitHub release downloads) to check for and download updates. You can turn this off in Settings ("Check for updates automatically"). GitHub's privacy statement applies to those requests: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
+This program does not send any personal data and has no telemetry; error reports are only sent if you submit the pre-filled GitHub issue yourself. Its only network connection is to GitHub (`api.github.com` and GitHub release downloads) to check for and download updates. You can turn this off in Settings ("Check for updates automatically"). GitHub's privacy statement applies to those requests: https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement
 
 The program reads the simulator through SimConnect and writes only to the WinWing devices' vibration motors. The installer adds a "start with Windows" entry, which is optional, and the uninstaller removes it.
 

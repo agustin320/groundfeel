@@ -44,7 +44,9 @@
     "defecto": "Varsayılanlara dön",
     "carpeta": "Ayarlar klasörü",
     "cerrar": "Kapat",
-    "aviso_simapppro": "Joystick ve gaz kolu için SimAppPro titreşimini kapatmayı unutmayın."
+    "aviso_simapppro": "Joystick ve gaz kolu için SimAppPro titreşimini kapatmayı unutmayın.",
+    "reportar": "Sorun bildir",
+    "error_inesperado": "URSA Rumble beklenmeyen bir hatayla karşılaştı. Göndermek için menüden “Sorun bildir”i kullanın; gönderilmeden önce her şeyi görebilirsiniz."
   },
   "efectos": {
     "rodaje": "yer hareketi",

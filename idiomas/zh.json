@@ -44,7 +44,9 @@
     "defecto": "恢复默认值",
     "carpeta": "设置文件夹",
     "cerrar": "关闭",
-    "aviso_simapppro": "请记得在 SimAppPro 中关闭摇杆和油门的振动。"
+    "aviso_simapppro": "请记得在 SimAppPro 中关闭摇杆和油门的振动。",
+    "reportar": "报告问题",
+    "error_inesperado": "URSA Rumble 遇到意外错误。请在菜单中使用“报告问题”发送；发送前您可以查看全部内容。"
   },
   "efectos": {
     "rodaje": "地面滑行",

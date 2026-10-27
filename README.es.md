@@ -39,7 +39,13 @@ La interfaz está disponible en 20 idiomas: inglés, chino mandarín, hindi, cas
 Click derecho en el ícono de la bandeja:
 
 - **Ajustes**: intensidad del joystick, del throttle y del rodaje; si el joystick vibra sólo en tierra; pausa; iniciar con Windows. Muestra en vivo si el simulador está conectado, qué dispositivos encontró y qué está vibrando. Los cambios se aplican al instante.
-- **Pausar vibración**, **Ver registro**, **Buscar actualizaciones**, **Desinstalar**, **Salir**.
+- **Pausar vibración**, **Ver registro**, **Buscar actualizaciones**, **Reportar un problema**, **Desinstalar**, **Salir**.
+
+### Reportar problemas y errores
+
+"Reportar un problema" (en el menú de la bandeja o en Ajustes) abre en el navegador un issue de GitHub ya completo. Trae la versión, Windows, los dispositivos, el último error inesperado y las últimas líneas del registro. Tu carpeta de usuario, tu nombre de usuario y el nombre del equipo van tapados. Vos revisás todo y decidís si lo mandás: no se envía nada solo.
+
+Si la app tiene un error inesperado, guarda el detalle en `%APPDATA%\VibracionURSA\errores\` y avisa con una notificación para que lo puedas reportar.
 
 En pausa del simulador no vibra nada.
 

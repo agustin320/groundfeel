@@ -44,7 +44,9 @@
     "defecto": "Ripristina predefiniti",
     "carpeta": "Cartella impostazioni",
     "cerrar": "Chiudi",
-    "aviso_simapppro": "Ricordati di disattivare la vibrazione di SimAppPro per joystick e manetta."
+    "aviso_simapppro": "Ricordati di disattivare la vibrazione di SimAppPro per joystick e manetta.",
+    "reportar": "Segnala un problema",
+    "error_inesperado": "URSA Rumble ha avuto un errore imprevisto. Usa «Segnala un problema» nel menu per inviarlo; vedrai tutto prima dell'invio."
   },
   "efectos": {
     "rodaje": "rullaggio",

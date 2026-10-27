@@ -44,7 +44,9 @@
     "defecto": "Valeurs par défaut",
     "carpeta": "Dossier des paramètres",
     "cerrar": "Fermer",
-    "aviso_simapppro": "Pensez à désactiver les vibrations de SimAppPro pour le joystick et la manette des gaz."
+    "aviso_simapppro": "Pensez à désactiver les vibrations de SimAppPro pour le joystick et la manette des gaz.",
+    "reportar": "Signaler un problème",
+    "error_inesperado": "URSA Rumble a rencontré une erreur inattendue. Utilisez « Signaler un problème » dans le menu pour l'envoyer ; vous verrez tout avant l'envoi."
   },
   "efectos": {
     "rodaje": "roulage",

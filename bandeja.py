@@ -20,6 +20,7 @@ from PIL import Image
 import actualizador
 import i18n
 import instalacion
+import reportes
 import rutas
 from config_usuario import Config
 from i18n import t
@@ -83,9 +84,13 @@ class App:
                  self.actualizar_ahora, visible=lambda _i: self.act.pendiente is not None),
             item(lambda _i: t("menu_buscar"), lambda: self.buscar_ahora(avisar=True)),
             item(lambda _i: t("menu_registro"), lambda: os.startfile(rutas.archivo_log())),
+            item(lambda _i: t("reportar") + "…", self.reportar),
             item(lambda _i: t("menu_desinstalar"), self._desinstalar, visible=rutas.EMPAQUETADO),
             item(lambda _i: t("menu_salir"), self._salir),
         )
+
+    def reportar(self) -> None:
+        reportes.abrir_reporte(self.vib.estado)
 
     def _pausar(self) -> None:
         self.vib.pausar(not self.vib.estado.pausado)
@@ -149,8 +154,13 @@ class App:
     def _vigilar(self) -> None:
         """Refresca el menú y aplica actualizaciones sola cuando el simulador no está abierto."""
         proxima = time.time() + 5
+        if reportes.error_sin_reportar():
+            reportes.HUBO_ERROR.set()   # un error de la sesión anterior que nunca se reportó
         while not self.saliendo:
             time.sleep(2)
+            if reportes.HUBO_ERROR.is_set():
+                reportes.HUBO_ERROR.clear()
+                self.icono.notify(t("error_inesperado"), t("app"))
             i18n.elegir(str(self.vib.cfg.datos.get("idioma", "auto")))
             self.icono.title = f"{t('app')}\n{self._texto_estado()}"[:127]
             e = self.vib.estado
@@ -188,6 +198,7 @@ class App:
 def main() -> None:
     args = sys.argv[1:]
     configurar_log()
+    reportes.instalar_capturador()
     i18n.elegir(str(Config().datos.get("idioma", "auto")))
     if "--salir" in args:
         sys.exit(0 if pedir_salida() else 1)

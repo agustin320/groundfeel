@@ -44,7 +44,9 @@
     "defecto": "既定値に戻す",
     "carpeta": "設定フォルダー",
     "cerrar": "閉じる",
-    "aviso_simapppro": "ジョイスティックとスロットルの SimAppPro の振動をオフにするのを忘れずに。"
+    "aviso_simapppro": "ジョイスティックとスロットルの SimAppPro の振動をオフにするのを忘れずに。",
+    "reportar": "問題を報告",
+    "error_inesperado": "URSA Rumble で予期しないエラーが発生しました。メニューの「問題を報告」から送信できます。送信前に内容をすべて確認できます。"
   },
   "efectos": {
     "rodaje": "地上走行",

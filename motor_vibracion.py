@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass, field
 from logging.handlers import RotatingFileHandler
 
+import reportes
 import rutas
 from config_usuario import Config
 from efectos import EFECTOS, Efectos
@@ -151,6 +152,7 @@ class Vibracion:
                 self._parar.wait(max(0.0, 1.0 / HZ - (time.time() - t0)))
         except Exception as ex:  # noqa: BLE001
             log.exception("error en el lazo de vibración")
+            reportes.registrar_error("vibracion")
             self.estado.error = str(ex)
         finally:
             self._apagar_todo()
