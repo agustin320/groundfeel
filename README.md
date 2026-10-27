@@ -34,7 +34,7 @@ Some antivirus products flagged the first versions (1.0.x) with generic behavior
 
 ## Usage
 
-The interface is in English or Spanish, following the Windows language. You can change it in Settings → Language.
+The interface is available in 20 languages: English, Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Portuguese, Russian, Urdu, Indonesian, German, Japanese, Marathi, Telugu, Turkish, Tamil, Vietnamese, Korean and Italian. It follows the Windows language and falls back to English; you can change it in Settings → Language. Translations live in `idiomas/<code>.json` and corrections are welcome.
 
 Right-click the tray icon:
 

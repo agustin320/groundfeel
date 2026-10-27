@@ -34,7 +34,7 @@ Algunos antivirus marcaron las primeras versiones (1.0.x) con detecciones genér
 
 ## Uso
 
-La interfaz está en castellano o en inglés según el idioma de Windows. Se puede cambiar en Ajustes → Idioma.
+La interfaz está disponible en 20 idiomas: inglés, chino mandarín, hindi, castellano, francés, árabe, bengalí, portugués, ruso, urdu, indonesio, alemán, japonés, maratí, telugu, turco, tamil, vietnamita, coreano e italiano. Sigue el idioma de Windows y, si no lo tiene, usa inglés. Se puede cambiar en Ajustes → Idioma. Las traducciones están en `idiomas/<código>.json` y las correcciones son bienvenidas.
 
 Click derecho en el ícono de la bandeja:
 
