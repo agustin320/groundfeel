@@ -246,4 +246,9 @@ r20 = rodaje_medio({"GROUND VELOCITY": 20})
 caso("rodaje físico crece con la velocidad", r0 == 0 and r5 < r40 < r140,
      f"0 kt {r0:.2f} / 5 kt {r5:.2f} / 40 kt {r40:.2f} / 140 kt {r140:.2f}")
 caso("rodaje físico: pasto > pista", rp > r20 * 1.5, f"pasto {rp:.2f} / pista {r20:.2f} a 20 kt")
+# 19. Cargar un vuelo (en el aire -> en tierra con el avión quieto) no es un aterrizaje.
+ef = Efectos(CFG)
+correr({"SIM ON GROUND": 0, "GROUND VELOCITY": 0}, 0.5, ef)
+mx_c, _, _ = correr({"SIM ON GROUND": 1, "GROUND VELOCITY": 0}, 0.5, ef)
+caso("carga de vuelo sin toque falso", mx_c["aterrizaje"] == 0, f"aterrizaje {mx_c['aterrizaje']}")
 print("\nTodas las pruebas pasaron.")

@@ -121,7 +121,9 @@ class Efectos:
         en_tierra = bool(d.get("SIM ON GROUND"))
         if not en_tierra:
             self.vs_aire = d.get("VERTICAL SPEED", 0.0)
-        elif self.en_tierra_prev is False:
+        # Reason: al cargar un vuelo el sim pasa de "en el aire" a "en tierra" con el avión quieto y disparaba un
+        # toque falso; un aterrizaje real siempre es con velocidad.
+        elif self.en_tierra_prev is False and d.get("GROUND VELOCITY", 0.0) > 30:
             hundimiento = abs(min(0.0, self.vs_aire))
             self.amp_toque = c["maximo"] * max(0.25, _clamp((hundimiento - c["vs_suave_fpm"]) /
                                                              (c["vs_duro_fpm"] - c["vs_suave_fpm"])))
