@@ -46,7 +46,8 @@
     "cerrar": "Close",
     "aviso_simapppro": "Remember to turn off SimAppPro's vibration for the joystick and the throttle.",
     "reportar": "Report a problem",
-    "error_inesperado": "URSA Rumble hit an unexpected error. Use “Report a problem” in the menu to send it; you'll see everything before it's sent."
+    "error_inesperado": "URSA Rumble hit an unexpected error. Use “Report a problem” in the menu to send it; you'll see everything before it's sent.",
+    "actualizado": "URSA Rumble was updated to version {v}."
   },
   "efectos": {
     "rodaje": "ground roll",

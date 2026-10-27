@@ -46,7 +46,8 @@
     "cerrar": "Tutup",
     "aviso_simapppro": "Jangan lupa matikan getaran SimAppPro untuk joystick dan throttle.",
     "reportar": "Laporkan masalah",
-    "error_inesperado": "URSA Rumble mengalami kesalahan tak terduga. Gunakan “Laporkan masalah” di menu untuk mengirimnya; Anda akan melihat semuanya sebelum terkirim."
+    "error_inesperado": "URSA Rumble mengalami kesalahan tak terduga. Gunakan “Laporkan masalah” di menu untuk mengirimnya; Anda akan melihat semuanya sebelum terkirim.",
+    "actualizado": "URSA Rumble telah diperbarui ke versi {v}."
   },
   "efectos": {
     "rodaje": "taxi di darat",

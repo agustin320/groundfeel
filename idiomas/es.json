@@ -46,7 +46,8 @@
     "cerrar": "Cerrar",
     "aviso_simapppro": "Recordá apagar la vibración de SimAppPro para el joystick y el throttle.",
     "reportar": "Reportar un problema",
-    "error_inesperado": "Vibración URSA tuvo un error inesperado. Usá «Reportar un problema» en el menú para enviarlo; vas a ver todo antes de que se mande."
+    "error_inesperado": "Vibración URSA tuvo un error inesperado. Usá «Reportar un problema» en el menú para enviarlo; vas a ver todo antes de que se mande.",
+    "actualizado": "Vibración URSA se actualizó a la versión {v}."
   },
   "efectos": {
     "rodaje": "rodaje",

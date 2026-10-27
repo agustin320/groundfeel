@@ -178,6 +178,25 @@ class App:
                 log.info("aplicando actualización automática %s", self.act.pendiente.numero)
                 self.actualizar_ahora()
 
+    def _avisar_si_es_nueva(self) -> None:
+        """Tras una actualización (o la primera vez después de instalar) avisa y abre Ajustes, así se nota el cambio.
+
+        Reason: la actualización es silenciosa (el instalador corre con /VERYSILENT); sin esto el usuario no se
+        enteraba de que tenía una versión nueva.
+        """
+        marca = rutas.datos_usuario() / "version_anterior.txt"
+        try:
+            anterior = marca.read_text(encoding="utf-8").strip() if marca.is_file() else ""
+            marca.write_text(__version__, encoding="utf-8")
+        except OSError:
+            return
+        if not rutas.EMPAQUETADO or anterior == __version__:
+            return
+        if anterior:
+            log.info("actualizada de %s a %s", anterior, __version__)
+            self.icono.notify(t("actualizado", v=__version__), t("app"))
+        self._abrir_ajustes()
+
     # ------------------------------------------------------------------ arranque
     def correr(self) -> None:
         try:
@@ -189,6 +208,7 @@ class App:
         def al_aparecer(icono: pystray.Icon) -> None:
             icono.visible = True
             threading.Thread(target=self._vigilar, daemon=True, name="vigilar").start()
+            self._avisar_si_es_nueva()
             threading.Thread(target=esperar_pedido_de_salida, args=(self._salir,), daemon=True,
                              name="pedido-salida").start()
 

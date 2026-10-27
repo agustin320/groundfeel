@@ -115,9 +115,9 @@ begin
   Result := True;
 end;
 
-{ Reason: "Iniciar con Windows" también se puede prender desde Ajustes, y ahí no lo registra el instalador:
-  se borra siempre al desinstalar. (No hay [UninstallDelete] de la carpeta: Inno borra lo que instaló y
-  borrar {app} entero sería peligroso si alguien instaló con /DIR= en una carpeta con otras cosas.) }
+// Reason: "Iniciar con Windows" también se puede prender desde Ajustes, y ahí no lo registra el instalador:
+// se borra siempre al desinstalar. (No hay [UninstallDelete] de la carpeta: Inno borra lo que instaló y
+// borrar la carpeta entera sería peligroso si alguien instaló con /DIR= en una carpeta con otras cosas.)
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usUninstall then
