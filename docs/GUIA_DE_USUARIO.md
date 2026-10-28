@@ -51,7 +51,7 @@ Groundfeel es una app gratuita y de código abierto (licencia MIT) que maneja lo
 
 ### Paso 1 — Bajar el instalador
 
-1. Entrá a la última versión: https://github.com/agustin320/vibracion-ursa/releases/latest
+1. Entrá a la última versión: https://github.com/agustin320/groundfeel/releases/latest
 2. En **Assets**, bajá **`VibracionURSA-Setup.exe`**.
 
 [CAPTURA: página de la versión en GitHub con la sección "Assets" abierta y VibracionURSA-Setup.exe resaltado]
@@ -445,7 +445,7 @@ Para evitarlo, cerrá siempre la app con **Salir** desde el menú de la bandeja.
 | La abrí dos veces y no pasó nada | Corre una sola copia a la vez. Buscá el ícono en la bandeja |
 | El toque se siente muy fuerte / muy suave | Sigue a tu velocidad de descenso. La fuerza general se ajusta con los deslizadores **Joystick** y **Throttle** |
 | ¿Dónde está el registro? | Menú de la bandeja → **Ver registro**, o `%APPDATA%\VibracionURSA\vibracion.log` |
-| ¿Cómo aviso de un error o de una traducción mal hecha? | https://github.com/agustin320/vibracion-ursa/issues — si podés, adjuntá el registro |
+| ¿Cómo aviso de un error o de una traducción mal hecha? | https://github.com/agustin320/groundfeel/issues — si podés, adjuntá el registro |
 
 ### Reportar un problema
 

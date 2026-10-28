@@ -6,7 +6,7 @@ Microsoft Flight Simulator 2024'te WinWing (WINCTRL) URSA MINOR 32 joystick ve g
 
 ## 1. Kurulum
 
-1. `VibracionURSA-Setup.exe` dosyasını [son sürümden](https://github.com/agustin320/vibracion-ursa/releases/latest) indirin.
+1. `VibracionURSA-Setup.exe` dosyasını [son sürümden](https://github.com/agustin320/groundfeel/releases/latest) indirin.
 2. Çalıştırın. Yönetici hakları gerekmeden yalnızca sizin kullanıcınız için kurulur.
 3. Windows SmartScreen yayımcının bilinmediğini söylerse **Ek bilgi** (More info) → **Yine de çalıştır** (Run anyway) seçeneğine tıklayın. Programın henüz kod imzası yok.
 4. **Windows ile başlat** seçeneğini işaretli bırakın. Simülatörü açana kadar bildirim alanında bekler.

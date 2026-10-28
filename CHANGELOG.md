@@ -1,5 +1,15 @@
 # Changelog / Registro de cambios
 
+## 1.6.1
+
+**English**
+- The repository is now **github.com/agustin320/groundfeel**. Updates keep working: the app accepts downloads from
+  both the old and the new address.
+
+**Español**
+- El repositorio ahora es **github.com/agustin320/groundfeel**. Las actualizaciones siguen funcionando: la app acepta
+  descargas de la dirección vieja y de la nueva.
+
 ## 1.6.0
 
 **English**

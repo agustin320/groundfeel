@@ -6,7 +6,7 @@ Des vibrations réalistes pour le joystick et la manette des gaz WinWing (WINCTR
 
 ## 1. Installation
 
-1. Téléchargez `VibracionURSA-Setup.exe` depuis la [dernière version](https://github.com/agustin320/vibracion-ursa/releases/latest).
+1. Téléchargez `VibracionURSA-Setup.exe` depuis la [dernière version](https://github.com/agustin320/groundfeel/releases/latest).
 2. Lancez-le. Il s'installe uniquement pour votre utilisateur, sans droits d'administrateur.
 3. Si Windows SmartScreen indique que l'éditeur est inconnu, cliquez sur **Informations complémentaires → Exécuter quand même**. Le programme n'est pas encore signé numériquement.
 4. Laissez cochée l'option **Démarrer avec Windows** (affichée « Start with Windows » dans l'installateur). Le programme attend dans la zone de notification jusqu'à ce que vous ouvriez le simulateur.

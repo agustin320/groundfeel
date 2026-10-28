@@ -352,7 +352,15 @@ for nombre, assets in casos_act.items():
 actualizador._pedir = respuesta([{"name": "VibracionURSA-Update.exe", "browser_download_url": BUENO,
                                   "digest": "sha256:" + "b" * 64}])
 ok = actualizador._ultima_publicada()
+# El repo cambió de nombre (vibracion-ursa -> groundfeel): una descarga desde el nombre viejo sigue siendo válida.
+VIEJO = "https://github.com/agustin320/vibracion-ursa/releases/download/v9.9.9/VibracionURSA-Update.exe"
+actualizador._pedir = respuesta([{"name": "VibracionURSA-Update.exe", "browser_download_url": VIEJO,
+                                  "digest": "sha256:" + "c" * 64}])
+ok_viejo = actualizador._ultima_publicada()
 actualizador._pedir = original
+caso("actualizador acepta el repo con nombre viejo y nuevo",
+     actualizador.REPO == "agustin320/groundfeel" and ok_viejo is not None and ok_viejo.url == VIEJO,
+     f"repo {actualizador.REPO} / viejo {ok_viejo.numero if ok_viejo else None}")
 caso("actualizador falla cerrado", all(rechazos.values()) and ok is not None and ok.url == BUENO,
      f"rechazos {rechazos} / válido {ok.numero if ok else None}")
 # 24. Avión a pistón: los efectos de motor siguen las RPM (no hay N1) y frenar con RPM altas no es reversa.

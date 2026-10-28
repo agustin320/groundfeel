@@ -6,7 +6,7 @@ Getaran realistis untuk joystick dan throttle WinWing (WINCTRL) URSA MINOR 32 di
 
 ## 1. Pemasangan
 
-1. Unduh `VibracionURSA-Setup.exe` dari [rilis terbaru](https://github.com/agustin320/vibracion-ursa/releases/latest).
+1. Unduh `VibracionURSA-Setup.exe` dari [rilis terbaru](https://github.com/agustin320/groundfeel/releases/latest).
 2. Jalankan. Program terpasang hanya untuk pengguna Anda, tanpa hak administrator.
 3. Jika Windows SmartScreen mengatakan penerbitnya tidak dikenal, klik **Info selengkapnya → Tetap jalankan**. Program ini belum memiliki tanda tangan digital.
 4. Biarkan **Mulai bersama Windows** tetap dicentang. Program akan menunggu di area notifikasi sampai Anda membuka simulator.

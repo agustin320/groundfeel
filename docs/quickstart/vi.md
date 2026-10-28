@@ -6,7 +6,7 @@ Rung chân thực cho joystick và cần ga WinWing (WINCTRL) URSA MINOR 32 tron
 
 ## 1. Cài đặt
 
-1. Tải `VibracionURSA-Setup.exe` từ [bản phát hành mới nhất](https://github.com/agustin320/vibracion-ursa/releases/latest).
+1. Tải `VibracionURSA-Setup.exe` từ [bản phát hành mới nhất](https://github.com/agustin320/groundfeel/releases/latest).
 2. Chạy tệp. Chương trình chỉ cài cho tài khoản của bạn, không cần quyền quản trị.
 3. Nếu Windows SmartScreen báo nhà phát hành không xác định, hãy bấm **Thông tin thêm** (More info) → **Vẫn chạy** (Run anyway). Chương trình chưa được ký mã.
 4. Giữ nguyên dấu chọn **Khởi động cùng Windows**. Chương trình sẽ chờ ở khay hệ thống cho đến khi bạn mở trình mô phỏng.

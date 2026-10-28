@@ -6,7 +6,7 @@
 
 ## 1. 安装
 
-1. 从[最新版本](https://github.com/agustin320/vibracion-ursa/releases/latest)下载 `VibracionURSA-Setup.exe`。
+1. 从[最新版本](https://github.com/agustin320/groundfeel/releases/latest)下载 `VibracionURSA-Setup.exe`。
 2. 运行它。它只为当前用户安装，不需要管理员权限。
 3. 如果 Windows SmartScreen 提示发布者未知，请点击 **更多信息 → 仍要运行**。本程序目前还没有代码签名。
 4. 保持勾选 **开机时启动**（安装程序中显示为 Start with Windows）。它会在系统托盘中等待，直到你打开模拟器。

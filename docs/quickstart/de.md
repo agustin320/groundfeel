@@ -6,7 +6,7 @@ Realistische Vibration für Joystick und Schubhebel WinWing (WINCTRL) URSA MINOR
 
 ## 1. Installation
 
-1. Lade `VibracionURSA-Setup.exe` aus dem [neuesten Release](https://github.com/agustin320/vibracion-ursa/releases/latest) herunter.
+1. Lade `VibracionURSA-Setup.exe` aus dem [neuesten Release](https://github.com/agustin320/groundfeel/releases/latest) herunter.
 2. Starte die Datei. Das Programm wird nur für deinen Benutzer installiert, ohne Administratorrechte.
 3. Wenn Windows SmartScreen meldet, dass der Herausgeber unbekannt ist, klicke auf **Weitere Informationen → Trotzdem ausführen**. Das Programm ist noch nicht digital signiert.
 4. Lass **Mit Windows starten** aktiviert. Das Programm wartet im Infobereich der Taskleiste, bis du den Simulator öffnest.

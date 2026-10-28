@@ -6,7 +6,7 @@ Microsoft Flight Simulator 2024 मध्ये WinWing (WINCTRL) URSA MINOR 32 
 
 ## 1. इन्स्टॉल करा
 
-1. [नवीनतम रिलीज](https://github.com/agustin320/vibracion-ursa/releases/latest) मधून `VibracionURSA-Setup.exe` डाउनलोड करा.
+1. [नवीनतम रिलीज](https://github.com/agustin320/groundfeel/releases/latest) मधून `VibracionURSA-Setup.exe` डाउनलोड करा.
 2. ते चालवा. ते फक्त तुमच्या युजरसाठी इन्स्टॉल होते, ॲडमिन अधिकारांशिवाय.
 3. Windows SmartScreen प्रकाशक अज्ञात असल्याचे सांगत असल्यास (**More info → Run anyway**) वर क्लिक करा. प्रोग्रामवर अजून डिजिटल स्वाक्षरी नाही.
 4. **Windows सोबत सुरू करा** टिक केलेले ठेवा. तुम्ही सिम्युलेटर उघडेपर्यंत ते नोटिफिकेशन एरियामध्ये वाट पाहते.

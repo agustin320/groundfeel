@@ -49,7 +49,7 @@ Groundfeel is a free, open-source app (MIT license) that drives the vibration mo
 
 ### Step 1 — Download
 
-1. Go to the latest release: https://github.com/agustin320/vibracion-ursa/releases/latest
+1. Go to the latest release: https://github.com/agustin320/groundfeel/releases/latest
 2. Under **Assets**, download **`VibracionURSA-Setup.exe`**.
 
 [CAPTURE: GitHub release page with the "Assets" section open and VibracionURSA-Setup.exe highlighted]

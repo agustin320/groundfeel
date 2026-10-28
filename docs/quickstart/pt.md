@@ -6,7 +6,7 @@ Vibração realista para o joystick e o manete WinWing (WINCTRL) URSA MINOR 32 n
 
 ## 1. Instalação
 
-1. Baixe o `VibracionURSA-Setup.exe` da [versão mais recente](https://github.com/agustin320/vibracion-ursa/releases/latest).
+1. Baixe o `VibracionURSA-Setup.exe` da [versão mais recente](https://github.com/agustin320/groundfeel/releases/latest).
 2. Execute. Ele é instalado só para o seu usuário, sem permissão de administrador.
 3. Se o Windows SmartScreen disser que o editor é desconhecido, clique em **Mais informações → Executar assim mesmo**. O programa ainda não tem assinatura digital.
 4. Deixe marcada a opção **Iniciar com o Windows** (no instalador aparece como "Start with Windows"). Ele fica esperando na bandeja do sistema até você abrir o simulador.

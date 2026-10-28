@@ -18,14 +18,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import rutas
-from version import NOMBRE_APP, REPO, __version__
+from version import NOMBRE_APP, REPO, REPO_ANTERIOR, __version__
 
 log = logging.getLogger("vibracion")
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
 # Reason: el actualizador baja "-Update.exe" (el mismo instalador con otro nombre) para que las descargas de GitHub
 # distingan instalaciones nuevas ("-Setup.exe") de actualizaciones, sin telemetría. Si no está, usa el Setup.
 ASSETS = (f"{NOMBRE_APP}-Update.exe", f"{NOMBRE_APP}-Setup.exe")
-PREFIJO_DESCARGA = f"https://github.com/{REPO}/releases/download/"
+PREFIJO_DESCARGA = tuple(f"https://github.com/{r}/releases/download/" for r in (REPO, REPO_ANTERIOR))
 
 
 @dataclass

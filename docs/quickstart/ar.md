@@ -6,7 +6,7 @@
 
 ## 1. التثبيت
 
-1. نزّل `VibracionURSA-Setup.exe` من [أحدث إصدار](https://github.com/agustin320/vibracion-ursa/releases/latest).
+1. نزّل `VibracionURSA-Setup.exe` من [أحدث إصدار](https://github.com/agustin320/groundfeel/releases/latest).
 2. شغّله. يُثبَّت لحسابك فقط، دون صلاحيات المسؤول.
 3. إذا ظهرت رسالة من Windows SmartScreen تقول إن الناشر غير معروف، فانقر على "مزيد من المعلومات" ثم "تشغيل على أي حال" (**More info → Run anyway**). البرنامج غير موقَّع رقميًا بعد.
 4. اترك خيار **التشغيل مع Windows** محددًا (يظهر في برنامج التثبيت باسم "Start with Windows"). ينتظر البرنامج في علبة النظام حتى تفتح المحاكي.
