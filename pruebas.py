@@ -403,4 +403,7 @@ from reproducir import reproducir  # noqa: E402
 res = reproducir(arch)
 caso("grabar y reproducir", cab["avion"] == "Prueba 737" and len(frames) == 80 and res["frames"] == 80
      and res["efectos"]["rodaje"]["max"] > 0, f"{len(frames)} frames, rodaje máx {res['efectos']['rodaje']['max']}")
+import pruebas_v2  # noqa: E402
+
+pruebas_v2.correr_todo(caso, correr, BASE, CFG)
 print("\nTodas las pruebas pasaron.")

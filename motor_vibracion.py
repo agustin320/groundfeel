@@ -14,13 +14,14 @@ from logging.handlers import RotatingFileHandler
 import perfiles
 import reportes
 import rutas
+from cadencia import HZ_ENVIO, Reloj, timer_fino
 from config_usuario import Config, fusionar
 from grabador import Grabador
 from efectos import EFECTOS, Efectos
 from motores import Motor
 from sim_lector import LectorSim
 
-HZ = 40
+HZ = HZ_ENVIO
 log = logging.getLogger("vibracion")
 
 
@@ -122,7 +123,9 @@ class Vibracion:
                  ", ".join(self._motores) or "ninguno")
         ultimo = {"joystick": -1, "throttle_1": -1, "throttle_2": -1}
         acum = {e: 0.0 for e in EFECTOS}
-        t_log = t_cfg = t_reabrir = time.time()
+        t_log = t_cfg = t_reabrir = t_cadencia = time.time()
+        timer_fino(True)
+        reloj = Reloj(HZ, dormir=self._parar.wait)
         conectado_prev, ultimo_log = False, {}
         try:
             while not self._parar.is_set():
@@ -175,12 +178,16 @@ class Vibracion:
                                  d.get("VELOCITY BODY X", 0), d.get("TURB ENG N1:1", 0))
                     acum = {e: 0.0 for e in EFECTOS}
                     t_log = t0
-                self._parar.wait(max(0.0, 1.0 / HZ - (time.time() - t0)))
+                if t0 - t_cadencia >= 60:
+                    t_cadencia = t0
+                    log.info("cadencia %s", reloj.estadisticas())
+                reloj.esperar()
         except Exception as ex:  # noqa: BLE001
             log.exception("error en el lazo de vibración")
             reportes.registrar_error("vibracion")
             self.estado.error = str(ex)
         finally:
+            timer_fino(False)
             self._apagar_todo()
             log.info("detenido, motores apagados")
 
