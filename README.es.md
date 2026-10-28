@@ -34,10 +34,6 @@ Son automáticas. La app consulta GitHub unos segundos después de arrancar y de
 
 Menú de la bandeja → "Desinstalar…", o desde "Aplicaciones instaladas" de Windows. Tus ajustes quedan en `%APPDATA%\VibracionURSA` por si lo volvés a instalar.
 
-### Antivirus
-
-Algunos antivirus marcaron las primeras versiones (1.0.x) con detecciones genéricas por comportamiento, como `PDM:Trojan.Win32.Generic`. Esas versiones se instalaban solas copiando el `.exe`, algo que se parece a lo que hace un programa malicioso. Desde la 1.1.0 se usa un instalador estándar y el programa ya no es un único archivo que se autodescomprime. Si tu antivirus igual se queja, abrí un issue.
-
 ## Uso
 
 La interfaz está disponible en 20 idiomas: inglés, chino mandarín, hindi, castellano, francés, árabe, bengalí, portugués, ruso, urdu, indonesio, alemán, japonés, maratí, telugu, turco, tamil, vietnamita, coreano e italiano. Sigue el idioma de Windows y, si no lo tiene, usa inglés. Se puede cambiar en Ajustes → Idioma. Las traducciones están en `idiomas/<código>.json` y las correcciones son bienvenidas.

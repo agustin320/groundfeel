@@ -405,15 +405,6 @@ Check in this order:
 - Lower the intensity if a normal effect is simply too strong for you.
 - Need silence for a moment? **Pause vibration** from the tray menu.
 
-### Kaspersky or another antivirus blocks it
-
-- Versions **1.0.x** were flagged by some antivirus products (for example Kaspersky, `PDM:Trojan.Win32.Generic`) because they installed themselves by copying the `.exe`. Update to 1.1.0 or later, which uses a standard installer.
-- If your antivirus still blocks a current version:
-  1. Make sure you downloaded it from the official release page, and compare its SHA-256 with the one shown there.
-  2. If it matches, you can restore it from quarantine and add an exception for `%LOCALAPPDATA%\Programs\VibracionURSA`, following your antivirus' own instructions.
-  3. Please open an issue on GitHub naming the antivirus and the detection, so it can be reported as a false positive.
-- The code is public, every build is made by GitHub Actions from that code, and the app's only network connection is to GitHub for updates.
-
 ### A motor stayed vibrating
 
 This happens if the app was closed abruptly (for example killed from Task Manager or a crash) while a motor was running.

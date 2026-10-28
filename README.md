@@ -34,10 +34,6 @@ Updates are automatic. The app checks GitHub a few seconds after it starts and t
 
 Tray menu → "Uninstall…", or from Windows "Installed apps". Your settings stay in `%APPDATA%\VibracionURSA` in case you reinstall.
 
-### Antivirus
-
-Some antivirus products flagged the first versions (1.0.x) with generic behavior detections such as `PDM:Trojan.Win32.Generic`. Those versions installed themselves by copying the `.exe`, which looks like what malware does. Since 1.1.0 the app uses a standard installer and isn't packed as a self-extracting single file. If your antivirus still complains, please open an issue.
-
 ## Usage
 
 The interface is available in 20 languages: English, Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Portuguese, Russian, Urdu, Indonesian, German, Japanese, Marathi, Telugu, Turkish, Tamil, Vietnamese, Korean and Italian. It follows the Windows language and falls back to English; you can change it in Settings → Language. Translations live in `idiomas/<code>.json` and corrections are welcome.

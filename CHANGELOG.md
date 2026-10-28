@@ -123,7 +123,6 @@ URSA Rumble replaces SimAppPro's vibration on the WinWing URSA MINOR 32 (joystic
 
 - **Throttle pulses during the approach.** With the gear down and the autothrust constantly adjusting power, the throttle motors could switch on and off over and over, which felt like loose pulses. The throttle now stays smooth on final, and the power-change "push" is toned down in the air.
 - **False touchdown when loading a flight.** Spawning on the ground no longer triggers a landing bump. Touchdown is only felt on a real landing.
-- **Antivirus warnings on 1.0.x.** The 1.0.x builds copied themselves to install, which some antivirus products (for example Kaspersky, `PDM:Trojan.Win32.Generic`) flagged as suspicious. Since 1.1.0 the app uses a standard installer and is no longer a single self-extracting file.
 - **Installing over a running copy.** The installer and the uninstaller now close the running app cleanly first, turning the motors off, wherever it was running from.
 
 ## Known issues
@@ -171,7 +170,6 @@ Vibración URSA reemplaza la vibración de SimAppPro en el WinWing URSA MINOR 32
 
 - **Pulsos en el throttle durante la aproximación.** Con el tren abajo y el autothrust corrigiendo potencia todo el tiempo, los motores del throttle podían prenderse y apagarse una y otra vez, y se sentía como pulsos sueltos. Ahora el throttle queda suave en final, y el "empuje" al cambiar potencia es más leve en el aire.
 - **Toque falso al cargar un vuelo.** Aparecer en tierra ya no dispara el golpe de aterrizaje. El toque sólo se siente en un aterrizaje de verdad.
-- **Avisos de antivirus en la 1.0.x.** Las versiones 1.0.x se copiaban a sí mismas para instalarse, y algunos antivirus (por ejemplo Kaspersky, `PDM:Trojan.Win32.Generic`) lo tomaban como sospechoso. Desde la 1.1.0 se usa un instalador estándar y el programa ya no es un único archivo que se autodescomprime.
 - **Instalar con la app abierta.** El instalador y el desinstalador ahora cierran primero la app en marcha, apagando los motores, esté donde esté.
 
 ## Problemas conocidos
