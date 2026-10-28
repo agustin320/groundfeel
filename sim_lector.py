@@ -19,6 +19,7 @@ RECV_QUIT, RECV_EVENT, RECV_SIMOBJECT_DATA = 3, 4, 8
 EVENTOS_PAUSA = {1: b"Pause_EX1", 2: b"Pause"}
 GRUPO = 10
 GRUPO_AVION = 11   # nombre del avión (texto): aparte, una vez por segundo
+GRUPO_LVARS = 12   # L:vars del perfil del avión: se rearma al cambiar de avión
 
 VARIABLES: dict[str, str] = {
     "SIM ON GROUND": "Bool",
@@ -107,6 +108,9 @@ class LectorSim:
         self._avion = ""
         self._t_ultimo = 0.0
         self._pausa: dict[int, int] = {}
+        self._lvars: list[tuple[str, str, str]] = []           # (alias, nombre, unidad) registradas
+        self._lvars_pedidas: list[tuple[str, str, str]] | None = None
+        self._lvals: dict[str, float] = {}
         self._lock = threading.Lock()
         self.conectado = threading.Event()
         self._vars = list(VARIABLES)
@@ -120,7 +124,30 @@ class LectorSim:
             d = dict(self._vals)
             if d:
                 d["PAUSA"] = 1.0 if any(self._pausa.values()) else 0.0
+                d.update(self._lvals)
             return d
+
+    def pedir_lvars(self, lvars: dict[str, tuple[str, str]]) -> None:
+        """Pide leer estas L:vars ({alias: (nombre, unidad)}); el hilo de SimConnect las registra en su próxima vuelta.
+
+        Llegan en datos() como "LVAR:<alias>". Una L:var que el avión no tiene vale 0.
+        """
+        with self._lock:
+            self._lvars_pedidas = [(a, n, u) for a, (n, u) in lvars.items()]
+
+    def _registrar_lvars(self) -> None:
+        with self._lock:
+            pedidas, self._lvars_pedidas = self._lvars_pedidas, None
+        if pedidas is None:
+            return
+        self.dll.SimConnect_ClearDataDefinition(self.h, GRUPO_LVARS)
+        for i, (_, nombre, unidad) in enumerate(pedidas):
+            self.dll.SimConnect_AddToDataDefinition(self.h, GRUPO_LVARS, nombre.encode(), unidad.encode(), FLOAT64,
+                                                    C.c_float(0), C.c_uint32(i))
+        periodo = PERIODO_VISUAL_FRAME if pedidas else 0   # 0 = NEVER: deja de pedir
+        self.dll.SimConnect_RequestDataOnSimObject(self.h, GRUPO_LVARS, GRUPO_LVARS, 0, periodo, 0, 0, 0, 0)
+        with self._lock:
+            self._lvars, self._lvals = pedidas, {}
 
     def avion(self) -> str:
         """Nombre del avión cargado (TITLE), o "" si todavía no llegó."""
@@ -146,6 +173,9 @@ class LectorSim:
                                                            0, 0, 0, 0)
                 for ev, nombre in EVENTOS_PAUSA.items():
                     self.dll.SimConnect_SubscribeToSystemEvent(self.h, ev, nombre)
+                with self._lock:          # reconexión: volver a registrar las L:vars que ya estaban pedidas
+                    if self._lvars_pedidas is None and self._lvars:
+                        self._lvars_pedidas = list(self._lvars)
                 self.conectado.set()
                 self._bombear()
             except Exception:  # noqa: BLE001  (sim cerrado o caído: se reintenta)
@@ -164,6 +194,7 @@ class LectorSim:
         p, cb = C.POINTER(RECV)(), C.c_uint32()
         n = len(self._vars)
         while True:
+            self._registrar_lvars()
             hubo = False
             while self.dll.SimConnect_GetNextDispatch(self.h, C.byref(p), C.byref(cb)) == 0 and cb.value:
                 hubo = True
@@ -183,6 +214,11 @@ class LectorSim:
                     with self._lock:
                         self._vals = dict(zip(self._vars, valores, strict=True))
                         self._t_ultimo = time.time()
+                elif pedido == GRUPO_LVARS and self._lvars:
+                    m = len(self._lvars)
+                    vals = (C.c_double * m).from_buffer_copy(raw[40:40 + 8 * m])
+                    with self._lock:
+                        self._lvals = {f"LVAR:{a}": v for (a, _, _), v in zip(self._lvars, vals, strict=True)}
                 elif pedido == GRUPO_AVION:
                     titulo = raw[40:40 + 256].split(b"\0", 1)[0].decode("utf-8", errors="replace").strip()
                     with self._lock:

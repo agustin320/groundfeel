@@ -14,6 +14,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _toque(caso, correr, CFG)
     _arranque(caso, correr, CFG)
     _pausa(caso, correr, CFG)
+    _lvars(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -154,3 +155,35 @@ def _pausa(caso: Callable, correr: Callable, CFG: dict) -> None:
     caso("pausa por evento apaga en el tick siguiente", max(s.values()) == 0, f"salida {s}")
     raw = struct.pack("<IIIIII", 24, 6, 4, 0xFFFFFFFF, 1, 4)    # RECV_EVENT: grupo, evento 1, dato 4 (pausa activa)
     caso("lee el evento de pausa", leer_evento(raw) == (1, 4), f"{leer_evento(raw)}")
+
+
+def _lvars(caso: Callable) -> None:
+    import json
+    import tempfile
+    from pathlib import Path
+
+    import perfiles
+    import rutas
+    tmp = Path(tempfile.mkdtemp())
+    (tmp / "perfiles").mkdir()
+    (tmp / "perfiles" / "estudio.json").write_text(json.dumps({
+        "nombre": "Estudio", "coincide": ["Estudio"],
+        "lvars": {"vmax": ["L:I_PFD_VMAX", "Knots"]},
+        "fuentes": {"AIRSPEED BARBER POLE": "vmax", "TURB ENG N1:1": "no_declarada"}}), encoding="utf-8")
+    original, rutas.RECURSOS = rutas.RECURSOS, tmp
+    try:
+        p = perfiles.cargar()[0]
+    finally:
+        rutas.RECURSOS = original
+    d = {"AIRSPEED BARBER POLE": 350.0, "LVAR:vmax": 320.0, "TURB ENG N1:1": 40.0}
+    con = perfiles.aplicar_fuentes(d, p)
+    sin = perfiles.aplicar_fuentes(dict(d, **{"LVAR:vmax": 0.0}), p)
+    caso("L:var del perfil reemplaza la fuente", con["AIRSPEED BARBER POLE"] == 320.0 and con["TURB ENG N1:1"] == 40.0
+         and sin["AIRSPEED BARBER POLE"] == 350.0 and p.fuentes == {"AIRSPEED BARBER POLE": "vmax"}
+         and p.lvars == {"vmax": ("L:I_PFD_VMAX", "Knots")},
+         f"con L:var {con['AIRSPEED BARBER POLE']} / sin {sin['AIRSPEED BARBER POLE']} / fuentes {p.fuentes}")
+
+    incluidos = perfiles.cargar()
+    malos = [x.nombre for x in incluidos if any(a not in x.lvars for a in x.fuentes.values())]
+    caso("perfiles incluidos válidos", len(incluidos) >= 2 and not malos,
+         f"{len(incluidos)} perfiles, inválidos {malos}")

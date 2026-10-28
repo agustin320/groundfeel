@@ -63,6 +63,7 @@ class Vibracion:
         self.visto_sim = False
         self._perfiles = perfiles.cargar()
         self._perfil_ajustes: dict = {}
+        self._perfil: perfiles.Perfil | None = None
         self.grabador = Grabador()
 
     def grabar(self, si: bool) -> None:
@@ -138,6 +139,8 @@ class Vibracion:
                         self.estado.avion = avion
                         p = perfiles.elegir(avion, self._perfiles)
                         self._perfil_ajustes = p.ajustes if p else {}
+                        self._perfil = p
+                        sim.pedir_lvars(p.lvars if p else {})
                         self.estado.perfil = p.nombre if p else ""
                         log.info("avión: %s · perfil: %s", avion or "?", self.estado.perfil or "genérico")
                         recargo = True
@@ -155,7 +158,7 @@ class Vibracion:
                 if conectado:
                     self.grabador.escribir(t0, sim.datos())
                 if conectado and not self.estado.pausado:
-                    efectos, salida = ef.paso(sim.datos(), t0)
+                    efectos, salida = ef.paso(perfiles.aplicar_fuentes(sim.datos(), self._perfil), t0)
                 else:
                     efectos, salida = {e: 0.0 for e in EFECTOS}, {k: 0 for k in ultimo}
                 if not self.silencio:
