@@ -134,7 +134,7 @@ class Efectos:
         dt_toque = t - self.t_toque
         if dt_toque > c["duracion_s"] * 3:
             return 0.0
-        return self.amp_toque * math.exp(-dt_toque / c["duracion_s"]) * (0.75 + 0.25 * math.sin(2 * math.pi * 14 * t))
+        return self.amp_toque * math.exp(-dt_toque / c["duracion_s"]) * (0.75 + 0.25 * math.sin(2 * math.pi * 12 * t))
 
     def _tren(self, d: dict, t: float) -> float:
         """Tren de aterrizaje como en el avión real: golpes, no un zumbido mientras se mueve.
@@ -255,7 +255,7 @@ class Efectos:
         if frenando:
             fuerza = _clamp(decel / 14)
             # Temblor ligado al giro de las ruedas: la frecuencia baja con la velocidad (de ~14 Hz a ~3 Hz).
-            self.fase_freno += (3.0 + 11.0 * _clamp(gs / 140)) * dt
+            self.fase_freno += (3.0 + 9.0 * _clamp(gs / 140)) * dt
             onda = 0.5 + 0.5 * math.sin(2 * math.pi * self.fase_freno)
             por_vel = 0.2 + 0.8 * _clamp(gs / 40)
             v += c["temblor"] * fuerza * por_vel * (0.4 + 0.6 * onda) * (0.85 + 0.3 * random.random())
@@ -302,7 +302,7 @@ class Efectos:
         # Fuerza de la aceleración real (en tierra se siente mucho más que en el aire).
         if acel > 1.0:
             fuerza = _clamp(acel / 10) * (1.0 if en_tierra else 0.3)
-            self.fase_acel += (4.0 + 14.0 * _clamp((n1 - 20) / 70)) * dt
+            self.fase_acel += (4.0 + 8.0 * _clamp((n1 - 20) / 70)) * dt
             pulso = 0.6 + 0.4 * math.sin(2 * math.pi * self.fase_acel)
             v += c["fuerza"] * fuerza * pulso * (1.0 + self.paseo)
         return _clamp(v)
@@ -316,7 +316,7 @@ class Efectos:
         x = _clamp((lateral - c["umbral_fts"]) / (c["maximo_fts"] - c["umbral_fts"]))
         if x <= 0:
             return 0.0
-        aspereza = 0.5 + 0.3 * math.sin(2 * math.pi * 23 * t) + 0.4 * random.random()
+        aspereza = 0.5 + 0.3 * math.sin(2 * math.pi * 11 * t) + 0.4 * random.random()
         return _clamp(c["fuerza"] * x * aspereza)
 
     def _perdida(self, d: dict, t: float) -> float:

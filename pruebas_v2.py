@@ -9,6 +9,7 @@ from collections.abc import Callable
 
 def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None:
     _cadencia(caso)
+    _nyquist(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -46,3 +47,16 @@ def _cadencia(caso: Callable) -> None:
     caso("reloj no recupera en ráfaga", siguiente > 0.015, f"tick después de la traba: {siguiente * 1000:.1f} ms")
     est = r.estadisticas()
     caso("reloj mide la cadencia", est["max_ms"] > 200 and r.estadisticas()["max_ms"] == 0.0, f"{est}")
+
+
+def _nyquist(caso: Callable) -> None:
+    import re
+    from pathlib import Path
+
+    from cadencia import HZ_ENVIO
+    fuente = (Path(__file__).parent / "efectos.py").read_text(encoding="utf-8")
+    fijas = [float(x) for x in re.findall(r"math\.sin\(2 \* math\.pi \* ([\d.]+)", fuente)]
+    variables = [float(a) + float(b) for a, b in re.findall(r"\+= \(([\d.]+) \+ ([\d.]+) \* _clamp", fuente)]
+    todas = fijas + variables
+    caso("texturas bajo Nyquist", len(fijas) >= 4 and len(variables) >= 3 and max(todas) <= HZ_ENVIO / 4,
+         f"{len(todas)} frecuencias, máx {max(todas)} Hz (tope {HZ_ENVIO / 4})")
