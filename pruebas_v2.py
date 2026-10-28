@@ -17,6 +17,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _lvars(caso)
     _propios(caso, correr, CFG)
     _probar_en_dispositivo(caso)
+    _grabacion(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -257,3 +258,11 @@ def _probar_en_dispositivo(caso: Callable) -> None:
     caso("probar en el dispositivo", len(v._prueba) == 100 and max(x["throttle_1"] for x in v._prueba) > 0
          and max(x["joystick"] for x in v._prueba) == 0,
          f"{len(v._prueba)} ticks, throttle máx {max(x['throttle_1'] for x in v._prueba)}")
+
+
+def _grabacion(caso: Callable) -> None:
+    from efectos_propios import valores_de_grabacion
+    frames = [{"t": 0.0, "d": {"A": 1.0}}, {"t": 0.1, "d": {"A": 2.0}}, {"t": 0.2, "d": {"LVAR:B": 5.0, "A": 3.0}}]
+    va, vb = valores_de_grabacion(frames, "A"), valores_de_grabacion(frames, "B")
+    caso("grabación remuestreada a 50 Hz", len(va) == 11 and va[0] == 1.0 and va[5] == 2.0 and va[10] == 3.0
+         and vb[10] == 5.0, f"A {va} / B {vb[-1]}")

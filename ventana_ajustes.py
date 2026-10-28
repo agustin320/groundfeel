@@ -160,11 +160,16 @@ class VentanaAjustes:
         ttk.Button(botones, text=t("carpeta"),
                    command=lambda: os.startfile(rutas.datos_usuario())).grid(row=0, column=1, padx=4)
         ttk.Button(botones, text=t("cerrar"), command=self.cerrar).grid(row=0, column=2, padx=4)
+        ttk.Button(botones, text=t("menu_efectos"), command=self._abrir_efectos).grid(row=0, column=4, padx=4)
         ttk.Label(marco, text=t("aviso_simapppro"), foreground="#666").grid(row=5, column=0, sticky="w",
                                                                               pady=(10, 0))
         self._refrescar()
 
     # ------------------------------------------------------------------ acciones
+    def _abrir_efectos(self) -> None:
+        from ventana_efectos import VentanaEfectos
+        VentanaEfectos(self.raiz, self.vib)
+
     def _cambiar_idioma(self, codigo: str) -> None:
         self.cfg.guardar("idioma", valor=codigo)
         i18n.elegir(codigo)

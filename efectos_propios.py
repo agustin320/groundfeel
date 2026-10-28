@@ -179,6 +179,20 @@ def serie_prueba(ef: EfectoPropio, segundos: float) -> list[float]:
     return [desde + (hasta - desde) * min(1.0, (i % ciclo) / barrido) for i in range(n)]
 
 
+def valores_de_grabacion(frames: list[dict], fuente: str) -> list[float]:
+    """Valores de la fuente en una grabación, remuestreados a 50 Hz (mantiene el último valor entre frames)."""
+    if not frames:
+        return []
+    out, i, t_fin = [], 0, frames[-1].get("t", 0.0)
+    for k in range(int(t_fin * HZ_ENVIO) + 1):
+        t = k / HZ_ENVIO
+        while i + 1 < len(frames) and frames[i + 1].get("t", 0.0) <= t:
+            i += 1
+        d = frames[i].get("d", {})
+        out.append(float(d.get(fuente, d.get("LVAR:" + fuente, 0.0))))
+    return out
+
+
 def vista_previa(ef: EfectoPropio, valores: list[float], cfg: dict, disp: str = "throttle") -> list[int]:
     """Lo que realmente le llega al motor (0..255) tick a tick, a 50 Hz, para una serie de valores de la fuente.
 
