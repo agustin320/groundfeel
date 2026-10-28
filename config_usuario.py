@@ -72,10 +72,14 @@ class Config:
 
     def guardar(self, *clave: str, valor: object) -> None:
         """Guarda un ajuste del usuario (sólo la diferencia; el resto sigue a los valores por defecto)."""
-        d = self.usuario
+        # Reason: el lazo puede estar recorriendo self.usuario (fusionar) mientras la ventana guarda; se arma una copia
+        # y se reemplaza de una vez, así nunca ve un dict cambiando de tamaño a mitad de camino.
+        nuevo = copy.deepcopy(self.usuario)
+        d = nuevo
         for k in clave[:-1]:
             d = d.setdefault(k, {})
         d[clave[-1]] = valor
+        self.usuario = nuevo
         self.ruta_usuario.write_text(json.dumps(self.usuario, ensure_ascii=False, indent=2), encoding="utf-8")
         self.recargar()
 
