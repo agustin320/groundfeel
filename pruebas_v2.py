@@ -13,6 +13,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _vuelo(caso, correr)
     _toque(caso, correr, CFG)
     _arranque(caso, correr, CFG)
+    _pausa(caso, correr, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -140,3 +141,16 @@ def _arranque(caso: Callable, correr: Callable, CFG: dict) -> None:
     _, s4, _ = correr(cuatro, 2.0, Efectos(CFG))
     caso("4 motores: el 3 va a la palanca derecha", s4["throttle_2"] > 0 and s4["throttle_1"] == 0,
          f"izquierda {s4['throttle_1']:.0f} / derecha {s4['throttle_2']:.0f}")
+
+
+def _pausa(caso: Callable, correr: Callable, CFG: dict) -> None:
+    import struct
+
+    from efectos import Efectos
+    from sim_lector import leer_evento
+    ef = Efectos(CFG)
+    correr({"GROUND VELOCITY": 40, "TURB ENG N1:1": 60}, 1.0, ef)
+    _, s, _ = correr({"GROUND VELOCITY": 40, "TURB ENG N1:1": 60, "PAUSA": 1}, 0.025, ef)
+    caso("pausa por evento apaga en el tick siguiente", max(s.values()) == 0, f"salida {s}")
+    raw = struct.pack("<IIIIII", 24, 6, 4, 0xFFFFFFFF, 1, 4)    # RECV_EVENT: grupo, evento 1, dato 4 (pausa activa)
+    caso("lee el evento de pausa", leer_evento(raw) == (1, 4), f"{leer_evento(raw)}")

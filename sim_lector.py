@@ -13,7 +13,10 @@ import rutas
 
 FLOAT64, STRING256 = 4, 9
 PERIODO_VISUAL_FRAME, PERIODO_SEGUNDO = 2, 4
-RECV_QUIT, RECV_SIMOBJECT_DATA = 3, 8
+RECV_QUIT, RECV_EVENT, RECV_SIMOBJECT_DATA = 3, 4, 8
+# Pausa por eventos del sim (más rápido que esperar a que SIMULATION TIME se congele). "Pause_EX1" trae banderas
+# (pausa total, activa, de simulación); "Pause" es la versión vieja (1/0). Cualquiera distinta de 0 es pausa.
+EVENTOS_PAUSA = {1: b"Pause_EX1", 2: b"Pause"}
 GRUPO = 10
 GRUPO_AVION = 11   # nombre del avión (texto): aparte, una vez por segundo
 
@@ -87,6 +90,11 @@ def cargar_simconnect() -> C.WinDLL:
         "recursos\\ del programa, o indicá su ruta en la variable de entorno SIMCONNECT_DLL.")
 
 
+def leer_evento(raw: bytes) -> tuple[int, int]:
+    """(id de evento, dato) de un SIMCONNECT_RECV_EVENT: cabecera de 12 bytes, grupo, evento, dato."""
+    return int.from_bytes(raw[16:20], "little"), int.from_bytes(raw[20:24], "little")
+
+
 class RECV(C.Structure):
     _fields_ = [("dwSize", C.c_uint32), ("dwVersion", C.c_uint32), ("dwID", C.c_uint32)]
 
@@ -98,6 +106,7 @@ class LectorSim:
         self._vals: dict[str, float] = {}
         self._avion = ""
         self._t_ultimo = 0.0
+        self._pausa: dict[int, int] = {}
         self._lock = threading.Lock()
         self.conectado = threading.Event()
         self._vars = list(VARIABLES)
@@ -108,7 +117,10 @@ class LectorSim:
 
     def datos(self) -> dict[str, float]:
         with self._lock:
-            return dict(self._vals)
+            d = dict(self._vals)
+            if d:
+                d["PAUSA"] = 1.0 if any(self._pausa.values()) else 0.0
+            return d
 
     def avion(self) -> str:
         """Nombre del avión cargado (TITLE), o "" si todavía no llegó."""
@@ -132,6 +144,8 @@ class LectorSim:
                                                         C.c_float(0), C.c_uint32(0))
                 self.dll.SimConnect_RequestDataOnSimObject(self.h, GRUPO_AVION, GRUPO_AVION, 0, PERIODO_SEGUNDO,
                                                            0, 0, 0, 0)
+                for ev, nombre in EVENTOS_PAUSA.items():
+                    self.dll.SimConnect_SubscribeToSystemEvent(self.h, ev, nombre)
                 self.conectado.set()
                 self._bombear()
             except Exception:  # noqa: BLE001  (sim cerrado o caído: se reintenta)
@@ -139,6 +153,7 @@ class LectorSim:
             self.conectado.clear()
             with self._lock:
                 self._vals.clear()
+                self._pausa.clear()
             try:
                 self.dll.SimConnect_Close(self.h)
             except Exception:  # noqa: BLE001
@@ -156,6 +171,12 @@ class LectorSim:
                 rid = p.contents.dwID
                 if rid == RECV_QUIT:
                     raise ConnectionError("el simulador se cerró")
+                if rid == RECV_EVENT:
+                    ev, dato = leer_evento(raw)
+                    if ev in EVENTOS_PAUSA:
+                        with self._lock:
+                            self._pausa[ev] = dato
+                    continue
                 pedido = int.from_bytes(raw[12:16], "little") if rid == RECV_SIMOBJECT_DATA else -1
                 if pedido == GRUPO:
                     valores = (C.c_double * n).from_buffer_copy(raw[40:40 + 8 * n])

@@ -419,7 +419,7 @@ class Efectos:
         else:
             self.t_sim_quieto = 0.0
         self.sim_t_prev = sim_t
-        if not d or self.t_sim_quieto > 0.3:
+        if not d or d.get("PAUSA") or self.t_sim_quieto > 0.3:
             return {e: 0.0 for e in EFECTOS}, {"joystick": 0, "throttle_1": 0, "throttle_2": 0}
 
         (m1, r1), (m2, r2) = self._palancas(d, t, dt)
