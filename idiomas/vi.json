@@ -65,6 +65,7 @@
     "frenos": "phanh",
     "aceleracion": "tăng tốc",
     "derrape": "trượt",
-    "perdida": "thất tốc"
+    "perdida": "thất tốc",
+    "sobrevelocidad": "vượt tốc"
   }
 }

@@ -65,6 +65,7 @@
     "frenos": "ブレーキ",
     "aceleracion": "加速",
     "derrape": "横滑り",
-    "perdida": "失速"
+    "perdida": "失速",
+    "sobrevelocidad": "速度超過"
   }
 }

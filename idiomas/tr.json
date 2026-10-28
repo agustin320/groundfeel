@@ -65,6 +65,7 @@
     "frenos": "frenler",
     "aceleracion": "ivmelenme",
     "derrape": "kayma",
-    "perdida": "stall"
+    "perdida": "stall",
+    "sobrevelocidad": "aşırı hız"
   }
 }

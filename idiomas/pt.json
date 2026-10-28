@@ -65,6 +65,7 @@
     "frenos": "freios",
     "aceleracion": "aceleração",
     "derrape": "derrapagem",
-    "perdida": "estol"
+    "perdida": "estol",
+    "sobrevelocidad": "sobrevelocidade"
   }
 }

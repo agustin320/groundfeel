@@ -10,6 +10,7 @@ from collections.abc import Callable
 def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None:
     _cadencia(caso)
     _nyquist(caso)
+    _vuelo(caso, correr)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -60,3 +61,25 @@ def _nyquist(caso: Callable) -> None:
     todas = fijas + variables
     caso("texturas bajo Nyquist", len(fijas) >= 4 and len(variables) >= 3 and max(todas) <= HZ_ENVIO / 4,
          f"{len(todas)} frecuencias, máx {max(todas)} Hz (tope {HZ_ENVIO / 4})")
+
+
+def _vuelo(caso: Callable, correr: Callable) -> None:
+    aire = {"SIM ON GROUND": 0, "AIRSPEED INDICATED": 300, "GEAR CENTER POSITION": 0}
+    mx_rolido, _, _ = correr(dict(aire, **{"SPOILERS LEFT POSITION": 0.6, "SPOILERS RIGHT POSITION": 0.0}))
+    mx_sb, _, _ = correr(dict(aire, **{"SPOILERS LEFT POSITION": 1.0, "SPOILERS RIGHT POSITION": 1.0}))
+    caso("spoilers de alabeo no vibran", mx_rolido["speedbrake"] == 0 and mx_sb["speedbrake"] > 0.2,
+         f"alabeo {mx_rolido['speedbrake']:.2f} / speedbrake {mx_sb['speedbrake']:.2f}")
+
+    def slats(d, i):
+        d["LEADING EDGE FLAPS LEFT PERCENT"] = min(0.5, i / 80 * 0.5)
+
+    mx_sl, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 200, "GEAR CENTER POSITION": 0}, 2.0, None, slats)
+    caso("slats solos mueven flaps", mx_sl["flaps"] > 0.1, f"flaps {mx_sl['flaps']:.2f}")
+
+    def sv(ias, barber):
+        mx, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": ias, "AIRSPEED BARBER POLE": barber,
+                           "GEAR CENTER POSITION": 0})
+        return mx.get("sobrevelocidad", -1)
+    s_alto, s_bajo, s_sin = sv(360, 350), sv(345, 350), sv(360, 0)
+    caso("sobrevelocidad", s_alto > 0.3 and s_bajo == 0 and s_sin == 0,
+         f"+10 kt {s_alto:.2f} / -5 kt {s_bajo:.2f} / sin dato {s_sin:.2f}")

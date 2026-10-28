@@ -65,6 +65,7 @@
     "frenos": "Bremsen",
     "aceleracion": "Beschleunigung",
     "derrape": "Rutschen",
-    "perdida": "Strömungsabriss"
+    "perdida": "Strömungsabriss",
+    "sobrevelocidad": "Übergeschwindigkeit"
   }
 }

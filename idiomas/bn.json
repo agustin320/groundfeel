@@ -65,6 +65,7 @@
     "frenos": "ব্রেক",
     "aceleracion": "ত্বরণ",
     "derrape": "পিছলে যাওয়া",
-    "perdida": "স্টল"
+    "perdida": "স্টল",
+    "sobrevelocidad": "অতিরিক্ত গতি"
   }
 }

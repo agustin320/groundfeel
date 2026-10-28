@@ -65,6 +65,7 @@
     "frenos": "刹车",
     "aceleracion": "加速",
     "derrape": "侧滑",
-    "perdida": "失速"
+    "perdida": "失速",
+    "sobrevelocidad": "超速"
   }
 }

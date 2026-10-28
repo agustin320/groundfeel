@@ -65,6 +65,7 @@
     "frenos": "ब्रेक",
     "aceleracion": "त्वरण",
     "derrape": "फिसलन",
-    "perdida": "स्टॉल"
+    "perdida": "स्टॉल",
+    "sobrevelocidad": "ओवरस्पीड"
   }
 }

@@ -65,6 +65,7 @@
     "frenos": "frenos",
     "aceleracion": "aceleración",
     "derrape": "derrape",
-    "perdida": "pérdida"
+    "perdida": "pérdida",
+    "sobrevelocidad": "sobrevelocidad"
   }
 }

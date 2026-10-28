@@ -65,6 +65,7 @@
     "frenos": "тормоза",
     "aceleracion": "ускорение",
     "derrape": "занос",
-    "perdida": "сваливание"
+    "perdida": "сваливание",
+    "sobrevelocidad": "превышение скорости"
   }
 }

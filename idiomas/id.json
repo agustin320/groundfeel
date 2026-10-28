@@ -65,6 +65,7 @@
     "frenos": "rem",
     "aceleracion": "akselerasi",
     "derrape": "tergelincir",
-    "perdida": "stall"
+    "perdida": "stall",
+    "sobrevelocidad": "kecepatan berlebih"
   }
 }

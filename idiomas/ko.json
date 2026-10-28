@@ -65,6 +65,7 @@
     "frenos": "브레이크",
     "aceleracion": "가속",
     "derrape": "미끄러짐",
-    "perdida": "실속"
+    "perdida": "실속",
+    "sobrevelocidad": "과속"
   }
 }

@@ -117,7 +117,8 @@ caso("tren: golpes al destrabar y trabar", picos == 2 and medio < 0.05,
      f"{picos} golpes, máximo en el medio del recorrido {medio:.3f}")
 
 # 8. Speedbrake en vuelo a 300 kt vibra más que sin speedbrake
-mx_sb, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 300, "SPOILERS LEFT POSITION": 1.0, "GEAR CENTER POSITION": 0})
+mx_sb, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 300, "SPOILERS LEFT POSITION": 1.0, "SPOILERS RIGHT POSITION": 1.0,
+                      "GEAR CENTER POSITION": 0})
 caso("speedbrake", mx_sb["speedbrake"] > 0.2, f"máximo speedbrake {mx_sb['speedbrake']:.2f}")
 
 # 9. Reversa: el motor del acelerador de ese motor vibra

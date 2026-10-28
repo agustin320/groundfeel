@@ -65,6 +65,7 @@
     "frenos": "brakes",
     "aceleracion": "acceleration",
     "derrape": "skid",
-    "perdida": "stall"
+    "perdida": "stall",
+    "sobrevelocidad": "overspeed"
   }
 }

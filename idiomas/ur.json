@@ -65,6 +65,7 @@
     "frenos": "بریک",
     "aceleracion": "رفتار میں اضافہ",
     "derrape": "پھسلن",
-    "perdida": "اسٹال"
+    "perdida": "اسٹال",
+    "sobrevelocidad": "زیادہ رفتار"
   }
 }

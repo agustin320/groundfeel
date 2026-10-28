@@ -65,6 +65,7 @@
     "frenos": "ब्रेक",
     "aceleracion": "प्रवेग",
     "derrape": "घसरणे",
-    "perdida": "स्टॉल"
+    "perdida": "स्टॉल",
+    "sobrevelocidad": "अतिवेग"
   }
 }

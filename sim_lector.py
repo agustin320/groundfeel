@@ -30,6 +30,12 @@ VARIABLES: dict[str, str] = {
     "GEAR CENTER POSITION": "Percent over 100",
     "TRAILING EDGE FLAPS LEFT PERCENT": "Percent over 100",
     "SPOILERS LEFT POSITION": "Percent over 100",
+    # Simetría: los spoilers de alabeo (un solo lado) no son freno aerodinámico.
+    "SPOILERS RIGHT POSITION": "Percent over 100",
+    # Slats: en algunos aviones se mueven sin los flaps.
+    "LEADING EDGE FLAPS LEFT PERCENT": "Percent over 100",
+    # Velocidad máxima del avión (barber pole); 0 si no la publica.
+    "AIRSPEED BARBER POLE": "Knots",
     "TURB ENG N1:1": "Percent",
     "TURB ENG N1:2": "Percent",
     "TURB ENG REVERSE NOZZLE PERCENT:1": "Percent",

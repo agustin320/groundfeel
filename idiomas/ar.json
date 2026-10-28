@@ -65,6 +65,7 @@
     "frenos": "المكابح",
     "aceleracion": "التسارع",
     "derrape": "انزلاق",
-    "perdida": "انهيار السرعة"
+    "perdida": "انهيار السرعة",
+    "sobrevelocidad": "السرعة الزائدة"
   }
 }

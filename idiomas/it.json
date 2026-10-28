@@ -65,6 +65,7 @@
     "frenos": "freni",
     "aceleracion": "accelerazione",
     "derrape": "slittamento",
-    "perdida": "stallo"
+    "perdida": "stallo",
+    "sobrevelocidad": "sovravelocità"
   }
 }

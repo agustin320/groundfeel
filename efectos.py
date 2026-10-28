@@ -18,7 +18,7 @@ PASTO = {1, 3, 5, 6, 7}
 RIPIO_TIERRA = {12, 14, 21, 22}
 
 EFECTOS = ("rodadura", "rodaje", "sacudones", "aterrizaje", "tren", "flaps", "speedbrake", "motores", "reversa",
-           "frenos", "aceleracion", "derrape", "perdida")
+           "frenos", "aceleracion", "derrape", "perdida", "sobrevelocidad")
 
 
 def _clamp(x: float, lo: float = 0.0, hi: float = 1.0) -> float:
@@ -73,6 +73,8 @@ class Efectos:
         self.spool = 0.0
         self.fase_spool = 0.0
         self.fase_acel = 0.0
+        self.fase_sobrevel = 0.0
+        self._dt = 0.0
 
     # ------------------------------------------------------------------ efectos individuales
     def _rodadura(self, d: dict, t: float, dt: float) -> float:
@@ -170,21 +172,39 @@ class Efectos:
         return _clamp(v)
 
     def _flaps(self, d: dict, dt: float, t: float) -> float:
-        f = _norm01(d.get("TRAILING EDGE FLAPS LEFT PERCENT", 0.0))
+        # Reason: en algunos aviones los slats se mueven solos (sin flaps de borde de fuga): también es "flaps".
+        f = (_norm01(d.get("TRAILING EDGE FLAPS LEFT PERCENT", 0.0)),
+             _norm01(d.get("LEADING EDGE FLAPS LEFT PERCENT", 0.0)))
         prev = self.flaps_prev if self.flaps_prev is not None else f
         self.flaps_prev = f
-        moviendo = dt > 0 and abs(f - prev) / dt > 0.004
+        moviendo = dt > 0 and max(abs(f[0] - prev[0]), abs(f[1] - prev[1])) / dt > 0.004
         return self.cfg["flaps"]["movimiento"] * (0.7 + 0.3 * math.sin(2 * math.pi * 7 * t)) if moviendo else 0.0
 
     def _speedbrake(self, d: dict) -> float:
         c = self.cfg["speedbrake"]
-        sp = _norm01(d.get("SPOILERS LEFT POSITION", 0.0))
+        izq, der = _norm01(d.get("SPOILERS LEFT POSITION", 0.0)), _norm01(d.get("SPOILERS RIGHT POSITION", 0.0))
+        # Reason: muchos aviones alabean con spoilers de un solo lado; eso no es freno aerodinámico y no debe vibrar.
+        if abs(izq - der) > c.get("asimetria_max", 0.10):
+            return 0.0
+        sp = min(izq, der)
         if sp < 0.03:
             return 0.0
         textura = 0.6 + 0.4 * random.random()
         if d.get("SIM ON GROUND"):
             return _clamp(c["tierra"] * sp * _clamp(d.get("GROUND VELOCITY", 0.0) / 80)) * textura
         return _clamp(c["aire"] * sp * _clamp(d.get("AIRSPEED INDICATED", 0.0) / 300) ** 2 * 2.0) * textura
+
+    def _sobrevelocidad(self, t: float, d: dict) -> float:
+        """Velocidad por encima de la máxima del avión (barber pole): vibración que crece con el exceso."""
+        c = self.cfg["sobrevelocidad"]
+        barber = d.get("AIRSPEED BARBER POLE", 0.0)
+        if barber < 50 or d.get("SIM ON GROUND"):     # el avión no la publica, o estamos en tierra
+            return 0.0
+        exceso = _clamp((d.get("AIRSPEED INDICATED", 0.0) - barber) / c["rango_kt"])
+        if exceso <= 0:
+            return 0.0
+        self.fase_sobrevel += (5.0 + 7.0 * exceso) * self._dt
+        return c["maximo"] * (0.35 + 0.65 * exceso) * (0.7 + 0.3 * math.sin(2 * math.pi * self.fase_sobrevel))
 
     def _potencia(self, d: dict, n: int) -> float:
         """Potencia del motor n en % (0..100), comparable entre tipos de avión.
@@ -336,6 +356,7 @@ class Efectos:
         """Devuelve (efectos 0..1, salida por motor 0..255) para el frame actual."""
         dt = 0.0 if self.t_prev is None else max(0.0, min(0.2, t - self.t_prev))
         self.t_prev = t
+        self._dt = dt
         # Pausa: el tiempo de simulación no avanza → todo apagado.
         sim_t = d.get("SIMULATION TIME", 0.0)
         if self.sim_t_prev is not None and sim_t <= self.sim_t_prev:
@@ -371,6 +392,7 @@ class Efectos:
             "aceleracion": self._aceleracion(d, t, dt),
             "derrape": self._derrape(d, t),
             "perdida": self._perdida(d, t),
+            "sobrevelocidad": self._sobrevelocidad(t, d),
         }
         mez, gan = self.cfg["mezcla"], self.cfg["ganancia_general"]
         # Los toquecitos van al ritmo de la velocidad (como las ruedas pasando por la pista): lentos al arrancar, más

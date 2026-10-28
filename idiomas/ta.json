@@ -65,6 +65,7 @@
     "frenos": "பிரேக்குகள்",
     "aceleracion": "முடுக்கம்",
     "derrape": "சறுக்கல்",
-    "perdida": "ஸ்டால்"
+    "perdida": "ஸ்டால்",
+    "sobrevelocidad": "அதிவேகம்"
   }
 }
