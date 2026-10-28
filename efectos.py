@@ -7,6 +7,8 @@ from __future__ import annotations
 import math
 import random
 
+from efectos_propios import Evaluador
+from efectos_propios import cargar as cargar_propios
 from rodaje_fisico import RodajeFisico
 
 G_FTS2 = 32.174
@@ -75,6 +77,8 @@ class Efectos:
         self.fase_spool = 0.0
         self.fase_acel = 0.0
         self.fase_sobrevel = 0.0
+        self._propios_src: object = None
+        self.propios: list[Evaluador] = []
         self.nariz_prev = False
         self.amp_nariz, self.t_nariz = 0.0, -99.0
         self._dt = 0.0
@@ -452,6 +456,27 @@ class Efectos:
         if 0 <= t - self.t_toque < self.cfg["aterrizaje"].get("silencio_s", 0.0):
             ef = {e: (v if e == "aterrizaje" else 0.0) for e, v in ef.items()}
             m1 = r1 = m2 = r2 = 0.0
+        # Efectos propios (editor): se evalúan y, si alguno reemplaza a un incorporado, éste se apaga.
+        if self.cfg.get("efectos_propios") is not self._propios_src:
+            self._propios_src = self.cfg.get("efectos_propios")
+            self.propios = [Evaluador(e) for e in cargar_propios(self._propios_src or [])]
+        propios = [(ev.ef, ev.valor(d, t, dt)) for ev in self.propios]
+        for p, _v in propios:
+            if p.activo and p.reemplaza in ef:
+                ef[p.reemplaza] = 0.0
+                if p.reemplaza == "motores":
+                    m1 = m2 = 0.0
+                elif p.reemplaza == "reversa":
+                    r1 = r2 = 0.0
+        ruteo, inten = self.cfg.get("ruteo", {}), self.cfg.get("intensidad_efecto", {})
+
+        def peso(e: str, disp: str, w: dict) -> float:
+            """Peso del efecto e en el dispositivo: mezcla × intensidad del efecto, 0 si el ruteo lo saca de ahí."""
+            r = ruteo.get(e, "ambos")
+            if r == "ninguno" or (r in ("joystick", "throttle") and r != disp):
+                return 0.0
+            return w.get(e, 0.0) * inten.get(e, 1.0)
+
         mez, gan = self.cfg["mezcla"], self.cfg["ganancia_general"]
         # Los toquecitos van al ritmo de la velocidad (como las ruedas pasando por la pista): lentos al arrancar, más
         # seguidos al acelerar.
@@ -464,9 +489,12 @@ class Efectos:
             w = mez[disp]
             # Con el modelo físico el joystick usa "rodaje" en vez de la "rodadura" heurística (throttle: igual).
             omitir = {"motores", "reversa", "rodadura" if fisico and disp == "joystick" else "rodaje"}
-            total = sum(ef[e] * w.get(e, 0.0) for e in EFECTOS if e not in omitir)
+            total = sum(ef[e] * peso(e, disp, w) for e in EFECTOS if e not in omitir)
             mot, rev = motor_n if motor_n else (ef["motores"], ef["reversa"])
-            total += mot * w["motores"] + rev * w["reversa"]
+            total += mot * peso("motores", disp, w) + rev * peso("reversa", disp, w)
+            for p, v in propios:
+                if p.ruteo in ("ambos", disp):
+                    total = max(total, v) if p.mezcla == "max" else total + v
             # Reason: el motor no gira por debajo de cierto valor (zona muerta); con ganancias bajas todo caía ahí y
             # "no vibraba nada". Todo efecto real arranca justo en el borde de la zona muerta y la ganancia escala
             # lo que está por encima.

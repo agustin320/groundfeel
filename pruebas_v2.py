@@ -15,6 +15,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _arranque(caso, correr, CFG)
     _pausa(caso, correr, CFG)
     _lvars(caso)
+    _propios(caso, correr, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -130,7 +131,7 @@ def _arranque(caso: Callable, correr: Callable, CFG: dict) -> None:
     caso("arranque en 3 etapas", 0.03 < st < ig and ac > 0.03 and st_t1 > 0 and st_t2 == 0,
          f"starter {st:.2f} / ignición {ig:.2f} / aceleración {ac:.2f} · palancas {st_t1:.0f}/{st_t2:.0f}")
 
-    # Arranque abortado: se corta el starter sin combustión → cae a 0 en menos de 2 s.
+    # Arranque abortado: se corta el starter sin combustión -> cae a 0 en menos de 2 s.
     ef = Efectos(CFG)
     correr(dict(apagado, **{"GENERAL ENG STARTER:1": 1, "TURB ENG N2:1": 15}), 2.0, ef)
     correr(dict(apagado, **{"TURB ENG N2:1": 10}), 1.5, ef)
@@ -187,3 +188,56 @@ def _lvars(caso: Callable) -> None:
     malos = [x.nombre for x in incluidos if any(a not in x.lvars for a in x.fuentes.values())]
     caso("perfiles incluidos válidos", len(incluidos) >= 2 and not malos,
          f"{len(incluidos)} perfiles, inválidos {malos}")
+
+
+def _propios(caso: Callable, correr: Callable, CFG: dict) -> None:
+    import copy
+
+    from efectos import Efectos
+    from efectos_propios import EfectoPropio, Evaluador, vista_previa
+
+    malos = {"umbral": EfectoPropio(umbral=(300.0, 250.0)),
+             "curva": EfectoPropio(curva=[(0.5, 0.0), (0.2, 1.0)]),
+             "hz": EfectoPropio(forma="seno", hz=30.0),
+             "lvar": EfectoPropio(fuente="L:MI VAR", unidad="Number")}
+    errores = {k: v.validar() for k, v in malos.items()}
+    caso("editor rechaza efectos mal armados", all(errores.values()) and not EfectoPropio().validar(), f"{errores}")
+
+    ev = Evaluador(EfectoPropio(fuente="AIRSPEED INDICATED", disparo="sobre", umbral=(250.0, 300.0), intensidad=1.0))
+    v275, v240 = ev.valor({"AIRSPEED INDICATED": 275.0}, 0.0, 0.02), ev.valor({"AIRSPEED INDICATED": 240.0}, 0.02, 0.02)
+    caso("efecto propio lineal", abs(v275 - 0.5) < 1e-6 and v240 == 0, f"275 kt {v275:.2f} / 240 kt {v240:.2f}")
+
+    e = EfectoPropio(nombre="Prueba", curva=[(0.0, 0.1), (0.4, 0.7), (1.0, 1.0)], forma="pulso", hz=4.0)
+    caso("exportar e importar es idéntico", EfectoPropio.desde_dict(e.a_dict()) == e, "ida y vuelta")
+
+    def con(cfg_extra: dict) -> dict:
+        c = copy.deepcopy(CFG)
+        for k, v in cfg_extra.items():
+            c[k] = v
+        return c
+    alta = {"SIM ON GROUND": 0, "AIRSPEED INDICATED": 360, "AIRSPEED BARBER POLE": 350, "GEAR CENTER POSITION": 0}
+    _, s_norm, _ = correr(alta, 1.0, Efectos(CFG))
+    _, s_nada, _ = correr(alta, 1.0, Efectos(con({"ruteo": {"sobrevelocidad": "ninguno"}})))
+    _, s_cero, _ = correr(alta, 1.0, Efectos(con({"intensidad_efecto": {"sobrevelocidad": 0.0}})))
+    caso("ruteo e intensidad por efecto", s_norm["throttle_1"] > 10 and s_nada["throttle_1"] == 0
+         and s_cero["throttle_1"] == 0, f"normal {s_norm['throttle_1']:.0f} / ninguno {s_nada['throttle_1']:.0f} / "
+         f"intensidad 0 {s_cero['throttle_1']:.0f}")
+
+    nunca = EfectoPropio(nombre="Mía", fuente="AIRSPEED INDICATED", umbral=(900.0, 1000.0), reemplaza="sobrevelocidad")
+    mx_r, s_r, _ = correr(alta, 1.0, Efectos(con({"efectos_propios": [nunca.a_dict()]})))
+    caso("efecto propio reemplaza al incorporado", mx_r["sobrevelocidad"] == 0 and s_r["throttle_1"] == 0,
+         f"sobrevelocidad {mx_r['sobrevelocidad']} / throttle {s_r['throttle_1']:.0f}")
+
+    suelo = EfectoPropio(nombre="Suelo", fuente="GROUND VELOCITY", umbral=(5.0, 30.0), intensidad=0.8, ruteo="throttle")
+    _, s_base, _ = correr({"GROUND VELOCITY": 20}, 1.0, Efectos(CFG))
+    _, s_suma, _ = correr({"GROUND VELOCITY": 20}, 1.0, Efectos(con({"efectos_propios": [suelo.a_dict()]})))
+    caso("efecto propio suma a su dispositivo", s_suma["throttle_1"] > s_base["throttle_1"] + 20
+         and abs(s_suma["joystick"] - s_base["joystick"]) < 1,
+         f"throttle {s_base['throttle_1']:.0f} -> {s_suma['throttle_1']:.0f} / joystick {s_base['joystick']:.0f} -> "
+         f"{s_suma['joystick']:.0f}")
+
+    rampa = EfectoPropio(fuente="GROUND VELOCITY", umbral=(0.0, 10.0), intensidad=0.6)
+    prev = vista_previa(rampa, [0.0] * 10 + [10.0] * 40, CFG)
+    zm = CFG["zona_muerta"]["throttle"]
+    caso("vista previa = salida real", max(prev[:10]) == 0 and min(prev[15:]) > zm,
+         f"antes {prev[:3]} / después {prev[-3:]}")
