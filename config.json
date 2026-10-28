@@ -40,7 +40,7 @@
   "aterrizaje": { "vs_suave_fpm": 60.0, "vs_duro_fpm": 600.0, "maximo": 1.0, "duracion_s": 0.5, "nariz": 0.5, "silencio_s": 0.8 },
   "tren": { "golpe_destrabe": 0.35, "golpe_traba": 0.55, "transito": 0.0, "aire_tren_abajo": 0.06 },
   "flaps": { "movimiento": 0.18 },
-  "speedbrake": { "aire": 0.45, "tierra": 0.20, "asimetria_max": 0.10 },
+  "speedbrake": { "aire": 0.45, "tierra": 0.20 },
   "sobrevelocidad": { "_nota": "rango_kt: nudos por encima de la máxima en que llega al tope", "rango_kt": 15.0, "maximo": 0.9 },
   "arranque": { "_nota": "rampa_s: segundos del starter hasta su tope; caida_s: constante de la caída al cortar", "starter": 0.10, "ignicion": 0.35, "aceleracion": 0.14, "rampa_s": 3.0, "caida_s": 0.4, "aceleracion_max_s": 45.0 },
   "motores": { "minimo_ralenti": 0.045, "puesta_en_marcha": 0.12, "zumbido_tierra": 0.16, "zumbido_aire": 0.03, "reversa": 0.55, "n1_idle": 20.0 },

@@ -51,7 +51,7 @@ def cargar() -> list[Perfil]:
                                 archivo.name, clave, alias)
             out.append(Perfil(datos["nombre"], [str(c) for c in datos.get("coincide", [])],
                               datos.get("ajustes", {}), archivo.name, lvars, fuentes))
-        except (OSError, KeyError, json.JSONDecodeError) as ex:
+        except Exception as ex:  # noqa: BLE001  (un perfil mal escrito no puede impedir que arranque la app)
             log.warning("perfil %s ignorado: %s", archivo.name, ex)
     return out
 

@@ -412,8 +412,12 @@ class VentanaEfectos:
         try:
             with open(archivo, encoding="utf-8") as f:
                 ef = EfectoPropio.desde_dict(json.load(f))
+            errores = ef.validar()
         except (OSError, ValueError, TypeError, KeyError, IndexError) as ex:
             messagebox.showerror(t("ve_titulo"), str(ex), parent=self.top)
+            return
+        if errores:   # no se carga a medias en el formulario
+            messagebox.showerror(t("ve_titulo"), " ".join(t(e) for e in errores), parent=self.top)
             return
         self._editar(ef)
 

@@ -55,6 +55,11 @@ class EfectoPropio:
         if not 2 <= len(self.curva) <= 8 or any(b <= a for a, b in zip(xs, xs[1:], strict=False)) \
                 or any(not (0 <= x <= 1 and 0 <= y <= 1) for x, y in self.curva):
             errores.append("ep_err_curva")
+        numeros = (*self.umbral, self.histeresis, self.hz, self.intensidad, *(v for p in self.curva for v in p))
+        if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in numeros):
+            errores.append("ep_err_opcion")
+        elif not 0 <= self.intensidad <= 1:
+            errores.append("ep_err_opcion")
         if self.forma in ("pulso", "seno", "sierra") and not 0 < self.hz <= F_MAX_HZ:
             errores.append("ep_err_hz")
         if self.disparo not in DISPAROS or self.forma not in FORMAS or self.ruteo not in RUTEOS \
@@ -69,12 +74,31 @@ class EfectoPropio:
 
     @classmethod
     def desde_dict(cls, d: dict) -> EfectoPropio:
+        """Arma el efecto desde un dict (ajustes.json o un JSON importado), forzando los tipos de cada campo.
+
+        Reason: ajustes.json se edita a mano y se comparte; un tipo raro (null, "5", una lista) no puede llegar al lazo.
+        Lanza ValueError/TypeError si algo no se puede convertir.
+        """
+        if not isinstance(d, dict):
+            raise TypeError("un efecto propio es un objeto JSON")
         base = cls()
-        campos = {k: d[k] for k in base.a_dict() if k in d}
-        if "umbral" in campos:
-            campos["umbral"] = (float(campos["umbral"][0]), float(campos["umbral"][1]))
-        if "curva" in campos:
-            campos["curva"] = [(float(x), float(y)) for x, y in campos["curva"]]
+        tipos = {k: type(v) for k, v in base.a_dict().items()}
+        campos: dict = {}
+        for k, v in d.items():
+            if k not in tipos:
+                continue
+            if k == "umbral":
+                campos[k] = (float(v[0]), float(v[1]))
+            elif k == "curva":
+                campos[k] = [(float(x), float(y)) for x, y in v]
+            elif tipos[k] is str:
+                if not isinstance(v, str):
+                    raise TypeError(f"{k} tiene que ser texto")
+                campos[k] = v
+            elif tipos[k] is bool:
+                campos[k] = bool(v)
+            else:
+                campos[k] = float(v)
         return cls(**campos)
 
 
@@ -172,10 +196,10 @@ def cargar(lista: list[dict]) -> list[EfectoPropio]:
     for d in lista or []:
         try:
             ef = EfectoPropio.desde_dict(d)
-        except (TypeError, ValueError, KeyError, IndexError):
+            if not ef.validar():
+                out.append(ef)
+        except Exception:  # noqa: BLE001  (un efecto mal escrito se descarta; el lazo sigue)
             continue
-        if not ef.validar():
-            out.append(ef)
     return out
 
 

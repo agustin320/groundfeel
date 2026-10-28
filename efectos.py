@@ -200,9 +200,8 @@ class Efectos:
     def _speedbrake(self, d: dict) -> float:
         c = self.cfg["speedbrake"]
         izq, der = _norm01(d.get("SPOILERS LEFT POSITION", 0.0)), _norm01(d.get("SPOILERS RIGHT POSITION", 0.0))
-        # Reason: muchos aviones alabean con spoilers de un solo lado; eso no es freno aerodinámico y no debe vibrar.
-        if abs(izq - der) > c.get("asimetria_max", 0.10):
-            return 0.0
+        # Reason: muchos aviones alabean con spoilers de un solo lado; eso no es freno aerodinámico. Cuenta sólo la
+        # parte simétrica (lo que está desplegado de los dos lados), así un viraje con speedbrake afuera no lo corta.
         sp = min(izq, der)
         if sp < 0.03:
             return 0.0

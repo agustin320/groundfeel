@@ -22,6 +22,8 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _datos_faltantes_y_frames(caso, CFG)
     _paquete_lvars(caso)
     _ralenti_bajo(caso, correr, CFG)
+    _datos_raros(caso, correr, CFG)
+    _speedbrake_en_viraje(caso, correr)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -334,3 +336,48 @@ def _ralenti_bajo(caso: Callable, correr: Callable, CFG: dict) -> None:
                  "TURB ENG N1:2": 17}
     mx, _, _ = correr(en_marcha, 3.0, Efectos(CFG))
     caso("ralentí bajo sin zumbido de arranque", mx["motores"] < 0.06, f"motores {mx['motores']:.3f}")
+
+
+def _datos_raros(caso: Callable, correr: Callable, CFG: dict) -> None:
+    """Efectos propios y perfiles con tipos raros (escritos a mano) no rompen el lazo ni la app."""
+    import copy
+    import json
+    import tempfile
+    from pathlib import Path
+
+    import perfiles
+    import rutas
+    from efectos import Efectos
+    from efectos_propios import EfectoPropio, cargar
+    raros = [{"fuente": None}, {"hz": "5", "forma": "constante"}, {"histeresis": "x"}, {"reemplaza": ["a"]},
+             {"intensidad": float("nan")}, {"intensidad": 3.0}, {"curva": []}, {"umbral": "malo"}, "no es un dict"]
+    validos = cargar(raros + [EfectoPropio().a_dict()])
+    c = copy.deepcopy(CFG)
+    c["efectos_propios"] = raros
+    try:
+        correr({"GROUND VELOCITY": 20}, 0.5, Efectos(c))
+        lazo_ok = True
+    except Exception as ex:  # noqa: BLE001
+        lazo_ok = repr(ex)
+    caso("efectos propios raros no rompen el lazo", lazo_ok is True and len(validos) == 2,   # "hz": "5" se convierte
+         f"lazo {lazo_ok} / válidos {len(validos)} de {len(raros) + 1}")
+
+    tmp = Path(tempfile.mkdtemp())
+    (tmp / "perfiles").mkdir()
+    (tmp / "perfiles" / "a_roto.json").write_text(json.dumps({"nombre": "Roto", "lvars": ["x"]}), encoding="utf-8")
+    (tmp / "perfiles" / "b_bien.json").write_text(json.dumps({"nombre": "Bien", "coincide": ["X"]}), encoding="utf-8")
+    original, rutas.RECURSOS = rutas.RECURSOS, tmp
+    try:
+        nombres = [p.nombre for p in perfiles.cargar()]
+    except Exception as ex:  # noqa: BLE001
+        nombres = [repr(ex)]
+    finally:
+        rutas.RECURSOS = original
+    caso("perfil roto no impide arrancar", nombres == ["Bien"], f"{nombres}")
+
+
+def _speedbrake_en_viraje(caso: Callable, correr: Callable) -> None:
+    """Speedbrake extendido mientras se alabea con spoilers: sigue vibrando (cuenta la parte simétrica)."""
+    aire = {"SIM ON GROUND": 0, "AIRSPEED INDICATED": 300, "GEAR CENTER POSITION": 0}
+    mx, _, _ = correr(dict(aire, **{"SPOILERS LEFT POSITION": 1.0, "SPOILERS RIGHT POSITION": 0.6}))
+    caso("speedbrake sigue en un viraje", mx["speedbrake"] > 0.1, f"speedbrake {mx['speedbrake']:.2f}")
