@@ -77,6 +77,8 @@ class Efectos:
         self.fase_spool = 0.0
         self.fase_acel = 0.0
         self.fase_sobrevel = 0.0
+        self._der: dict[str, tuple[float, float]] = {}
+        self._frame_nuevo, self._dt_sim = True, 0.0
         self._propios_src: object = None
         self.propios: list[Evaluador] = []
         self.nariz_prev = False
@@ -192,9 +194,7 @@ class Efectos:
         # Reason: en algunos aviones los slats se mueven solos (sin flaps de borde de fuga): también es "flaps".
         f = (_norm01(d.get("TRAILING EDGE FLAPS LEFT PERCENT", 0.0)),
              _norm01(d.get("LEADING EDGE FLAPS LEFT PERCENT", 0.0)))
-        prev = self.flaps_prev if self.flaps_prev is not None else f
-        self.flaps_prev = f
-        moviendo = dt > 0 and max(abs(f[0] - prev[0]), abs(f[1] - prev[1])) / dt > 0.004
+        moviendo = max(abs(self._deriva("flaps_bf", f[0])), abs(self._deriva("flaps_ba", f[1]))) > 0.004
         return self.cfg["flaps"]["movimiento"] * (0.7 + 0.3 * math.sin(2 * math.pi * 7 * t)) if moviendo else 0.0
 
     def _speedbrake(self, d: dict) -> float:
@@ -275,8 +275,7 @@ class Efectos:
     def _motor_en_marcha(self, d: dict, n: int, t: float, dt: float) -> tuple[float, float]:
         c = self.cfg["motores"]
         n1 = self._potencia(d, n)
-        dn1 = (n1 - self.n1_motor_prev[n]) / dt if dt > 0 else 0.0
-        self.n1_motor_prev[n] = n1
+        dn1 = self._deriva(f"n1_{n}", n1)
         # Puesta en marcha: mientras el motor gana vueltas hacia el ralentí, un rumor que crece con la potencia.
         idle = self._ralenti(d)
         if 2 < n1 < idle - 0.5 and dn1 > 0.05:
@@ -319,8 +318,7 @@ class Efectos:
         decel = max(0.0, -d.get("ACCELERATION BODY Z", 0.0))          # ft/s², positivo al frenar
         freno = max(_norm01(d.get("BRAKE LEFT POSITION", 0.0)), _norm01(d.get("BRAKE RIGHT POSITION", 0.0)))
         # Golpe inicial: cuando la desaceleración sube rápido (jerk) aparece un golpe proporcional.
-        tiron = (decel - self.decel_prev) / dt if dt > 0 else 0.0
-        self.decel_prev = decel
+        tiron = self._deriva("decel", decel)
         # Reason: casi parado no hay inercia que cabecee el avión; el golpe escala con la velocidad (nulo bajo 3 kt).
         por_velocidad = _clamp((gs - 3) / 25)
         if en_tierra and por_velocidad > 0 and tiron > c["tiron_umbral"] and t - self.t_golpe_freno > 0.6:
@@ -359,8 +357,7 @@ class Efectos:
         una fuerza que acompaña la aceleración real con variaciones irregulares."""
         c = self.cfg["aceleracion"]
         n1 = max(self._potencia(d, 1), self._potencia(d, 2))
-        dn1 = (n1 - self.n1_prev) / dt if dt > 0 else 0.0
-        self.n1_prev = n1
+        dn1 = self._deriva("n1", n1)
         acel = max(0.0, d.get("ACCELERATION BODY Z", 0.0))             # ft/s², positivo al acelerar
         en_tierra = bool(d.get("SIM ON GROUND"))
         # Paseo aleatorio lento: la intensidad "respira" en vez de quedar plana.
@@ -410,6 +407,22 @@ class Efectos:
             x = max(x, 0.8)
         return c["buffet"] * x * (0.6 + 0.4 * random.random()) if x > 0 else 0.0
 
+    def _deriva(self, clave: str, x: float) -> float:
+        """Derivada de x contra el tiempo del simulador. En un tick sin frame nuevo del sim repite la anterior.
+
+        Reason: el lazo corre a 50 Hz y el sim manda datos a su ritmo de frames (30-60 fps); con dt del lazo, los
+        ticks repetidos daban derivada 0 y el siguiente el doble, y los efectos que dependen de ella titilaban.
+        """
+        prev = self._der.get(clave)
+        if prev is None:
+            self._der[clave] = (x, 0.0)
+            return 0.0
+        if not self._frame_nuevo or self._dt_sim <= 0:
+            return prev[1]
+        der = (x - prev[0]) / self._dt_sim
+        self._der[clave] = (x, der)
+        return der
+
     # ------------------------------------------------------------------ paso completo
     def paso(self, d: dict, t: float) -> tuple[dict[str, float], dict[str, float]]:
         """Devuelve (efectos 0..1, salida por motor 0..255) para el frame actual."""
@@ -418,6 +431,8 @@ class Efectos:
         self._dt = dt
         # Pausa: el tiempo de simulación no avanza → todo apagado.
         sim_t = d.get("SIMULATION TIME", 0.0)
+        self._frame_nuevo = self.sim_t_prev is None or sim_t != self.sim_t_prev
+        self._dt_sim = 0.0 if self.sim_t_prev is None else min(0.2, sim_t - self.sim_t_prev)
         if self.sim_t_prev is not None and sim_t <= self.sim_t_prev:
             self.t_sim_quieto += dt
         else:

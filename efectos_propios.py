@@ -109,15 +109,31 @@ class Evaluador:
         self.x_prev: float | None = None
         self.t_golpe = -99.0
         self.fase = 0.0
+        self.vel = 0.0
+        self.sim_t: float | None = None
 
     def valor(self, d: dict, t: float, dt: float) -> float:
         e = self.ef
-        x = d.get(e.fuente, d.get("LVAR:" + e.fuente, 0.0))
+        x = d.get(e.fuente, d.get("LVAR:" + e.fuente))
+        if x is None:   # la variable todavía no llegó (o el avión no la tiene): no se evalúa nada
+            self.x_prev, self.activo = None, False
+            return 0.0
         lo, hi = e.umbral
         span = max(1e-9, hi - lo)
         h = e.histeresis
         if e.disparo == "mientras_cambia":
-            vel = abs(x - self.x_prev) / dt if self.x_prev is not None and dt > 0 else 0.0
+            # Derivada contra el tiempo del simulador: en un tick sin frame nuevo se repite la anterior (si no, el lazo
+            # a 50 Hz ve frames repetidos del sim, deriva 0 y el efecto titila).
+            sim_t = d.get("SIMULATION TIME")
+            if self.x_prev is None:
+                self.vel = 0.0
+            elif sim_t is None or self.sim_t is None:
+                self.vel = abs(x - self.x_prev) / dt if dt > 0 else self.vel
+            elif sim_t > self.sim_t:
+                self.vel = abs(x - self.x_prev) / (sim_t - self.sim_t)
+            if sim_t is None or self.sim_t is None or sim_t > self.sim_t or self.x_prev is None:
+                self.x_prev, self.sim_t = x, sim_t
+            vel = self.vel
             activo, norm = vel > (lo - h if self.activo else lo), (vel - lo) / span
         elif e.disparo == "sobre":
             activo, norm = x > (lo - h if self.activo else lo), (x - lo) / span
@@ -129,7 +145,8 @@ class Evaluador:
             activo, norm = x >= 0.5, 1.0
         else:
             activo, norm = True, (x - lo) / span
-        self.x_prev = x
+        if e.disparo != "mientras_cambia":
+            self.x_prev = x
         if activo and not self.activo:
             self.t_golpe = t
         self.activo = activo

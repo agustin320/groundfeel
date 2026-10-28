@@ -19,6 +19,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _probar_en_dispositivo(caso)
     _grabacion(caso)
     _config_en_vivo(caso)
+    _datos_faltantes_y_frames(caso, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -285,3 +286,29 @@ def _config_en_vivo(caso: Callable) -> None:
     tercera = v._config_nueva()
     caso("cambio de config llega al lazo", primera and segunda and not tercera,
          f"inicio {primera} / después de guardar {segunda} / sin cambios {tercera}")
+
+
+def _datos_faltantes_y_frames(caso: Callable, CFG: dict) -> None:
+    """Una variable que no llegó no dispara nada, y los ticks sin frame nuevo del sim no hacen titilar derivadas."""
+    from efectos import Efectos
+    from efectos_propios import EfectoPropio, Evaluador
+    bajo = Evaluador(EfectoPropio(fuente="L:NO_EXISTE", disparo="bajo", umbral=(0.0, 100.0), intensidad=1.0))
+    v_falta = bajo.valor({}, 0.0, 0.02)
+    v_llega = bajo.valor({"LVAR:L:NO_EXISTE": 50.0}, 0.02, 0.02)
+    camb = Evaluador(EfectoPropio(fuente="X", disparo="mientras_cambia", umbral=(1.0, 50.0), intensidad=1.0))
+    camb.valor({}, 0.0, 0.02)
+    v_salto = camb.valor({"X": 1000.0}, 0.02, 0.02)
+    caso("variable ausente no dispara", v_falta == 0 and v_llega > 0 and v_salto == 0,
+         f"falta {v_falta} / llega {v_llega:.2f} / aparece {v_salto}")
+
+    # Flaps a 30 fps del sim con el lazo a 50 Hz: el frame se repite cada tanto; el efecto no puede caer a 0.
+    ef = Efectos(CFG)
+    base = {"SIM ON GROUND": 0, "AIRSPEED INDICATED": 200, "GEAR CENTER POSITION": 0, "SURFACE TYPE": 4}
+    vals = []
+    for i in range(100):
+        t = i * 0.02
+        frame = int(t * 30)
+        d = dict(base, **{"SIMULATION TIME": 500.0 + frame / 30, "TRAILING EDGE FLAPS LEFT PERCENT": frame / 30 * 0.1})
+        e, _ = ef.paso(d, t)
+        vals.append(e["flaps"])
+    caso("flaps no titilan con frames repetidos", min(vals[10:]) > 0, f"mínimo {min(vals[10:]):.3f}")

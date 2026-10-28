@@ -175,7 +175,7 @@ class Vibracion:
                         self.estado.perfil = p.nombre if p else ""
                         log.info("avión: %s · perfil: %s", avion or "?", self.estado.perfil or "genérico")
                         recargo = True
-                    if self.cfg.datos.get("efectos_propios") is not self._propios_src:
+                    if self.cfg.datos.get("efectos_propios") != self._propios_src:
                         self._propios_src = self.cfg.datos.get("efectos_propios")
                         self._pedir_variables(sim)
                     if recargo:

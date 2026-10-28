@@ -138,7 +138,7 @@ class LectorSim:
     def _registrar_lvars(self) -> None:
         with self._lock:
             pedidas, self._lvars_pedidas = self._lvars_pedidas, None
-        if pedidas is None:
+        if pedidas is None or pedidas == self._lvars:   # la misma lista: no se rearma (los valores siguen llegando)
             return
         self.dll.SimConnect_ClearDataDefinition(self.h, GRUPO_LVARS)
         for i, (_, nombre, unidad) in enumerate(pedidas):
