@@ -4,10 +4,21 @@ Reason: pruebas.py pasaba las 400 líneas; estas reciben sus helpers por paráme
 """
 from __future__ import annotations
 
+import sys
+import types
 from collections.abc import Callable
 
 
+def _sin_hid() -> None:
+    """Reason: el CI corre en Linux sin hidapi; estas pruebas usan Vibracion(silencio=True), que nunca abre un HID."""
+    try:
+        import hid  # noqa: F401
+    except ImportError:
+        sys.modules["hid"] = types.ModuleType("hid")
+
+
 def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None:
+    _sin_hid()
     _cadencia(caso)
     _nyquist(caso)
     _vuelo(caso, correr)
