@@ -69,7 +69,7 @@ def _buscar(seccion: str, clave: str) -> str:
 
 def t(clave: str, **valores: object) -> str:
     if clave == "app":
-        return IDIOMAS.get(_IDIOMA, {}).get("app") or IDIOMAS.get("en", {}).get("app", "URSA Rumble")
+        return IDIOMAS.get(_IDIOMA, {}).get("app") or IDIOMAS.get("en", {}).get("app", "Groundfeel")
     texto = _buscar("textos", clave)
     return texto.format(**valores) if valores else texto
 

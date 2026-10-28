@@ -1,6 +1,6 @@
 {
   "nombre": "বাংলা",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "সিমুলেটর সংযুক্ত",
     "sim_esperando": "সিমুলেটরের জন্য অপেক্ষা",
@@ -32,7 +32,7 @@
     "act_buscar": "এখনই খুঁজুন",
     "act_instalar": "এখনই আপডেট করুন",
     "act_nota": "স্বয়ংক্রিয় আপডেট চালু থাকলে সিমুলেটর বন্ধ করলেই নতুন সংস্করণ নিজে থেকে ইনস্টল হয়।",
-    "titulo_ajustes": "URSA Rumble {v} — সেটিংস",
+    "titulo_ajustes": "Groundfeel {v} — সেটিংস",
     "estado": "অবস্থা",
     "intensidad": "তীব্রতা",
     "rodaje_joystick": "গ্রাউন্ড রোল (জয়স্টিক)",
@@ -46,8 +46,8 @@
     "cerrar": "বন্ধ করুন",
     "aviso_simapppro": "জয়স্টিক ও থ্রটলের জন্য SimAppPro-র কম্পন বন্ধ করতে ভুলবেন না।",
     "reportar": "সমস্যা জানান",
-    "error_inesperado": "URSA Rumble-এ একটি অপ্রত্যাশিত ত্রুটি হয়েছে। পাঠাতে মেনুতে “সমস্যা জানান” ব্যবহার করুন; পাঠানোর আগে আপনি সবকিছু দেখতে পাবেন।",
-    "actualizado": "URSA Rumble সংস্করণ {v}-এ আপডেট হয়েছে।",
+    "error_inesperado": "Groundfeel-এ একটি অপ্রত্যাশিত ত্রুটি হয়েছে। পাঠাতে মেনুতে “সমস্যা জানান” ব্যবহার করুন; পাঠানোর আগে আপনি সবকিছু দেখতে পাবেন।",
+    "actualizado": "Groundfeel সংস্করণ {v}-এ আপডেট হয়েছে।",
     "avion": "বিমান: {a} · প্রোফাইল: {p}",
     "perfil_generico": "সাধারণ",
     "grabar": "ফ্লাইট রেকর্ড করুন (এই বিমান টিউন করতে)"

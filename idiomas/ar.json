@@ -1,6 +1,6 @@
 {
   "nombre": "العربية",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "المحاكي متصل",
     "sim_esperando": "في انتظار المحاكي",
@@ -32,7 +32,7 @@
     "act_buscar": "تحقق الآن",
     "act_instalar": "حدّث الآن",
     "act_nota": "عند تفعيل التحديث التلقائي، يُثبَّت الإصدار الجديد تلقائيًا عند إغلاق المحاكي.",
-    "titulo_ajustes": "URSA Rumble {v} — الإعدادات",
+    "titulo_ajustes": "Groundfeel {v} — الإعدادات",
     "estado": "الحالة",
     "intensidad": "الشدة",
     "rodaje_joystick": "الدرج على الأرض (عصا التحكم)",
@@ -46,8 +46,8 @@
     "cerrar": "إغلاق",
     "aviso_simapppro": "تذكّر إيقاف اهتزاز SimAppPro لعصا التحكم ومقبض الدفع.",
     "reportar": "الإبلاغ عن مشكلة",
-    "error_inesperado": "واجه URSA Rumble خطأً غير متوقع. استخدم «الإبلاغ عن مشكلة» من القائمة لإرساله؛ سترى كل شيء قبل الإرسال.",
-    "actualizado": "تم تحديث URSA Rumble إلى الإصدار {v}.",
+    "error_inesperado": "واجه Groundfeel خطأً غير متوقع. استخدم «الإبلاغ عن مشكلة» من القائمة لإرساله؛ سترى كل شيء قبل الإرسال.",
+    "actualizado": "تم تحديث Groundfeel إلى الإصدار {v}.",
     "avion": "الطائرة: {a} · الملف: {p}",
     "perfil_generico": "عام",
     "grabar": "تسجيل الرحلة (لضبط هذه الطائرة)"

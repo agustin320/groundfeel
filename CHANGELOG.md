@@ -1,5 +1,16 @@
 # Changelog / Registro de cambios
 
+## 1.6.0
+
+**English**
+- **New name: Groundfeel** (formerly URSA Rumble). Same app, same settings and same automatic updates; only the
+  visible name changes. "URSA MINOR" is WinWing's product name and is now used only to describe the hardware.
+
+**Español**
+- **Nombre nuevo: Groundfeel** (antes Vibración URSA / URSA Rumble). La misma app, los mismos ajustes y las mismas
+  actualizaciones automáticas; sólo cambia el nombre visible. "URSA MINOR" es el nombre del producto de WinWing y
+  ahora se usa sólo para describir el hardware.
+
 ## 1.5.1
 
 **English**

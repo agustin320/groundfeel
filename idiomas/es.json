@@ -1,6 +1,6 @@
 {
   "nombre": "Español",
-  "app": "Vibración URSA",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "Simulador conectado",
     "sim_esperando": "Esperando al simulador",
@@ -32,7 +32,7 @@
     "act_buscar": "Buscar ahora",
     "act_instalar": "Actualizar ahora",
     "act_nota": "Con la opción automática, la versión nueva se instala sola cuando cerrás el simulador.",
-    "titulo_ajustes": "Vibración URSA {v} — Ajustes",
+    "titulo_ajustes": "Groundfeel {v} — Ajustes",
     "estado": "Estado",
     "intensidad": "Intensidad",
     "rodaje_joystick": "Rodaje (joystick)",
@@ -46,8 +46,8 @@
     "cerrar": "Cerrar",
     "aviso_simapppro": "Recordá apagar la vibración de SimAppPro para el joystick y el throttle.",
     "reportar": "Reportar un problema",
-    "error_inesperado": "Vibración URSA tuvo un error inesperado. Usá «Reportar un problema» en el menú para enviarlo; vas a ver todo antes de que se mande.",
-    "actualizado": "Vibración URSA se actualizó a la versión {v}.",
+    "error_inesperado": "Groundfeel tuvo un error inesperado. Usá «Reportar un problema» en el menú para enviarlo; vas a ver todo antes de que se mande.",
+    "actualizado": "Groundfeel se actualizó a la versión {v}.",
     "avion": "Avión: {a} · perfil: {p}",
     "perfil_generico": "genérico",
     "grabar": "Grabar vuelo (para afinar este avión)"

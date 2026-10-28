@@ -1,6 +1,6 @@
 {
   "nombre": "Italiano",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "Simulatore connesso",
     "sim_esperando": "In attesa del simulatore",
@@ -32,7 +32,7 @@
     "act_buscar": "Controlla ora",
     "act_instalar": "Aggiorna ora",
     "act_nota": "Con gli aggiornamenti automatici, la nuova versione si installa da sola quando chiudi il simulatore.",
-    "titulo_ajustes": "URSA Rumble {v} — Impostazioni",
+    "titulo_ajustes": "Groundfeel {v} — Impostazioni",
     "estado": "Stato",
     "intensidad": "Intensità",
     "rodaje_joystick": "Rullaggio (joystick)",
@@ -46,8 +46,8 @@
     "cerrar": "Chiudi",
     "aviso_simapppro": "Ricordati di disattivare la vibrazione di SimAppPro per joystick e manetta.",
     "reportar": "Segnala un problema",
-    "error_inesperado": "URSA Rumble ha avuto un errore imprevisto. Usa «Segnala un problema» nel menu per inviarlo; vedrai tutto prima dell'invio.",
-    "actualizado": "URSA Rumble è stato aggiornato alla versione {v}.",
+    "error_inesperado": "Groundfeel ha avuto un errore imprevisto. Usa «Segnala un problema» nel menu per inviarlo; vedrai tutto prima dell'invio.",
+    "actualizado": "Groundfeel è stato aggiornato alla versione {v}.",
     "avion": "Aereo: {a} · profilo: {p}",
     "perfil_generico": "generico",
     "grabar": "Registra il volo (per regolare questo aereo)"

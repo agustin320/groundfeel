@@ -1,4 +1,4 @@
-; Instalador de Vibración URSA (Inno Setup 6). Lo compila el workflow de release:
+; Instalador de Groundfeel (Inno Setup 6). Lo compila el workflow de release:
 ;   ISCC /DVersion=1.1.0 instalador.iss   ->  dist\VibracionURSA-Setup.exe
 ; Instala por usuario (sin administrador) en %LOCALAPPDATA%\Programs\VibracionURSA.
 
@@ -8,26 +8,26 @@
 
 [Setup]
 AppId={{6C1E2D7A-5B4F-4E8B-9C3A-2F7D1E0B8A41}
-AppName=URSA Rumble (Vibración URSA)
+AppName=Groundfeel
 AppVersion={#Version}
-AppVerName=URSA Rumble {#Version}
+AppVerName=Groundfeel {#Version}
 AppPublisher=agustin320
 AppPublisherURL=https://github.com/agustin320/vibracion-ursa
 AppSupportURL=https://github.com/agustin320/vibracion-ursa/issues
 AppUpdatesURL=https://github.com/agustin320/vibracion-ursa/releases
 VersionInfoVersion={#Version}
-VersionInfoProductName=vibracion-ursa
-VersionInfoDescription=URSA Rumble installer
+VersionInfoProductName=Groundfeel
+VersionInfoDescription=Groundfeel installer
 PrivilegesRequired=lowest
 DefaultDirName={localappdata}\Programs\VibracionURSA
 DisableDirPage=yes
-DefaultGroupName=URSA Rumble
+DefaultGroupName=Groundfeel
 DisableProgramGroupPage=yes
 OutputDir=dist
 OutputBaseFilename=VibracionURSA-Setup
 SetupIconFile=recursos\icono.ico
 UninstallDisplayIcon={app}\VibracionURSA.exe
-UninstallDisplayName=URSA Rumble (Vibración URSA)
+UninstallDisplayName=Groundfeel
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -46,8 +46,8 @@ en.Privacy=Privacy: the only internet connection is checking for and downloading
 es.Privacy=Privacidad: la única conexión a internet es buscar y bajar actualizaciones desde GitHub. No se envía ningún dato personal. Se puede desactivar en Ajustes.
 en.SimAppPro=Remember to turn off SimAppPro's vibration for the joystick and the throttle.
 es.SimAppPro=Acordate de apagar la vibración de SimAppPro para el joystick y el throttle.
-en.Launch=Open URSA Rumble now
-es.Launch=Abrir Vibración URSA ahora
+en.Launch=Open Groundfeel now
+es.Launch=Abrir Groundfeel ahora
 
 [Tasks]
 Name: "autostart"; Description: "{cm:Autostart}"
@@ -57,8 +57,12 @@ Source: "dist\VibracionURSA\*"; DestDir: "{app}"; Flags: ignoreversion recursesu
 Source: "LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"
 Source: "THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"
 
+[InstallDelete]
+; Reason: hasta la 1.5.1 el acceso directo se llamaba "URSA Rumble"; al actualizar quedaba duplicado.
+Type: files; Name: "{userprograms}\URSA Rumble.lnk"
+
 [Icons]
-Name: "{userprograms}\URSA Rumble"; Filename: "{app}\VibracionURSA.exe"
+Name: "{userprograms}\Groundfeel"; Filename: "{app}\VibracionURSA.exe"
 
 [Registry]
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "VibracionURSA"; ValueData: """{app}\VibracionURSA.exe"""; Tasks: autostart; Flags: uninsdeletevalue

@@ -127,4 +127,4 @@ jobs:
           # así las descargas de GitHub separan instalaciones de actualizaciones sin telemetría.
           Copy-Item dist/VibracionURSA-Setup.exe dist/VibracionURSA-Update.exe
           $notas = "**Download / Descarga:** ``VibracionURSA-Setup.exe`` (``-Update.exe`` is used by the built-in updater)`n`nCode signing policy: https://github.com/$($env:REPO)#code-signing-policy"
-          gh release create $env:TAG dist/VibracionURSA-Setup.exe dist/VibracionURSA-Update.exe -R $env:REPO --title "URSA Rumble $($env:TAG)" --notes $notas --generate-notes
+          gh release create $env:TAG dist/VibracionURSA-Setup.exe dist/VibracionURSA-Update.exe -R $env:REPO --title "Groundfeel $($env:TAG)" --notes $notas --generate-notes

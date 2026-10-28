@@ -1,4 +1,4 @@
-# URSA Rumble — User Manual
+# Groundfeel — User Manual
 
 Version 1.4 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Simulator 2024
 
@@ -6,7 +6,7 @@ Version 1.4 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Si
 
 ## Contents
 
-1. [What URSA Rumble does](#1-what-ursa-rumble-does)
+1. [What Groundfeel does](#1-what-groundfeel-does)
 2. [What you need](#2-what-you-need)
 3. [Installation](#3-installation)
 4. [First use: turn off SimAppPro's vibration](#4-first-use-turn-off-simapppros-vibration)
@@ -20,16 +20,16 @@ Version 1.4 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Si
 
 ---
 
-## 1. What URSA Rumble does
+## 1. What Groundfeel does
 
-URSA Rumble is a free, open-source app (MIT license) that drives the vibration motors in your **WinWing URSA MINOR 32 joystick L** and **throttle Metal R**. It replaces SimAppPro's vibration with effects based on what your aircraft is really doing in MSFS 2024: the surface you're rolling on, your speed, how hard you land, how hard you brake, engine power, reverse thrust, gear, flaps and more.
+Groundfeel is a free, open-source app (MIT license) that drives the vibration motors in your **WinWing URSA MINOR 32 joystick L** and **throttle Metal R**. It replaces SimAppPro's vibration with effects based on what your aircraft is really doing in MSFS 2024: the surface you're rolling on, your speed, how hard you land, how hard you brake, engine power, reverse thrust, gear, flaps and more.
 
 - It sits quietly in the Windows **system tray**, next to the clock.
 - It connects to the simulator by itself when MSFS opens.
 - It only **reads** the simulator. It never changes anything in your flight.
 - It never sends personal data. Its only internet connection is checking GitHub for updates, and you can turn that off.
 
-> URSA Rumble is an independent project. It isn't affiliated with WinWing or Microsoft.
+> Groundfeel is an independent project. It isn't affiliated with WinWing or Microsoft.
 
 ---
 
@@ -73,11 +73,11 @@ The installer isn't code-signed yet, so Windows may show a blue **"Windows prote
 2. Accept the license (MIT).
 3. Choose whether to **Start with Windows**. Recommended: the app waits in the tray, uses no vibration until the simulator opens, and you never have to remember to launch it.
 4. Click **Install**.
-5. On the last page, read the privacy and SimAppPro notes, leave **"Open URSA Rumble now"** ticked and click **Finish**.
+5. On the last page, read the privacy and SimAppPro notes, leave **"Open Groundfeel now"** ticked and click **Finish**.
 
 [CAPTURE: installer page with the "Start with Windows" checkbox]
 
-[CAPTURE: final installer page with the privacy note, the SimAppPro reminder and "Open URSA Rumble now"]
+[CAPTURE: final installer page with the privacy note, the SimAppPro reminder and "Open Groundfeel now"]
 
 Where things go:
 
@@ -85,14 +85,14 @@ Where things go:
 |---|---|
 | The program | `%LOCALAPPDATA%\Programs\VibracionURSA` (installed for your user only) |
 | Your settings and the log | `%APPDATA%\VibracionURSA` |
-| Shortcut | Start menu → **URSA Rumble** |
+| Shortcut | Start menu → **Groundfeel** |
 | Uninstall entry | Windows Settings → Apps → Installed apps |
 
 ### Step 4 — Find the tray icon
 
-Look for the URSA Rumble icon next to the clock. If you don't see it, click the small **^** arrow to show hidden icons. You can drag it onto the taskbar so it's always visible.
+Look for the Groundfeel icon next to the clock. If you don't see it, click the small **^** arrow to show hidden icons. You can drag it onto the taskbar so it's always visible.
 
-[CAPTURE: Windows taskbar with the hidden-icons area open and the URSA Rumble icon highlighted]
+[CAPTURE: Windows taskbar with the hidden-icons area open and the Groundfeel icon highlighted]
 
 ---
 
@@ -136,7 +136,7 @@ Hover over the icon to see the connection status and the devices found.
 
 | Item | What it does |
 |---|---|
-| URSA Rumble 1.4.0 | Shows the installed version (not clickable) |
+| Groundfeel 1.4.0 | Shows the installed version (not clickable) |
 | Status line | Simulator connected or waiting, and the devices found (not clickable) |
 | **Settings…** | Opens the Settings window (also the icon's default action) |
 | **Pause vibration** | Turns all vibration off until you untick it |
@@ -237,7 +237,7 @@ Loading a flight already on the ground does **not** give a touchdown bump: it's 
 |---|---|---|
 | Reversers deployed | A strong vibration on each engine's lever, growing with power | Throttle |
 
-If the aircraft doesn't report reverse thrust to the simulator (for example the FlyByWire A320), URSA Rumble detects it from high engine power while decelerating on the ground.
+If the aircraft doesn't report reverse thrust to the simulator (for example the FlyByWire A320), Groundfeel detects it from high engine power while decelerating on the ground.
 
 ### Brakes
 
@@ -368,7 +368,7 @@ The app is available in 20 languages: English, Mandarin Chinese, Hindi, Spanish,
 
 ## 10. Uninstalling
 
-1. Tray menu → **Uninstall…**, or Windows Settings → Apps → Installed apps → **URSA Rumble (Vibración URSA)** → Uninstall.
+1. Tray menu → **Uninstall…**, or Windows Settings → Apps → Installed apps → **Groundfeel** → Uninstall.
 2. The uninstaller closes the app first and turns the motors off.
 3. Confirm.
 
@@ -384,7 +384,7 @@ If you want SimAppPro to handle vibration again, turn its vibration back on for 
 
 Check in this order:
 
-1. **Is the app running?** Look for the icon in the tray. If it's not there, open **URSA Rumble** from the Start menu.
+1. **Is the app running?** Look for the icon in the tray. If it's not there, open **Groundfeel** from the Start menu.
 2. **Open Settings → Status.**
    - "Waiting for the simulator" → see [It doesn't detect the simulator](#it-doesnt-detect-the-simulator).
    - "Devices: none found" in red → check the USB cables. The app looks for the devices again every 10 seconds, so you don't need to restart it.
@@ -418,7 +418,7 @@ Check in this order:
 
 This happens if the app was closed abruptly (for example killed from Task Manager or a crash) while a motor was running.
 
-1. Open **URSA Rumble** again from the Start menu. When it starts, it turns the motors off.
+1. Open **Groundfeel** again from the Start menu. When it starts, it turns the motors off.
 2. If it's already running and the motor keeps going, choose **Exit** from the tray menu and open it again.
 3. As a last resort, unplug and replug the device's USB cable.
 
@@ -426,11 +426,11 @@ To avoid it, always close the app with **Exit** from the tray menu.
 
 ### It doesn't detect the simulator
 
-- URSA Rumble is made for **MSFS 2024**.
+- Groundfeel is made for **MSFS 2024**.
 - It connects by itself: there's no need to start it in any particular order. Give it a few seconds once a flight is loading or loaded.
 - "Simulator connected" means it's receiving data from the aircraft.
 - If it stays on "Waiting for the simulator" with a flight loaded:
-  1. Choose **Exit** in the tray menu and open URSA Rumble again from the Start menu.
+  1. Choose **Exit** in the tray menu and open Groundfeel again from the Start menu.
   2. Check the log (**View log**) for errors and include it in an issue.
 
 ### Other questions
@@ -444,4 +444,4 @@ To avoid it, always close the app with **Exit** from the tray menu.
 | The touchdown is too strong / too soft | It follows your descent rate. Adjust the overall strength with the **Joystick** and **Throttle** sliders |
 | Where's the log? | Tray menu → **View log**, or `%APPDATA%\VibracionURSA\vibracion.log` |
 | How do I report a bug or a translation mistake? | Tray menu → **Report a problem…**. It opens a GitHub issue already filled in with the version, Windows, devices, the last unexpected error and the last log lines, with your user name, user folder and computer name masked. Review it, describe what happened and submit it. Nothing is sent unless you submit it |
-| It said "URSA Rumble hit an unexpected error" | The details were saved in `%APPDATA%\VibracionURSA\errores\`. Use **Report a problem…** so it can be fixed |
+| It said "Groundfeel hit an unexpected error" | The details were saved in `%APPDATA%\VibracionURSA\errores\`. Use **Report a problem…** so it can be fixed |

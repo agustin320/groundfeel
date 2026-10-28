@@ -1,6 +1,6 @@
 {
   "nombre": "한국어",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "시뮬레이터 연결됨",
     "sim_esperando": "시뮬레이터 대기 중",
@@ -32,7 +32,7 @@
     "act_buscar": "지금 확인",
     "act_instalar": "지금 업데이트",
     "act_nota": "자동 업데이트를 켜면 시뮬레이터를 닫을 때 새 버전이 자동으로 설치됩니다.",
-    "titulo_ajustes": "URSA Rumble {v} — 설정",
+    "titulo_ajustes": "Groundfeel {v} — 설정",
     "estado": "상태",
     "intensidad": "강도",
     "rodaje_joystick": "지상 주행(조이스틱)",
@@ -46,8 +46,8 @@
     "cerrar": "닫기",
     "aviso_simapppro": "조이스틱과 스로틀의 SimAppPro 진동을 끄는 것을 잊지 마세요.",
     "reportar": "문제 신고",
-    "error_inesperado": "URSA Rumble에서 예기치 않은 오류가 발생했습니다. 메뉴의 “문제 신고”로 보낼 수 있으며, 보내기 전에 모든 내용을 확인할 수 있습니다.",
-    "actualizado": "URSA Rumble이 버전 {v}(으)로 업데이트되었습니다.",
+    "error_inesperado": "Groundfeel에서 예기치 않은 오류가 발생했습니다. 메뉴의 “문제 신고”로 보낼 수 있으며, 보내기 전에 모든 내용을 확인할 수 있습니다.",
+    "actualizado": "Groundfeel이 버전 {v}(으)로 업데이트되었습니다.",
     "avion": "항공기: {a} · 프로필: {p}",
     "perfil_generico": "일반",
     "grabar": "비행 기록(이 항공기 조정용)"

@@ -1,14 +1,14 @@
-# Vibración URSA — Manual de usuario
+# Groundfeel — Manual de usuario
 
 Versión 1.4 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Simulator 2024
 
-> En inglés la app se llama **URSA Rumble**. Es el mismo programa: el nombre cambia según el idioma.
+> En inglés la app se llama **Groundfeel**. Es el mismo programa: el nombre cambia según el idioma.
 
 ---
 
 ## Contenido
 
-1. [Qué hace Vibración URSA](#1-qué-hace-vibración-ursa)
+1. [Qué hace Groundfeel](#1-qué-hace-groundfeel)
 2. [Qué necesitás](#2-qué-necesitás)
 3. [Instalación](#3-instalación)
 4. [Primer uso: apagar la vibración de SimAppPro](#4-primer-uso-apagar-la-vibración-de-simapppro)
@@ -22,16 +22,16 @@ Versión 1.4 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Si
 
 ---
 
-## 1. Qué hace Vibración URSA
+## 1. Qué hace Groundfeel
 
-Vibración URSA es una app gratuita y de código abierto (licencia MIT) que maneja los motores de vibración del **joystick L** y del **throttle Metal R** del **WinWing URSA MINOR 32**. Reemplaza la vibración de SimAppPro por efectos basados en lo que hace tu avión en MSFS 2024: la superficie por la que rodás, la velocidad, qué tan fuerte aterrizás y frenás, la potencia de los motores, la reversa, el tren, los flaps y más.
+Groundfeel es una app gratuita y de código abierto (licencia MIT) que maneja los motores de vibración del **joystick L** y del **throttle Metal R** del **WinWing URSA MINOR 32**. Reemplaza la vibración de SimAppPro por efectos basados en lo que hace tu avión en MSFS 2024: la superficie por la que rodás, la velocidad, qué tan fuerte aterrizás y frenás, la potencia de los motores, la reversa, el tren, los flaps y más.
 
 - Vive tranquila en la **bandeja del sistema** de Windows, junto al reloj.
 - Se conecta sola al simulador cuando abrís MSFS.
 - Sólo **lee** el simulador. Nunca cambia nada de tu vuelo.
 - No envía datos personales. Su única conexión a internet es buscar actualizaciones en GitHub, y se puede apagar.
 
-> Vibración URSA es un proyecto independiente, sin relación con WinWing ni con Microsoft.
+> Groundfeel es un proyecto independiente, sin relación con WinWing ni con Microsoft.
 
 ---
 
@@ -75,11 +75,11 @@ El instalador todavía no está firmado, así que Windows puede mostrar una vent
 2. Aceptá la licencia (MIT).
 3. Elegí si querés **Iniciar con Windows**. Recomendado: la app espera en la bandeja sin hacer vibrar nada hasta que abrís el simulador, y no tenés que acordarte de abrirla.
 4. Hacé click en **Instalar**.
-5. En la última pantalla, leé las notas de privacidad y de SimAppPro, dejá tildado **"Abrir Vibración URSA ahora"** y hacé click en **Finalizar**.
+5. En la última pantalla, leé las notas de privacidad y de SimAppPro, dejá tildado **"Abrir Groundfeel ahora"** y hacé click en **Finalizar**.
 
 [CAPTURA: pantalla del instalador con la casilla "Iniciar con Windows"]
 
-[CAPTURA: pantalla final del instalador con la nota de privacidad, el recordatorio de SimAppPro y "Abrir Vibración URSA ahora"]
+[CAPTURA: pantalla final del instalador con la nota de privacidad, el recordatorio de SimAppPro y "Abrir Groundfeel ahora"]
 
 Dónde queda cada cosa:
 
@@ -87,14 +87,14 @@ Dónde queda cada cosa:
 |---|---|
 | El programa | `%LOCALAPPDATA%\Programs\VibracionURSA` (sólo para tu usuario) |
 | Tus ajustes y el registro | `%APPDATA%\VibracionURSA` |
-| Acceso directo | Menú Inicio → **URSA Rumble** |
+| Acceso directo | Menú Inicio → **Groundfeel** |
 | Para desinstalar | Configuración de Windows → Aplicaciones → Aplicaciones instaladas |
 
 ### Paso 4 — Encontrar el ícono en la bandeja
 
 Buscá el ícono junto al reloj. Si no lo ves, hacé click en la flechita **^** que muestra los íconos ocultos. Lo podés arrastrar a la barra de tareas para tenerlo siempre a la vista.
 
-[CAPTURA: barra de tareas de Windows con los íconos ocultos desplegados y el ícono de Vibración URSA resaltado]
+[CAPTURA: barra de tareas de Windows con los íconos ocultos desplegados y el ícono de Groundfeel resaltado]
 
 ---
 
@@ -138,7 +138,7 @@ Si dejás el mouse sobre el ícono, ves el estado de la conexión y los disposit
 
 | Opción | Qué hace |
 |---|---|
-| Vibración URSA 1.2.0 | Muestra la versión instalada (no se puede tocar) |
+| Groundfeel 1.2.0 | Muestra la versión instalada (no se puede tocar) |
 | Línea de estado | Simulador conectado o esperando, y los dispositivos encontrados (no se puede tocar) |
 | **Ajustes…** | Abre la ventana de Ajustes (también es la acción por defecto del ícono) |
 | **Pausar vibración** | Apaga toda la vibración hasta que la destildes |
@@ -239,7 +239,7 @@ Cargar un vuelo que ya arranca en tierra **no** da golpe de toque: sólo se sien
 |---|---|---|
 | Reversores desplegados | Una vibración fuerte en la palanca de cada motor, que crece con la potencia | Throttle |
 
-Si el avión no le informa la reversa al simulador (por ejemplo, el A320 de FlyByWire), Vibración URSA la deduce de la potencia alta mientras el avión desacelera en tierra.
+Si el avión no le informa la reversa al simulador (por ejemplo, el A320 de FlyByWire), Groundfeel la deduce de la potencia alta mientras el avión desacelera en tierra.
 
 ### Frenos
 
@@ -370,7 +370,7 @@ La app está en 20 idiomas: inglés, chino mandarín, hindi, castellano, francé
 
 ## 10. Desinstalar
 
-1. Menú de la bandeja → **Desinstalar…**, o Configuración de Windows → Aplicaciones → Aplicaciones instaladas → **URSA Rumble (Vibración URSA)** → Desinstalar.
+1. Menú de la bandeja → **Desinstalar…**, o Configuración de Windows → Aplicaciones → Aplicaciones instaladas → **Groundfeel** → Desinstalar.
 2. El desinstalador primero cierra la app y apaga los motores.
 3. Confirmá.
 
@@ -386,7 +386,7 @@ Si querés que SimAppPro vuelva a manejar la vibración, prendé de nuevo su vib
 
 Revisá en este orden:
 
-1. **¿La app está abierta?** Buscá el ícono en la bandeja. Si no está, abrí **URSA Rumble** desde el menú Inicio.
+1. **¿La app está abierta?** Buscá el ícono en la bandeja. Si no está, abrí **Groundfeel** desde el menú Inicio.
 2. **Abrí Ajustes → Estado.**
    - "Esperando al simulador" → ver [No detecta el simulador](#no-detecta-el-simulador).
    - "Dispositivos: ninguno encontrado" en rojo → revisá los cables USB. La app vuelve a buscar los dispositivos cada 10 segundos, así que no hace falta reiniciarla.
@@ -420,7 +420,7 @@ Revisá en este orden:
 
 Pasa si la app se cerró de golpe (por ejemplo, matándola desde el Administrador de tareas o por un cuelgue) con un motor andando.
 
-1. Volvé a abrir **URSA Rumble** desde el menú Inicio. Al arrancar, apaga los motores.
+1. Volvé a abrir **Groundfeel** desde el menú Inicio. Al arrancar, apaga los motores.
 2. Si ya estaba abierta y el motor sigue, elegí **Salir** en el menú de la bandeja y abrila de nuevo.
 3. Como último recurso, desenchufá y volvé a enchufar el cable USB del dispositivo.
 
@@ -428,11 +428,11 @@ Para evitarlo, cerrá siempre la app con **Salir** desde el menú de la bandeja.
 
 ### No detecta el simulador
 
-- Vibración URSA está hecha para **MSFS 2024**.
+- Groundfeel está hecha para **MSFS 2024**.
 - Se conecta sola: no hace falta abrir las cosas en un orden especial. Dale unos segundos cuando el vuelo está cargando o ya cargado.
 - "Simulador conectado" significa que está recibiendo datos del avión.
 - Si se queda en "Esperando al simulador" con un vuelo cargado:
-  1. Elegí **Salir** en el menú de la bandeja y volvé a abrir URSA Rumble desde el menú Inicio.
+  1. Elegí **Salir** en el menú de la bandeja y volvé a abrir Groundfeel desde el menú Inicio.
   2. Revisá el registro (**Ver registro**) por si hay errores e incluilo en un issue.
 
 ### Otras preguntas
@@ -451,4 +451,4 @@ Para evitarlo, cerrá siempre la app con **Salir** desde el menú de la bandeja.
 
 Menú de la bandeja → **Reportar un problema…** (o el botón en Ajustes). Se abre en el navegador un issue de GitHub ya completo con la versión, Windows, los dispositivos, el último error inesperado y las últimas líneas del registro. Tu nombre de usuario, tu carpeta de usuario y el nombre del equipo van tapados. Lo revisás, contás qué pasó y lo mandás: no se envía nada si vos no lo mandás.
 
-Si aparece el aviso «Vibración URSA tuvo un error inesperado», el detalle quedó guardado en `%APPDATA%\VibracionURSA\errores\`: usá **Reportar un problema…** para que se pueda arreglar.
+Si aparece el aviso «Groundfeel tuvo un error inesperado», el detalle quedó guardado en `%APPDATA%\VibracionURSA\errores\`: usá **Reportar un problema…** para que se pueda arreglar.

@@ -1,6 +1,6 @@
 {
   "nombre": "Bahasa Indonesia",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "Simulator terhubung",
     "sim_esperando": "Menunggu simulator",
@@ -32,7 +32,7 @@
     "act_buscar": "Periksa sekarang",
     "act_instalar": "Perbarui sekarang",
     "act_nota": "Dengan pembaruan otomatis, versi baru terpasang sendiri saat Anda menutup simulator.",
-    "titulo_ajustes": "URSA Rumble {v} — Pengaturan",
+    "titulo_ajustes": "Groundfeel {v} — Pengaturan",
     "estado": "Status",
     "intensidad": "Intensitas",
     "rodaje_joystick": "Taxi di darat (joystick)",
@@ -46,8 +46,8 @@
     "cerrar": "Tutup",
     "aviso_simapppro": "Jangan lupa matikan getaran SimAppPro untuk joystick dan throttle.",
     "reportar": "Laporkan masalah",
-    "error_inesperado": "URSA Rumble mengalami kesalahan tak terduga. Gunakan “Laporkan masalah” di menu untuk mengirimnya; Anda akan melihat semuanya sebelum terkirim.",
-    "actualizado": "URSA Rumble telah diperbarui ke versi {v}.",
+    "error_inesperado": "Groundfeel mengalami kesalahan tak terduga. Gunakan “Laporkan masalah” di menu untuk mengirimnya; Anda akan melihat semuanya sebelum terkirim.",
+    "actualizado": "Groundfeel telah diperbarui ke versi {v}.",
     "avion": "Pesawat: {a} · profil: {p}",
     "perfil_generico": "umum",
     "grabar": "Rekam penerbangan (untuk menyetel pesawat ini)"

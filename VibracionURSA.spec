@@ -16,12 +16,12 @@ VERSION = VSVersionInfo(
     kids=[
         StringFileInfo([StringTable("040904B0", [
             StringStruct("CompanyName", "agustin320"),
-            StringStruct("FileDescription", "URSA Rumble - WinWing URSA MINOR vibration for MSFS 2024"),
+            StringStruct("FileDescription", "Groundfeel - WinWing URSA MINOR vibration for MSFS 2024"),
             StringStruct("FileVersion", __version__),
             StringStruct("InternalName", "VibracionURSA"),
             StringStruct("LegalCopyright", "MIT License"),
             StringStruct("OriginalFilename", "VibracionURSA.exe"),
-            StringStruct("ProductName", "vibracion-ursa"),
+            StringStruct("ProductName", "Groundfeel"),
             StringStruct("ProductVersion", __version__),
         ])]),
         VarFileInfo([VarStruct("Translation", [0x0409, 1200])]),

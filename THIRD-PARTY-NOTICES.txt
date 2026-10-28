@@ -1,7 +1,7 @@
-URSA Rumble (Vibración URSA) - Third-party notices
+Groundfeel - Third-party notices
 ===================================================
 
-URSA Rumble is distributed under the MIT License (see LICENSE). The Windows build bundles the following
+Groundfeel is distributed under the MIT License (see LICENSE). The Windows build bundles the following
 third-party components, each under its own license:
 
 - Python 3.13 runtime - Python Software Foundation License Version 2

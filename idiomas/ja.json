@@ -1,6 +1,6 @@
 {
   "nombre": "日本語",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "シミュレーターに接続済み",
     "sim_esperando": "シミュレーターを待機中",
@@ -32,7 +32,7 @@
     "act_buscar": "今すぐ確認",
     "act_instalar": "今すぐ更新",
     "act_nota": "自動更新がオンの場合、シミュレーターを閉じると新しいバージョンが自動でインストールされます。",
-    "titulo_ajustes": "URSA Rumble {v} — 設定",
+    "titulo_ajustes": "Groundfeel {v} — 設定",
     "estado": "状態",
     "intensidad": "強さ",
     "rodaje_joystick": "地上走行（ジョイスティック）",
@@ -46,8 +46,8 @@
     "cerrar": "閉じる",
     "aviso_simapppro": "ジョイスティックとスロットルの SimAppPro の振動をオフにするのを忘れずに。",
     "reportar": "問題を報告",
-    "error_inesperado": "URSA Rumble で予期しないエラーが発生しました。メニューの「問題を報告」から送信できます。送信前に内容をすべて確認できます。",
-    "actualizado": "URSA Rumble をバージョン {v} に更新しました。",
+    "error_inesperado": "Groundfeel で予期しないエラーが発生しました。メニューの「問題を報告」から送信できます。送信前に内容をすべて確認できます。",
+    "actualizado": "Groundfeel をバージョン {v} に更新しました。",
     "avion": "機体：{a} · プロファイル：{p}",
     "perfil_generico": "汎用",
     "grabar": "フライトを記録（この機体の調整用）"

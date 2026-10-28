@@ -1,4 +1,6 @@
-# Vibración URSA
+# Groundfeel
+
+*Antes "Vibración URSA" / "URSA Rumble". Proyecto independiente, sin relación con WinWing.*
 
 [English](README.md) · **Español**
 

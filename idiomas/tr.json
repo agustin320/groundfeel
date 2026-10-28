@@ -1,6 +1,6 @@
 {
   "nombre": "Türkçe",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "Simülatöre bağlı",
     "sim_esperando": "Simülatör bekleniyor",
@@ -32,7 +32,7 @@
     "act_buscar": "Şimdi denetle",
     "act_instalar": "Şimdi güncelle",
     "act_nota": "Otomatik güncellemeler açıkken yeni sürüm, simülatörü kapattığınızda kendiliğinden yüklenir.",
-    "titulo_ajustes": "URSA Rumble {v} — Ayarlar",
+    "titulo_ajustes": "Groundfeel {v} — Ayarlar",
     "estado": "Durum",
     "intensidad": "Yoğunluk",
     "rodaje_joystick": "Yer hareketi (joystick)",
@@ -46,8 +46,8 @@
     "cerrar": "Kapat",
     "aviso_simapppro": "Joystick ve gaz kolu için SimAppPro titreşimini kapatmayı unutmayın.",
     "reportar": "Sorun bildir",
-    "error_inesperado": "URSA Rumble beklenmeyen bir hatayla karşılaştı. Göndermek için menüden “Sorun bildir”i kullanın; gönderilmeden önce her şeyi görebilirsiniz.",
-    "actualizado": "URSA Rumble {v} sürümüne güncellendi.",
+    "error_inesperado": "Groundfeel beklenmeyen bir hatayla karşılaştı. Göndermek için menüden “Sorun bildir”i kullanın; gönderilmeden önce her şeyi görebilirsiniz.",
+    "actualizado": "Groundfeel {v} sürümüne güncellendi.",
     "avion": "Uçak: {a} · profil: {p}",
     "perfil_generico": "genel",
     "grabar": "Uçuşu kaydet (bu uçağı ayarlamak için)"

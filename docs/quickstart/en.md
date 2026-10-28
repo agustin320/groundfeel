@@ -1,4 +1,4 @@
-# URSA Rumble — Quick start
+# Groundfeel — Quick start
 
 Realistic vibration for the WinWing (WINCTRL) URSA MINOR 32 joystick and throttle in Microsoft Flight Simulator 2024. Free and open source.
 

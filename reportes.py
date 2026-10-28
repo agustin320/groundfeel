@@ -106,7 +106,7 @@ def armar_reporte(estado: object | None = None) -> tuple[str, str]:
     partes = [
         "**What happened?** (please describe it here)\n\n\n",
         "**System**",
-        f"- URSA Rumble: {__version__}",
+        f"- Groundfeel: {__version__}",
         f"- Windows: {platform.platform()}",
         f"- Devices found: {disp}",
         f"- Simulator connected: {conectado}",

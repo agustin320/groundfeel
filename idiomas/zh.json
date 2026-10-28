@@ -1,6 +1,6 @@
 {
   "nombre": "中文（简体）",
-  "app": "URSA Rumble",
+  "app": "Groundfeel",
   "textos": {
     "sim_conectado": "模拟器已连接",
     "sim_esperando": "正在等待模拟器",
@@ -32,7 +32,7 @@
     "act_buscar": "立即检查",
     "act_instalar": "立即更新",
     "act_nota": "开启自动更新后，新版本会在您关闭模拟器时自动安装。",
-    "titulo_ajustes": "URSA Rumble {v} — 设置",
+    "titulo_ajustes": "Groundfeel {v} — 设置",
     "estado": "状态",
     "intensidad": "强度",
     "rodaje_joystick": "地面滑行（摇杆）",
@@ -46,8 +46,8 @@
     "cerrar": "关闭",
     "aviso_simapppro": "请记得在 SimAppPro 中关闭摇杆和油门的振动。",
     "reportar": "报告问题",
-    "error_inesperado": "URSA Rumble 遇到意外错误。请在菜单中使用“报告问题”发送；发送前您可以查看全部内容。",
-    "actualizado": "URSA Rumble 已更新到版本 {v}。",
+    "error_inesperado": "Groundfeel 遇到意外错误。请在菜单中使用“报告问题”发送；发送前您可以查看全部内容。",
+    "actualizado": "Groundfeel 已更新到版本 {v}。",
     "avion": "飞机：{a} · 配置：{p}",
     "perfil_generico": "通用",
     "grabar": "录制飞行（用于调校此飞机）"
