@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections import deque
 from dataclasses import dataclass, field
 from logging.handlers import RotatingFileHandler
 
@@ -16,10 +17,12 @@ import reportes
 import rutas
 from cadencia import HZ_ENVIO, Reloj, timer_fino
 from config_usuario import Config, fusionar
-from grabador import Grabador
+from efectos_propios import EfectoPropio, serie_prueba, vista_previa
 from efectos import EFECTOS, Efectos
+from efectos_propios import cargar as cargar_propios
+from grabador import Grabador
 from motores import Motor
-from sim_lector import LectorSim
+from sim_lector import VARIABLES, LectorSim
 
 HZ = HZ_ENVIO
 log = logging.getLogger("vibracion")
@@ -48,6 +51,7 @@ class Estado:
     error: str = ""
     avion: str = ""     # nombre que informa el simulador (TITLE)
     perfil: str = ""    # perfil aplicado ("" = genérico)
+    vivo: dict = field(default_factory=dict)   # último tick: efectos, salida y datos crudos (monitor en vivo)
 
 
 class Vibracion:
@@ -65,6 +69,24 @@ class Vibracion:
         self._perfil_ajustes: dict = {}
         self._perfil: perfiles.Perfil | None = None
         self.grabador = Grabador()
+        self.historial: deque[dict[str, int]] = deque(maxlen=HZ * 10)   # salida de los últimos 10 s (monitor)
+        self._prueba: list[dict[str, int]] = []
+        self._propios_src: object = None
+
+    def probar(self, ef: EfectoPropio, segundos: float = 5.0) -> None:
+        """Hace sonar un efecto propio en el hardware durante `segundos`, tal como lo va a mandar el lazo."""
+        valores = serie_prueba(ef, segundos)
+        joy = vista_previa(ef, valores, self.cfg.datos, "joystick") if ef.ruteo != "throttle" else [0] * len(valores)
+        thr = vista_previa(ef, valores, self.cfg.datos, "throttle") if ef.ruteo != "joystick" else [0] * len(valores)
+        self._prueba = [{"joystick": j, "throttle_1": t, "throttle_2": t} for j, t in zip(joy, thr, strict=True)]
+
+    def _pedir_variables(self, sim: LectorSim) -> None:
+        """L:vars del perfil + variables que usan los efectos propios y el lector no trae por defecto."""
+        pedidas = dict(self._perfil.lvars) if self._perfil else {}
+        for ef in cargar_propios(self.cfg.datos.get("efectos_propios", [])):
+            if ef.fuente not in VARIABLES:
+                pedidas[ef.fuente] = (ef.fuente, ef.unidad)
+        sim.pedir_lvars(pedidas)
 
     def grabar(self, si: bool) -> None:
         if si:
@@ -140,10 +162,13 @@ class Vibracion:
                         p = perfiles.elegir(avion, self._perfiles)
                         self._perfil_ajustes = p.ajustes if p else {}
                         self._perfil = p
-                        sim.pedir_lvars(p.lvars if p else {})
+                        self._pedir_variables(sim)
                         self.estado.perfil = p.nombre if p else ""
                         log.info("avión: %s · perfil: %s", avion or "?", self.estado.perfil or "genérico")
                         recargo = True
+                    if self.cfg.datos.get("efectos_propios") is not self._propios_src:
+                        self._propios_src = self.cfg.datos.get("efectos_propios")
+                        self._pedir_variables(sim)
                     if recargo:
                         # defecto <- perfil del avión <- ajustes del usuario (sus intensidades siempre mandan)
                         ef.cfg = fusionar(fusionar(self.cfg.defecto, self._perfil_ajustes), self.cfg.usuario)
@@ -161,6 +186,11 @@ class Vibracion:
                     efectos, salida = ef.paso(perfiles.aplicar_fuentes(sim.datos(), self._perfil), t0)
                 else:
                     efectos, salida = {e: 0.0 for e in EFECTOS}, {k: 0 for k in ultimo}
+                if self._prueba:
+                    salida = self._prueba.pop(0)
+                self.historial.append(dict(salida))
+                self.estado.vivo = {"efectos": efectos, "salida": salida,
+                                    "datos": sim.datos() if conectado else {}}
                 if not self.silencio:
                     if len(self._motores) < 2 and t0 - t_reabrir > 10:
                         t_reabrir = t0

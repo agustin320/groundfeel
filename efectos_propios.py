@@ -162,6 +162,23 @@ def cargar(lista: list[dict]) -> list[EfectoPropio]:
     return out
 
 
+def serie_prueba(ef: EfectoPropio, segundos: float) -> list[float]:
+    """Valores de la fuente para "Probar en el dispositivo": recorren el umbral para que el efecto se sienta entero.
+
+    Booleano: se prende y se apaga cada 1 s (un golpe se repite). "Mientras cambia": la fuente cambia al ritmo del
+    medio del rango. El resto: barrido del mínimo al máximo en 2,5 s, 1 s arriba, y de nuevo.
+    """
+    n, lo, hi = int(segundos * HZ_ENVIO), ef.umbral[0], ef.umbral[1]
+    if ef.disparo == "booleano":
+        return [1.0 if (i // HZ_ENVIO) % 2 == 0 else 0.0 for i in range(n)]
+    if ef.disparo == "mientras_cambia":
+        return [(lo + hi) / 2 * i / HZ_ENVIO for i in range(n)]
+    ciclo = int(3.5 * HZ_ENVIO)
+    barrido = int(2.5 * HZ_ENVIO)
+    desde, hasta = (hi, lo) if ef.disparo == "bajo" else (lo, hi)
+    return [desde + (hasta - desde) * min(1.0, (i % ciclo) / barrido) for i in range(n)]
+
+
 def vista_previa(ef: EfectoPropio, valores: list[float], cfg: dict, disp: str = "throttle") -> list[int]:
     """Lo que realmente le llega al motor (0..255) tick a tick, a 50 Hz, para una serie de valores de la fuente.
 

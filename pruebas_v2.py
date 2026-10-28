@@ -16,6 +16,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _pausa(caso, correr, CFG)
     _lvars(caso)
     _propios(caso, correr, CFG)
+    _probar_en_dispositivo(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -241,3 +242,18 @@ def _propios(caso: Callable, correr: Callable, CFG: dict) -> None:
     zm = CFG["zona_muerta"]["throttle"]
     caso("vista previa = salida real", max(prev[:10]) == 0 and min(prev[15:]) > zm,
          f"antes {prev[:3]} / después {prev[-3:]}")
+
+
+def _probar_en_dispositivo(caso: Callable) -> None:
+    from efectos_propios import EfectoPropio, serie_prueba
+    from motor_vibracion import Vibracion
+    boole = serie_prueba(EfectoPropio(disparo="booleano"), 3.0)
+    bajo = serie_prueba(EfectoPropio(disparo="bajo", umbral=(10.0, 20.0)), 1.0)
+    caso("serie de prueba recorre el umbral", boole[0] == 1 and boole[60] == 0 and boole[110] == 1
+         and bajo[0] == 20.0 and bajo[-1] < 20.0,
+         f"booleano {boole[0]}/{boole[60]}/{boole[110]}, bajo {bajo[0]}->{bajo[-1]:.1f}")
+    v = Vibracion(silencio=True)
+    v.probar(EfectoPropio(fuente="GROUND VELOCITY", umbral=(0.0, 10.0), intensidad=0.7, ruteo="throttle"), 2.0)
+    caso("probar en el dispositivo", len(v._prueba) == 100 and max(x["throttle_1"] for x in v._prueba) > 0
+         and max(x["joystick"] for x in v._prueba) == 0,
+         f"{len(v._prueba)} ticks, throttle máx {max(x['throttle_1'] for x in v._prueba)}")
