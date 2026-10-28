@@ -1,6 +1,6 @@
 # Groundfeel — User Manual
 
-Version 1.4 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Simulator 2024
+Version 1.6 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Simulator 2024
 
 ---
 
@@ -136,7 +136,7 @@ Hover over the icon to see the connection status and the devices found.
 
 | Item | What it does |
 |---|---|
-| Groundfeel 1.4.0 | Shows the installed version (not clickable) |
+| Groundfeel 1.6.0 | Shows the installed version (not clickable) |
 | Status line | Simulator connected or waiting, and the devices found (not clickable) |
 | **Settings…** | Opens the Settings window (also the icon's default action) |
 | **Pause vibration** | Turns all vibration off until you untick it |
@@ -159,7 +159,7 @@ Hover over the icon to see the connection status and the devices found.
 
 When the simulator is paused, nothing vibrates.
 
-> Engine hum, spool and reverse are based on turbine N1, so they may not appear on piston aircraft.
+> Engine effects follow N1 on jets and engine/propeller RPM on piston and turboprop aircraft. Reverse is only inferred on jets.
 
 ### Engine start
 
@@ -211,7 +211,7 @@ At walking pace you barely feel anything. The ground roll gets stronger and quic
 | What happens | What you feel | Where |
 |---|---|---|
 | Steady flight | A soft engine hum that follows power | Throttle |
-| Turbulence | Bumps that follow the real vertical jolts | Throttle (and joystick if not ground-only) |
+| Turbulence | Bumps that follow the real vertical jolts | Joystick only, if "Joystick vibrates on the ground only" is unticked (it is never sent to the throttle) |
 | Approaching a stall / stall warning | Buffet | Throttle (and joystick if not ground-only) |
 
 ### Approach
@@ -302,7 +302,7 @@ Drag the slider and release it: the new value is saved when you let go. The numb
 
 | Control | What it does |
 |---|---|
-| **Joystick vibrates on the ground only** | On by default. The joystick goes quiet in flight; gear, flaps, turbulence and stall are only felt in the throttle. Untick it to feel them in the stick too |
+| **Joystick vibrates on the ground only** | On by default. The joystick goes quiet in flight; gear, flaps and stall are only felt in the throttle, and turbulence is not felt at all. Untick it to feel them in the stick too |
 | **Pause vibration** | Turns all vibration off (same as the tray menu) |
 | **Start with Windows** | Starts the app with Windows (same as the tray menu) |
 | **Language** | "Automatic (Windows)" or any of the 20 languages. The window redraws immediately in the new language |
@@ -393,7 +393,7 @@ Check in this order:
 4. **Are you in the air with only the joystick?** By default the joystick only vibrates on the ground. Untick **Joystick vibrates on the ground only** if you want it in flight.
 5. **Intensity at 0 %?** Check the sliders.
 6. **Is SimAppPro's vibration really off?** If both programs drive the motors, the results are unpredictable.
-7. **Piston aircraft?** Engine effects may not appear (they're based on turbine N1), but ground roll, touchdown and brakes still work.
+7. **Piston or turboprop aircraft?** Engine effects follow RPM instead of N1, and reverse is not inferred. Ground roll, touchdown and brakes work the same.
 8. Still nothing → tray menu → **View log** and attach it to an issue on GitHub.
 
 ### It vibrates all the time
@@ -439,7 +439,7 @@ To avoid it, always close the app with **Exit** from the tray menu.
 |---|---|
 | Do I need both devices? | No. It works with the joystick only, the throttle only, or both. With only one, the Devices line shows orange, which is just informational |
 | Does it change my flight or my aircraft? | No. It only reads the simulator and only writes to the vibration motors |
-| Does it work with MSFS 2020? | It's made and tested for MSFS 2024 |
+| Does it work with MSFS 2020? | It's made and tested for MSFS 2024. It's untested on MSFS 2020: if you try it, please tell us how it went in an issue |
 | I opened it twice and nothing happened | Only one copy runs at a time. Look for the icon in the tray |
 | The touchdown is too strong / too soft | It follows your descent rate. Adjust the overall strength with the **Joystick** and **Throttle** sliders |
 | Where's the log? | Tray menu → **View log**, or `%APPDATA%\VibracionURSA\vibracion.log` |

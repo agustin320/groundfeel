@@ -1,6 +1,6 @@
 # Groundfeel — Manual de usuario
 
-Versión 1.4 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Simulator 2024
+Versión 1.6 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Simulator 2024
 
 > En inglés la app se llama **Groundfeel**. Es el mismo programa: el nombre cambia según el idioma.
 
@@ -161,7 +161,7 @@ Si dejás el mouse sobre el ícono, ves el estado de la conexión y los disposit
 
 Con el simulador en pausa no vibra nada.
 
-> El zumbido de motor, el spool y la reversa salen del N1 de turbina, así que en aviones a pistón pueden no aparecer.
+> Los efectos de motor siguen el N1 en los jets y las RPM en los aviones a pistón y turbohélice. La reversa sólo se deduce en jets.
 
 ### Puesta en marcha
 
@@ -213,7 +213,7 @@ A paso de hombre casi no se siente nada. El rodaje se vuelve más fuerte y más 
 | Qué pasa | Qué se siente | Dónde |
 |---|---|---|
 | Vuelo estable | Un zumbido de motor suave que sigue a la potencia | Throttle |
-| Turbulencia | Sacudones que siguen a los golpes verticales reales | Throttle (y joystick si no está en "sólo en tierra") |
+| Turbulencia | Sacudones que siguen a los golpes verticales reales | Sólo joystick, si destildás "El joystick vibra sólo en tierra" (al throttle nunca llega) |
 | Cerca de la pérdida / aviso de pérdida | Buffet | Throttle (y joystick si no está en "sólo en tierra") |
 
 ### Aproximación
@@ -304,7 +304,7 @@ Arrastrá el deslizador y soltalo: el valor se guarda al soltar. El número de l
 
 | Control | Qué hace |
 |---|---|
-| **El joystick vibra sólo en tierra** | Prendido por defecto. El joystick se queda quieto en vuelo; tren, flaps, turbulencia y pérdida se sienten sólo en el throttle. Destildalo para sentirlos también en el bastón |
+| **El joystick vibra sólo en tierra** | Prendido por defecto. El joystick se queda quieto en vuelo; tren, flaps y pérdida se sienten sólo en el throttle, y la turbulencia no se siente. Destildalo para sentirlos también en el bastón |
 | **Pausar la vibración** | Apaga toda la vibración (igual que en el menú de la bandeja) |
 | **Iniciar con Windows** | Abre la app al iniciar Windows (igual que en el menú de la bandeja) |
 | **Idioma** | "Automático (Windows)" o cualquiera de los 20 idiomas. La ventana se redibuja al instante en el idioma nuevo |
@@ -395,7 +395,7 @@ Revisá en este orden:
 4. **¿Estás en el aire y sólo mirás el joystick?** Por defecto el joystick vibra sólo en tierra. Destildá **El joystick vibra sólo en tierra** si lo querés también en vuelo.
 5. **¿La intensidad está en 0 %?** Revisá los deslizadores.
 6. **¿La vibración de SimAppPro está realmente apagada?** Si los dos programas manejan los motores, el resultado es impredecible.
-7. **¿Avión a pistón?** Los efectos de motor pueden no aparecer (salen del N1 de turbina), pero el rodaje, el toque y los frenos funcionan igual.
+7. **¿Avión a pistón o turbohélice?** Los efectos de motor siguen las RPM en vez del N1, y la reversa no se deduce. El rodaje, el toque y los frenos funcionan igual.
 8. Si sigue sin vibrar → menú de la bandeja → **Ver registro** y adjuntalo en un issue de GitHub.
 
 ### Vibra todo el tiempo
@@ -441,7 +441,7 @@ Para evitarlo, cerrá siempre la app con **Salir** desde el menú de la bandeja.
 |---|---|
 | ¿Necesito los dos dispositivos? | No. Funciona sólo con el joystick, sólo con el throttle, o con los dos. Con uno solo la línea de Dispositivos se ve en naranja, que es sólo informativo |
 | ¿Cambia algo de mi vuelo o de mi avión? | No. Sólo lee el simulador y sólo escribe en los motores de vibración |
-| ¿Anda con MSFS 2020? | Está hecha y probada para MSFS 2024 |
+| ¿Anda con MSFS 2020? | Está hecha y probada para MSFS 2024. En MSFS 2020 no está probada: si la usás, contanos cómo te fue en un issue |
 | La abrí dos veces y no pasó nada | Corre una sola copia a la vez. Buscá el ícono en la bandeja |
 | El toque se siente muy fuerte / muy suave | Sigue a tu velocidad de descenso. La fuerza general se ajusta con los deslizadores **Joystick** y **Throttle** |
 | ¿Dónde está el registro? | Menú de la bandeja → **Ver registro**, o `%APPDATA%\VibracionURSA\vibracion.log` |

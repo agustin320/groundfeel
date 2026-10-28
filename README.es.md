@@ -67,11 +67,12 @@ En pausa del simulador no vibra nada.
 | Spool / aceleración | Empuje al subir potencia y pulsación que acompaña la aceleración real. | Ambos |
 | Reversa | Vibración fuerte en la palanca de cada motor. Si el avión no la publica (A320 de FlyByWire), se deduce de N1 alto frenando en tierra. | Throttle |
 | Derrape | Vibración áspera cuando las ruedas van de costado. | Ambos |
-| Tren, flaps, frenos aerodinámicos, pérdida, turbulencia | Según su estado. | Ambos |
+| Tren, flaps, frenos aerodinámicos, pérdida | Según su estado. | Ambos |
+| Turbulencia | Los golpes verticales reales en vuelo. | Joystick |
 
 ### Aviones
 
-Funciona con cualquier avión. Los efectos salen de datos que todos los aviones publican, y la app se adapta:
+Funciona con cualquier avión de MSFS 2024 (MSFS 2020 sin probar). Los efectos salen de datos que todos los aviones publican, y la app se adapta:
 
 - **Tipo de motor:** los jets siguen el N1; los aviones a pistón y los turbohélices siguen las RPM. En un monomotor, las dos palancas siguen al único motor. La reversa sólo se deduce en jets.
 - **Peso:** el modelo de rodaje escala el tren de nariz con el peso real, así que un Cessna vibra más rápido y seco que un A350.

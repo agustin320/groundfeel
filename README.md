@@ -72,11 +72,12 @@ Nothing vibrates while the simulator is paused.
 | Spool / acceleration | A push when power goes up and a pulsation that follows the real acceleration. | Both |
 | Reverse | Strong vibration on each engine's lever. If the aircraft doesn't publish it (FlyByWire A320), it's inferred from high N1 while decelerating on the ground. | Throttle |
 | Skid | A rough vibration when the tires slide sideways. | Both |
-| Gear, flaps, speedbrakes, stall, turbulence | According to their state. | Both |
+| Gear, flaps, speedbrakes, stall | According to their state. | Both |
+| Turbulence | Real vertical jolts in flight. | Joystick |
 
 ### Aircraft support
 
-Any aircraft works. The effects come from data every aircraft publishes, and the app adapts to it:
+Any MSFS 2024 aircraft works (MSFS 2020 is untested). The effects come from data every aircraft publishes, and the app adapts to it:
 
 - **Engine type:** jets follow N1, while piston and turboprop aircraft follow propeller/engine RPM. Single-engine aircraft drive both throttle motors. Reverse thrust is inferred only on jets.
 - **Weight:** the ground-roll model scales the nose gear with the aircraft's real weight, so a Cessna rattles quicker and drier than an A350.
