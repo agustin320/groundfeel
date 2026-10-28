@@ -51,6 +51,6 @@
   "perdida": { "buffet": 0.7, "alpha_inicio_deg": 12.0, "alpha_full_deg": 16.0 },
   "mezcla": {
     "joystick": { "rodadura": 1.0, "rodaje": 1.0, "sacudones": 1.0, "aterrizaje": 1.0, "tren": 0.8, "flaps": 0.6, "speedbrake": 1.0, "motores": 0.25, "reversa": 0.35, "frenos": 0.9, "aceleracion": 0.35, "derrape": 1.0, "perdida": 1.0 },
-    "throttle": { "rodadura": 0.8, "sacudones": 0.65, "aterrizaje": 1.0, "tren": 0.8, "flaps": 0.5, "speedbrake": 0.9, "motores": 1.3, "reversa": 1.3, "frenos": 0.8, "aceleracion": 1.3, "derrape": 0.8, "perdida": 0.8 }
+    "throttle": { "rodadura": 0.8, "sacudones": 0.0, "aterrizaje": 1.0, "tren": 0.8, "flaps": 0.5, "speedbrake": 0.9, "motores": 1.3, "reversa": 1.3, "frenos": 0.8, "aceleracion": 1.3, "derrape": 0.8, "perdida": 0.8 }
   }
 }

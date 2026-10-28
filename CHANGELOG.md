@@ -1,5 +1,15 @@
 # Changelog / Registro de cambios
 
+## 1.5.1
+
+**English**
+- **No more turbulence on the throttle:** in-flight bumps now only reach the joystick. On the throttle they felt like
+  big isolated pulses, and in the real aircraft turbulence is not felt in the levers.
+
+**Español**
+- **La turbulencia ya no llega al throttle:** los sacudones en vuelo quedan sólo en el joystick. En las palancas se
+  sentían como pulsos grandes sueltos, y en el avión real la turbulencia no se siente en el throttle.
+
 ## 1.5.0
 
 **English**

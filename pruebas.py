@@ -140,6 +140,13 @@ def turbulencia(d, i):
 mx_t, _, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 250, "GEAR CENTER POSITION": 0}, 3.0, None, turbulencia)
 caso("turbulencia", mx_t["sacudones"] > 0.2, f"máximo sacudones {mx_t['sacudones']:.2f}")
 
+# 11b. La turbulencia no llega a las palancas: en el avión real no se siente en el throttle (con 0,65 saltaba 0→25-31→0).
+_, s_calmo, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 250, "GEAR CENTER POSITION": 0}, 3.0)
+_, s_turb, _ = correr({"SIM ON GROUND": 0, "AIRSPEED INDICATED": 250, "GEAR CENTER POSITION": 0}, 3.0, None, turbulencia)
+caso("turbulencia no mueve el throttle",
+     abs(s_turb["throttle_1"] - s_calmo["throttle_1"]) < 0.01,
+     f"throttle calmo {s_calmo['throttle_1']:.2f} / turbulento {s_turb['throttle_1']:.2f}")
+
 
 # 12. Frenado dinámico: golpe inicial al frenar, variación fuerte (no estática), temblor más lento a baja velocidad,
 #     y golpecito al detenerse.
