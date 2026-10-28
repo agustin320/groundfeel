@@ -21,6 +21,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _config_en_vivo(caso)
     _datos_faltantes_y_frames(caso, CFG)
     _paquete_lvars(caso)
+    _ralenti_bajo(caso, correr, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -324,3 +325,12 @@ def _paquete_lvars(caso: Callable) -> None:
     corto = cab + struct.pack("<d", 1.0)
     caso("paquete de L:vars corto se descarta", leer_valores(bueno, 3) == [1.0, 2.0, 3.0]
          and leer_valores(corto, 3) is None, f"bueno {leer_valores(bueno, 3)} / corto {leer_valores(corto, 3)}")
+
+
+def _ralenti_bajo(caso: Callable, correr: Callable, CFG: dict) -> None:
+    """Un motor ya en marcha con ralentí por debajo del configurado no queda con el zumbido de 'aceleración'."""
+    from efectos import Efectos
+    en_marcha = {"GENERAL ENG COMBUSTION:1": 1, "GENERAL ENG COMBUSTION:2": 1, "TURB ENG N1:1": 17,
+                 "TURB ENG N1:2": 17}
+    mx, _, _ = correr(en_marcha, 3.0, Efectos(CFG))
+    caso("ralentí bajo sin zumbido de arranque", mx["motores"] < 0.06, f"motores {mx['motores']:.3f}")

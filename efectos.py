@@ -49,7 +49,7 @@ class Efectos:
         self.ritmo_pulsado = 1.0
         self.n1_motor_prev = {n: 0.0 for n in range(1, 5)}
         self.t_arranque_motor = {n: -99.0 for n in range(1, 5)}
-        self.arr = {n: {"t_starter": None, "t_ign": -99.0, "comb_prev": False, "v": 0.0} for n in range(1, 5)}
+        self.arr = {n: {"t_starter": None, "t_ign": -99.0, "comb_prev": None, "v": 0.0} for n in range(1, 5)}
         self.mult_junta = 1.0
         self.en_tierra_prev: bool | None = None
         self.vs_aire = 0.0
@@ -251,7 +251,9 @@ class Efectos:
         starter = bool(d.get(f"GENERAL ENG STARTER:{n}"))
         comb = bool(d.get(f"GENERAL ENG COMBUSTION:{n}"))
         idle, pot = self._ralenti(d), self._potencia(d, n)
-        if comb and not a["comb_prev"] and pot < idle - 0.5:
+        # Reason: al cargar un vuelo con los motores ya en marcha la combustión "aparece" en el primer dato; eso no es
+        # una ignición.
+        if comb and a["comb_prev"] is False and pot < idle - 0.5:
             a["t_ign"] = t
         a["comb_prev"] = comb
         if not starter:
@@ -265,7 +267,8 @@ class Efectos:
                 v = c["starter"] * rampa * (1.0 if _frac(t * 3.0) < 0.5 else 0.3)
             else:
                 v = c["starter"] * rampa * (0.85 + 0.15 * random.random())
-        elif comb and pot < idle - 0.5:
+        elif comb and pot < idle - 0.5 and (starter or t - a["t_ign"] < c["aceleracion_max_s"]):
+            # Sólo durante un arranque: un motor ya en marcha con ralentí más bajo que el configurado no zumba.
             v = c["aceleracion"] * (0.4 + 0.6 * _clamp(pot / idle))
         if 0 <= t - a["t_ign"] < 1.5:
             v = max(v, c["ignicion"] * math.exp(-(t - a["t_ign"]) / 0.3))
