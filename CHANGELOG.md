@@ -1,5 +1,48 @@
 # Changelog / Registro de cambios
 
+## 1.7.0
+
+**English**
+- **Effects window** (Settings → Effects…): every built-in effect gets its own intensity (0–200 %) and can be sent to
+  the joystick, the throttle, both or neither, with a live bar.
+- **Live monitor:** what each motor received in the last 10 seconds and every simulator variable being read.
+- **Build your own effects:** any simulator variable or L:Var as the source; fires always, above, below, between,
+  on/off or while changing, with hysteresis; a response curve you draw; constant, pulse, thump, sine or sawtooth up to
+  12.5 Hz; added or as a maximum; it can replace a built-in effect. The preview shows what the motor really receives.
+  Test on device, replay a recorded flight, start from a template, share as JSON.
+- **Touchdown:** the nose wheel gives its own, softer bump after the mains, and for 0.8 s everything else goes quiet.
+- **Engine start in stages:** starter (cranking pulses on pistons), ignition kick, spool-up to idle, smooth fade on an
+  aborted start. Three- and four-engine aircraft map to the two levers.
+- **Speedbrakes** only when both sides are out (roll spoilers in a turn no longer vibrate); **slats** count as flap
+  movement; new **overspeed** effect against the barber pole.
+- **Pause** reacts on the next frame, using the simulator's pause events.
+- **Aircraft profiles can read L:Vars** and use them in place of a standard variable.
+- **Steadier output:** a fixed 50 Hz loop with a 1 ms timer (it used to drift around 40 Hz); the real cadence is
+  logged every minute. No vibration pattern goes above 12 Hz any more, so motors reproduce them cleanly.
+- New README layout, with screenshots.
+
+**Español**
+- **Ventana Efectos** (Ajustes → Efectos…): cada efecto incorporado tiene su intensidad (0 a 200 %) y se puede mandar
+  al joystick, al throttle, a los dos o a ninguno, con una barra en vivo.
+- **Monitor en vivo:** lo que recibió cada motor en los últimos 10 segundos y todas las variables del simulador que se
+  están leyendo.
+- **Armá tus propios efectos:** cualquier variable del simulador o L:Var como fuente; se disparan siempre, por encima,
+  por debajo, entre, prendido/apagado o mientras cambian, con histéresis; una curva de respuesta que dibujás;
+  constante, pulso, golpe, seno o sierra hasta 12,5 Hz; sumados o como máximo; pueden reemplazar a un efecto
+  incorporado. La vista previa muestra lo que de verdad recibe el motor. Probar en el dispositivo, reproducir un vuelo
+  grabado, arrancar desde una plantilla, compartir como JSON.
+- **Toque:** la rueda de nariz da su propio golpe, más suave, después de las principales, y durante 0,8 s lo demás se
+  calla.
+- **Arranque de motores por etapas:** starter (golpes de arranque en pistón), golpe de ignición, aceleración hasta el
+  ralentí y caída suave si se aborta. Los trimotores y cuatrimotores se reparten en las dos palancas.
+- **Frenos aerodinámicos** sólo con los dos lados afuera (los spoilers de alabeo en un viraje ya no vibran); los
+  **slats** cuentan como movimiento de flaps; efecto nuevo de **sobrevelocidad** contra la barber pole.
+- **Pausa:** reacciona en el frame siguiente, con los eventos de pausa del simulador.
+- **Los perfiles por avión pueden leer L:Vars** y usarlas en lugar de una variable estándar.
+- **Salida más pareja:** lazo fijo a 50 Hz con timer de 1 ms (antes rondaba los 40 Hz con deriva); la cadencia real
+  queda en el registro cada minuto. Ningún patrón de vibración pasa de 12 Hz, así los motores lo reproducen limpio.
+- README nuevo, con capturas.
+
 ## 1.6.1
 
 **English**
@@ -96,7 +139,7 @@
 
 ### English
 
-**English** · [Español](#vibración-ursa-120--notas-de-versión)
+**English** · [Español](#español)
 
 Released: October 27, 2026 · Download: `VibracionURSA-Setup.exe` from the [release page](https://github.com/agustin320/vibracion-ursa/releases/tag/v1.2.0)
 
@@ -143,7 +186,7 @@ URSA Rumble replaces SimAppPro's vibration on the WinWing URSA MINOR 32 (joystic
 
 ### Español
 
-[English](#ursa-rumble-120--release-notes) · **Español**
+[English](#english) · **Español**
 
 Publicada: 27 de octubre de 2026 · Descarga: `VibracionURSA-Setup.exe` desde la [página de la versión](https://github.com/agustin320/vibracion-ursa/releases/tag/v1.2.0)
 

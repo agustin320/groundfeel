@@ -1,6 +1,6 @@
 # Groundfeel — Manual de usuario
 
-Versión 1.6 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Simulator 2024
+Versión 1.7 · Para pilotos con el WinWing URSA MINOR 32 en Microsoft Flight Simulator 2024
 
 > En inglés la app se llama **Groundfeel**. Es el mismo programa: el nombre cambia según el idioma.
 
@@ -138,7 +138,7 @@ Si dejás el mouse sobre el ícono, ves el estado de la conexión y los disposit
 
 | Opción | Qué hace |
 |---|---|
-| Groundfeel 1.2.0 | Muestra la versión instalada (no se puede tocar) |
+| Groundfeel 1.7.0 | Muestra la versión instalada (no se puede tocar) |
 | Línea de estado | Simulador conectado o esperando, y los dispositivos encontrados (no se puede tocar) |
 | **Ajustes…** | Abre la ventana de Ajustes (también es la acción por defecto del ícono) |
 | **Pausar vibración** | Apaga toda la vibración hasta que la destildes |
@@ -167,7 +167,9 @@ Con el simulador en pausa no vibra nada.
 
 | Qué pasa | Qué se siente | Dónde |
 |---|---|---|
-| El motor gana vueltas hasta el ralentí | Un rumor que crece a medida que el motor toma vueltas | Throttle (la palanca de ese motor) |
+| Starter encendido | Un rumor que crece en unos segundos (en motores a pistón, golpes de arranque) | Throttle (la palanca de ese motor) |
+| Ignición | Un golpe corto | Throttle (la palanca de ese motor) |
+| El motor gana vueltas hasta el ralentí | Un rumor que crece a medida que el motor toma vueltas; si el arranque se aborta, se apaga suave | Throttle (la palanca de ese motor) |
 | Motor en ralentí | Un zumbido mínimo, apenas perceptible | Throttle |
 
 ### Rodaje
@@ -204,8 +206,8 @@ A paso de hombre casi no se siente nada. El rodaje se vuelve más fuerte y más 
 
 | Qué pasa | Qué se siente | Dónde |
 |---|---|---|
-| Flaps moviéndose | Una vibración suave mientras se mueven; nada cuando se quedan quietos | Throttle (y joystick si no está en "sólo en tierra") |
-| Frenos aerodinámicos afuera en vuelo | Un sacudón que crece con la apertura y la velocidad | Throttle (y joystick si no está en "sólo en tierra") |
+| Flaps o slats moviéndose | Una vibración suave mientras se mueven; nada cuando se quedan quietos | Throttle (y joystick si no está en "sólo en tierra") |
+| Frenos aerodinámicos afuera en vuelo | Un sacudón que crece con la apertura y la velocidad. Los spoilers de alabeo de un solo lado (en un viraje) no lo disparan | Throttle (y joystick si no está en "sólo en tierra") |
 | Spoilers en tierra después del toque | Una vibración que se apaga a medida que frenás | Ambos |
 
 ### Crucero
@@ -215,6 +217,7 @@ A paso de hombre casi no se siente nada. El rodaje se vuelve más fuerte y más 
 | Vuelo estable | Un zumbido de motor suave que sigue a la potencia | Throttle |
 | Turbulencia | Sacudones que siguen a los golpes verticales reales | Sólo joystick, si destildás "El joystick vibra sólo en tierra" (al throttle nunca llega) |
 | Cerca de la pérdida / aviso de pérdida | Buffet | Throttle (y joystick si no está en "sólo en tierra") |
+| Por encima de la velocidad máxima (barber pole) | Una vibración que crece con el exceso | Throttle (y joystick si no está en "sólo en tierra") |
 
 ### Aproximación
 
@@ -228,7 +231,8 @@ A paso de hombre casi no se siente nada. El rodaje se vuelve más fuerte y más 
 
 | Qué pasa | Qué se siente | Dónde |
 |---|---|---|
-| Las ruedas principales tocan la pista | Un golpe proporcional a la velocidad de descenso: suave si aterrizás suave, fuerte si aterrizás firme. Hasta un aterrizaje muy suave da un golpecito. | Ambos |
+| Las ruedas principales tocan la pista | Un golpe proporcional a la velocidad de descenso: suave si aterrizás suave, fuerte si aterrizás firme. Hasta un aterrizaje muy suave da un golpecito. Durante 0,8 s lo demás se calla para que el toque se note. | Ambos |
+| La rueda de nariz toca la pista | Un segundo golpe, más suave (si el avión publica el contacto por rueda) | Ambos |
 | Carrera de aterrizaje | Vuelve el rodaje en el joystick | Joystick |
 
 Cargar un vuelo que ya arranca en tierra **no** da golpe de toque: sólo se siente en un aterrizaje de verdad, con velocidad.
@@ -330,7 +334,28 @@ Arrastrá el deslizador y soltalo: el valor se guarda al soltar. El número de l
 | **Cerrar** | Cierra la ventana. La app sigue en la bandeja |
 | **Reportar un problema** | Igual que en el menú de la bandeja: abre un issue de GitHub ya completo |
 
-La línea gris de abajo te recuerda apagar la vibración de SimAppPro.
+La línea gris de abajo te recuerda apagar la vibración de SimAppPro. **Efectos…** abre la ventana Efectos.
+
+### La ventana Efectos
+
+Tiene tres pestañas:
+
+- **Efectos:** una fila por efecto incorporado con su **intensidad** (0 a 200 %), a dónde se **envía** (Ambos,
+  Joystick, Throttle o Apagado) y una barra en vivo. Los cambios se aplican en menos de 2 segundos.
+- **Monitor en vivo:** lo que recibió cada motor en los últimos 10 segundos y todas las variables del simulador que la
+  app está leyendo.
+- **Mis efectos:** armá tu propio efecto.
+  1. Elegí una **Fuente**: una variable del simulador de la lista, o escribí una L:Var (`L:NOMBRE`) y su **Unidad**.
+  2. Elegí cuándo **se dispara** (siempre, por encima, por debajo, entre, prendido/apagado, mientras cambia) y su
+     **rango** (mín · máx · histéresis).
+  3. Dibujá la **curva de respuesta**: clic para agregar un punto, arrastrar para moverlo, clic derecho para borrarlo.
+  4. Elegí la **forma** (constante, pulso, golpe, seno, sierra), su **ritmo** (hasta 12,5 Hz) y la **intensidad**.
+  5. Elegí a dónde se **envía**, si se **suma** a los demás efectos o toma el **máximo**, y si querés a qué efecto
+     incorporado **reemplaza**.
+  El gráfico de abajo muestra lo que de verdad va a recibir el motor, a 50 Hz y después de la zona muerta. **Probar en
+  el dispositivo** lo hace sonar 5 segundos; **Reproducir una grabación** pasa por el efecto uno de tus vuelos
+  grabados. **Guardar** lo conserva; **Exportar…/Importar…** lo comparten como archivo JSON; **Desde plantilla** arranca
+  desde Golpe, Zumbido, Pulsación o Creciente.
 
 ### Ajustes avanzados (opcional)
 

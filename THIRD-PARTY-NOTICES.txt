@@ -38,6 +38,9 @@ third-party components, each under its own license:
 
 - Motor HID protocol - documented in ursa-minor-ffb by rtroncoso (MIT License),
   https://github.com/rtroncoso/ursa-minor-ffb. The protocol was reimplemented here; no code was copied.
+- Effect ideas (spoiler symmetry, slats, overspeed against the barber pole, per-gear touchdown, staged engine start,
+  effect editor) - inspired by Aurora Vibra (MIT License), https://github.com/chegevarko1982/aurora-vibra.
+  Reimplemented here from the ideas; no code was copied.
 
 WinWing, WINCTRL and URSA MINOR are trademarks of their respective owners. Microsoft Flight Simulator and
 SimConnect are trademarks of Microsoft Corporation. This project is independent and not affiliated with them.

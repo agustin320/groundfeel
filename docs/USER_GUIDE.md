@@ -1,6 +1,6 @@
 # Groundfeel — User Manual
 
-Version 1.6 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Simulator 2024
+Version 1.7 · For pilots using the WinWing URSA MINOR 32 in Microsoft Flight Simulator 2024
 
 ---
 
@@ -136,7 +136,7 @@ Hover over the icon to see the connection status and the devices found.
 
 | Item | What it does |
 |---|---|
-| Groundfeel 1.6.0 | Shows the installed version (not clickable) |
+| Groundfeel 1.7.0 | Shows the installed version (not clickable) |
 | Status line | Simulator connected or waiting, and the devices found (not clickable) |
 | **Settings…** | Opens the Settings window (also the icon's default action) |
 | **Pause vibration** | Turns all vibration off until you untick it |
@@ -165,7 +165,9 @@ When the simulator is paused, nothing vibrates.
 
 | What happens | What you feel | Where |
 |---|---|---|
-| Engine spinning up to idle | A rumble that grows as the engine gains speed | Throttle (that engine's lever) |
+| Starter engaged | A rumble that ramps up over a few seconds (on piston engines, cranking pulses) | Throttle (that engine's lever) |
+| Ignition | A short kick | Throttle (that engine's lever) |
+| Engine spinning up to idle | A rumble that grows as the engine gains speed; if the start is aborted it fades smoothly | Throttle (that engine's lever) |
 | Engine at idle | A minimum hum, barely noticeable | Throttle |
 
 ### Taxi
@@ -202,8 +204,8 @@ At walking pace you barely feel anything. The ground roll gets stronger and quic
 
 | What happens | What you feel | Where |
 |---|---|---|
-| Flaps moving | A light vibration while they move; nothing once they stop | Throttle (and joystick if not ground-only) |
-| Speedbrakes out in flight | A buffet that grows with deployment and airspeed | Throttle (and joystick if not ground-only) |
+| Flaps or slats moving | A light vibration while they move; nothing once they stop | Throttle (and joystick if not ground-only) |
+| Speedbrakes out in flight | A buffet that grows with deployment and airspeed. Roll spoilers on one side only (in a turn) don't trigger it | Throttle (and joystick if not ground-only) |
 | Ground spoilers after touchdown | A vibration that fades as you slow down | Both |
 
 ### Cruise
@@ -213,6 +215,7 @@ At walking pace you barely feel anything. The ground roll gets stronger and quic
 | Steady flight | A soft engine hum that follows power | Throttle |
 | Turbulence | Bumps that follow the real vertical jolts | Joystick only, if "Joystick vibrates on the ground only" is unticked (it is never sent to the throttle) |
 | Approaching a stall / stall warning | Buffet | Throttle (and joystick if not ground-only) |
+| Above the maximum speed (barber pole) | A vibration that grows with the excess | Throttle (and joystick if not ground-only) |
 
 ### Approach
 
@@ -226,7 +229,8 @@ At walking pace you barely feel anything. The ground roll gets stronger and quic
 
 | What happens | What you feel | Where |
 |---|---|---|
-| Main wheels touching down | A bump proportional to your rate of descent: soft for a smooth landing, hard for a firm one. Even a very smooth landing gives a small bump. | Both |
+| Main wheels touching down | A bump proportional to your rate of descent: soft for a smooth landing, hard for a firm one. Even a very smooth landing gives a small bump. For 0.8 s everything else goes quiet so the touchdown stands out. | Both |
+| Nose wheel touching down | A second, softer bump (if the aircraft publishes per-wheel contact) | Both |
 | Rollout | Ground roll comes back on the joystick | Joystick |
 
 Loading a flight already on the ground does **not** give a touchdown bump: it's only felt on a real landing, at speed.
@@ -328,7 +332,26 @@ Drag the slider and release it: the new value is saved when you let go. The numb
 | **Close** | Closes the window. The app keeps running in the tray |
 | **Report a problem** | Same as the tray menu item: opens a pre-filled GitHub issue |
 
-The gray line at the bottom reminds you to turn off SimAppPro's vibration.
+The gray line at the bottom reminds you to turn off SimAppPro's vibration. **Effects…** opens the Effects window.
+
+### The Effects window
+
+Three tabs:
+
+- **Effects:** one row per built-in effect with its **intensity** (0–200 %), where it's **sent** (Both, Joystick,
+  Throttle or Off) and a live bar. Changes apply within 2 seconds.
+- **Live monitor:** what each motor received in the last 10 seconds, and every simulator variable the app is reading.
+- **My effects:** build your own effect.
+  1. Pick a **Source** — a simulator variable from the list, or type an L:Var (`L:NAME`) and its **Unit**.
+  2. Choose when it **fires** (always, above, below, between, on/off, while changing) and its **range**
+     (min · max · hysteresis).
+  3. Draw the **response curve**: click to add a point, drag to move it, right-click to remove it.
+  4. Choose the **shape** (constant, pulse, thump, sine, sawtooth), its **rate** (up to 12.5 Hz) and **intensity**.
+  5. Choose where it's **sent**, whether it's **added** to the other effects or takes the **maximum**, and optionally
+     which built-in effect it **replaces**.
+  The graph at the bottom shows what the motor will really receive, at 50 Hz and after the dead zone. **Test on
+  device** plays it for 5 seconds; **Replay a recording** runs one of your recorded flights through it. **Save** keeps
+  it; **Export…/Import…** share it as a JSON file; **From template** starts from Impact, Hum, Pulsation or Growing.
 
 ### Advanced settings (optional)
 
