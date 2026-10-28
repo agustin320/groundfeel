@@ -72,6 +72,7 @@ class Vibracion:
         self.historial: deque[dict[str, int]] = deque(maxlen=HZ * 10)   # salida de los últimos 10 s (monitor)
         self._prueba: list[dict[str, int]] = []
         self._propios_src: object = None
+        self._gen_aplicada = -1
 
     def probar(self, ef: EfectoPropio, segundos: float = 5.0) -> None:
         """Hace sonar un efecto propio en el hardware durante `segundos`, tal como lo va a mandar el lazo."""
@@ -87,6 +88,14 @@ class Vibracion:
             if ef.fuente not in VARIABLES:
                 pedidas[ef.fuente] = (ef.fuente, ef.unidad)
         sim.pedir_lvars(pedidas)
+
+    def _config_nueva(self) -> bool:
+        """True si hay una configuración que el lazo todavía no aplicó (la cargue quien la cargue)."""
+        self.cfg.recargar()
+        if self.cfg.generacion == self._gen_aplicada:
+            return False
+        self._gen_aplicada = self.cfg.generacion
+        return True
 
     def grabar(self, si: bool) -> None:
         if si:
@@ -155,7 +164,7 @@ class Vibracion:
                 t0 = time.time()
                 if t0 - t_cfg > 2:
                     t_cfg = t0
-                    recargo = self.cfg.recargar()
+                    recargo = self._config_nueva()
                     avion = sim.avion()
                     if avion != self.estado.avion:
                         self.estado.avion = avion

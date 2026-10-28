@@ -18,6 +18,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _propios(caso, correr, CFG)
     _probar_en_dispositivo(caso)
     _grabacion(caso)
+    _config_en_vivo(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -266,3 +267,21 @@ def _grabacion(caso: Callable) -> None:
     va, vb = valores_de_grabacion(frames, "A"), valores_de_grabacion(frames, "B")
     caso("grabación remuestreada a 50 Hz", len(va) == 11 and va[0] == 1.0 and va[5] == 2.0 and va[10] == 3.0
          and vb[10] == 5.0, f"A {va} / B {vb[-1]}")
+
+
+def _config_en_vivo(caso: Callable) -> None:
+    """Lo que la ventana guarda tiene que llegarle al lazo aunque la ventana ya haya recargado la config."""
+    import tempfile
+    from pathlib import Path
+
+    import rutas
+    from config_usuario import Config
+    from motor_vibracion import Vibracion
+    cfg = Config(rutas.config_por_defecto(), Path(tempfile.mkdtemp()) / "ajustes.json")
+    v = Vibracion(silencio=True, config=cfg)
+    primera = v._config_nueva()
+    cfg.guardar("intensidad_efecto", "frenos", valor=0.3)      # lo hace el hilo de tk
+    segunda = v._config_nueva()
+    tercera = v._config_nueva()
+    caso("cambio de config llega al lazo", primera and segunda and not tercera,
+         f"inicio {primera} / después de guardar {segunda} / sin cambios {tercera}")

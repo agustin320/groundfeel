@@ -39,6 +39,9 @@ class Config:
         self.usuario: dict = {}
         self.datos: dict = {}
         self._mtimes: tuple[float, float] = (-1.0, -1.0)
+        # Reason: la ventana (hilo de tk) guarda y recarga ella misma; si el lazo mirara sólo el valor de retorno de
+        # recargar() nunca se enteraría del cambio. Cada carga nueva sube la generación y el lazo compara contra ella.
+        self.generacion = 0
         self.recargar()
 
     def _mtimes_actuales(self) -> tuple[float, float]:
@@ -58,6 +61,7 @@ class Config:
             log.warning("configuración con error, sigo con la anterior: %s", ex)
             return False
         self.datos = fusionar(self.defecto, self.usuario)
+        self.generacion += 1
         return True
 
     def obtener(self, *clave: str) -> object:
