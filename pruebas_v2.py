@@ -11,6 +11,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _cadencia(caso)
     _nyquist(caso)
     _vuelo(caso, correr)
+    _toque(caso, correr, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -83,3 +84,26 @@ def _vuelo(caso: Callable, correr: Callable) -> None:
     s_alto, s_bajo, s_sin = sv(360, 350), sv(345, 350), sv(360, 0)
     caso("sobrevelocidad", s_alto > 0.3 and s_bajo == 0 and s_sin == 0,
          f"+10 kt {s_alto:.2f} / -5 kt {s_bajo:.2f} / sin dato {s_sin:.2f}")
+
+
+def _toque(caso: Callable, correr: Callable, CFG: dict) -> None:
+    from efectos import Efectos
+
+    def serie(por_pata: bool) -> list[tuple[float, float]]:
+        """Aire a -400 fpm, toque de mains a 130 kt y nariz a los 2 s. (máx aterrizaje, máx rodadura) por tramo."""
+        ef = Efectos(CFG)
+        correr({"SIM ON GROUND": 0, "VERTICAL SPEED": -400, "AIRSPEED INDICATED": 130, "GROUND VELOCITY": 130}, 1.0, ef)
+        suelo = {"SIM ON GROUND": 1, "AIRSPEED INDICATED": 130, "GROUND VELOCITY": 130,
+                 "GEAR IS ON GROUND:1": int(por_pata), "GEAR IS ON GROUND:2": int(por_pata), "GEAR IS ON GROUND:0": 0}
+        tramos = []
+        for seg, nariz in ((0.5, 0), (0.8, 0), (0.7, 0), (0.6, int(por_pata))):
+            mx, _, _ = correr(dict(suelo, **{"GEAR IS ON GROUND:0": nariz}), seg, ef)
+            tramos.append((mx["aterrizaje"], mx["rodadura"]))
+        return tramos
+
+    (a0, r0), (_, r1), (a2, _), (a3, _) = serie(True)
+    caso("toque de mains y después nariz", a0 > 0.4 and a2 < 0.05 and a3 > 0.15,
+         f"mains {a0:.2f} / entre medio {a2:.2f} / nariz {a3:.2f}")
+    caso("silencio en el toque", r0 == 0 and r1 > 0, f"rodadura primeros 0,5 s {r0:.2f} / después {r1:.2f}")
+    (b0, _), _, _, (b3, _) = serie(False)
+    caso("toque sin datos por pata", b0 > 0.4 and b3 < 0.05, f"mains {b0:.2f} / nariz {b3:.2f}")

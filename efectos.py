@@ -74,6 +74,8 @@ class Efectos:
         self.fase_spool = 0.0
         self.fase_acel = 0.0
         self.fase_sobrevel = 0.0
+        self.nariz_prev = False
+        self.amp_nariz, self.t_nariz = 0.0, -99.0
         self._dt = 0.0
 
     # ------------------------------------------------------------------ efectos individuales
@@ -132,11 +134,21 @@ class Efectos:
             self.amp_toque = c["maximo"] * max(0.25, _clamp((hundimiento - c["vs_suave_fpm"]) /
                                                              (c["vs_duro_fpm"] - c["vs_suave_fpm"])))
             self.t_toque = t
+        # Rueda de nariz: segundo golpe, más suave, cuando la pata delantera apoya después de las principales. Si el
+        # avión no publica el contacto por pata (GEAR IS ON GROUND:0 siempre en 0), sólo queda el toque de las mains.
+        nariz = bool(d.get("GEAR IS ON GROUND:0"))
+        if (nariz and not self.nariz_prev and en_tierra and 0 < t - self.t_toque < 20
+                and d.get("GROUND VELOCITY", 0.0) > 30):
+            self.amp_nariz = c["nariz"] * max(0.4, self.amp_toque / c["maximo"])
+            self.t_nariz = t
+        self.nariz_prev = nariz
         self.en_tierra_prev = en_tierra
-        dt_toque = t - self.t_toque
-        if dt_toque > c["duracion_s"] * 3:
-            return 0.0
-        return self.amp_toque * math.exp(-dt_toque / c["duracion_s"]) * (0.75 + 0.25 * math.sin(2 * math.pi * 12 * t))
+        textura = 0.75 + 0.25 * math.sin(2 * math.pi * 12 * t)
+        v = 0.0
+        for amp, t0 in ((self.amp_toque, self.t_toque), (self.amp_nariz, self.t_nariz)):
+            if 0 <= t - t0 <= c["duracion_s"] * 3:
+                v = max(v, amp * math.exp(-(t - t0) / c["duracion_s"]))
+        return v * textura
 
     def _tren(self, d: dict, t: float) -> float:
         """Tren de aterrizaje como en el avión real: golpes, no un zumbido mientras se mueve.
@@ -394,6 +406,10 @@ class Efectos:
             "perdida": self._perdida(d, t),
             "sobrevelocidad": self._sobrevelocidad(t, d),
         }
+        # Ventana de silencio: en el toque sólo se siente el toque (lo demás lo taparía).
+        if 0 <= t - self.t_toque < self.cfg["aterrizaje"].get("silencio_s", 0.0):
+            ef = {e: (v if e == "aterrizaje" else 0.0) for e, v in ef.items()}
+            m1 = r1 = m2 = r2 = 0.0
         mez, gan = self.cfg["mezcla"], self.cfg["ganancia_general"]
         # Los toquecitos van al ritmo de la velocidad (como las ruedas pasando por la pista): lentos al arrancar, más
         # seguidos al acelerar.

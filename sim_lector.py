@@ -19,6 +19,10 @@ GRUPO_AVION = 11   # nombre del avión (texto): aparte, una vez por segundo
 
 VARIABLES: dict[str, str] = {
     "SIM ON GROUND": "Bool",
+    # Contacto por pata (0 nariz, 1 izquierda, 2 derecha): el golpe de la nariz después del de las principales.
+    "GEAR IS ON GROUND:0": "Bool",
+    "GEAR IS ON GROUND:1": "Bool",
+    "GEAR IS ON GROUND:2": "Bool",
     "GROUND VELOCITY": "Knots",
     "SURFACE TYPE": "Enum",
     "AIRSPEED INDICATED": "Knots",

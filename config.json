@@ -37,7 +37,7 @@
     "a_umbral": 0.02, "a_ref": 0.67, "exponente_stevens": 0.8
   },
   "sacudones": { "ganancia": 0.9, "umbral_g": 0.04, "max_g": 0.45 },
-  "aterrizaje": { "vs_suave_fpm": 60.0, "vs_duro_fpm": 600.0, "maximo": 1.0, "duracion_s": 0.5 },
+  "aterrizaje": { "vs_suave_fpm": 60.0, "vs_duro_fpm": 600.0, "maximo": 1.0, "duracion_s": 0.5, "nariz": 0.5, "silencio_s": 0.8 },
   "tren": { "golpe_destrabe": 0.35, "golpe_traba": 0.55, "transito": 0.0, "aire_tren_abajo": 0.06 },
   "flaps": { "movimiento": 0.18 },
   "speedbrake": { "aire": 0.45, "tierra": 0.20, "asimetria_max": 0.10 },
