@@ -20,6 +20,7 @@ EVENTOS_PAUSA = {1: b"Pause_EX1", 2: b"Pause"}
 GRUPO = 10
 GRUPO_AVION = 11   # nombre del avión (texto): aparte, una vez por segundo
 GRUPO_LVARS = 12   # L:vars del perfil del avión: se rearma al cambiar de avión
+REQ_LVARS_BASE = 100   # ids de pedido de las L:vars: uno nuevo por cada registro
 
 VARIABLES: dict[str, str] = {
     "SIM ON GROUND": "Bool",
@@ -91,6 +92,17 @@ def cargar_simconnect() -> C.WinDLL:
         "recursos\\ del programa, o indicá su ruta en la variable de entorno SIMCONNECT_DLL.")
 
 
+def leer_valores(raw: bytes, n: int) -> list[float] | None:
+    """Los n doubles de un SIMCONNECT_RECV_SIMOBJECT_DATA, o None si el paquete no los trae (se descarta).
+
+    Reason: si el paquete viene corto (una definición vieja todavía en camino, o el sim rechazó una variable), leerlo
+    igual tiraba ValueError y se caía toda la conexión, con los motores apagados unos segundos.
+    """
+    if n <= 0 or len(raw) < 40 + 8 * n:
+        return None
+    return list((C.c_double * n).from_buffer_copy(raw[40:40 + 8 * n]))
+
+
 def leer_evento(raw: bytes) -> tuple[int, int]:
     """(id de evento, dato) de un SIMCONNECT_RECV_EVENT: cabecera de 12 bytes, grupo, evento, dato."""
     return int.from_bytes(raw[16:20], "little"), int.from_bytes(raw[20:24], "little")
@@ -111,6 +123,7 @@ class LectorSim:
         self._lvars: list[tuple[str, str, str]] = []           # (alias, nombre, unidad) registradas
         self._lvars_pedidas: list[tuple[str, str, str]] | None = None
         self._lvals: dict[str, float] = {}
+        self._req_lvars = REQ_LVARS_BASE
         self._lock = threading.Lock()
         self.conectado = threading.Event()
         self._vars = list(VARIABLES)
@@ -140,12 +153,16 @@ class LectorSim:
             pedidas, self._lvars_pedidas = self._lvars_pedidas, None
         if pedidas is None or pedidas == self._lvars:   # la misma lista: no se rearma (los valores siguen llegando)
             return
+        # Primero se corta el pedido anterior y se usa un id de pedido nuevo: los paquetes del pedido viejo que
+        # todavía estén en camino se ignoran en vez de leerse con la definición nueva.
+        self.dll.SimConnect_RequestDataOnSimObject(self.h, self._req_lvars, GRUPO_LVARS, 0, 0, 0, 0, 0, 0)
+        self._req_lvars = REQ_LVARS_BASE + (self._req_lvars - REQ_LVARS_BASE + 1) % 1000
         self.dll.SimConnect_ClearDataDefinition(self.h, GRUPO_LVARS)
         for i, (_, nombre, unidad) in enumerate(pedidas):
             self.dll.SimConnect_AddToDataDefinition(self.h, GRUPO_LVARS, nombre.encode(), unidad.encode(), FLOAT64,
                                                     C.c_float(0), C.c_uint32(i))
         periodo = PERIODO_VISUAL_FRAME if pedidas else 0   # 0 = NEVER: deja de pedir
-        self.dll.SimConnect_RequestDataOnSimObject(self.h, GRUPO_LVARS, GRUPO_LVARS, 0, periodo, 0, 0, 0, 0)
+        self.dll.SimConnect_RequestDataOnSimObject(self.h, self._req_lvars, GRUPO_LVARS, 0, periodo, 0, 0, 0, 0)
         with self._lock:
             self._lvars, self._lvals = pedidas, {}
 
@@ -210,15 +227,16 @@ class LectorSim:
                     continue
                 pedido = int.from_bytes(raw[12:16], "little") if rid == RECV_SIMOBJECT_DATA else -1
                 if pedido == GRUPO:
-                    valores = (C.c_double * n).from_buffer_copy(raw[40:40 + 8 * n])
-                    with self._lock:
-                        self._vals = dict(zip(self._vars, valores, strict=True))
-                        self._t_ultimo = time.time()
-                elif pedido == GRUPO_LVARS and self._lvars:
-                    m = len(self._lvars)
-                    vals = (C.c_double * m).from_buffer_copy(raw[40:40 + 8 * m])
-                    with self._lock:
-                        self._lvals = {f"LVAR:{a}": v for (a, _, _), v in zip(self._lvars, vals, strict=True)}
+                    valores = leer_valores(raw, n)
+                    if valores is not None:
+                        with self._lock:
+                            self._vals = dict(zip(self._vars, valores, strict=True))
+                            self._t_ultimo = time.time()
+                elif pedido == self._req_lvars and self._lvars:
+                    vals = leer_valores(raw, len(self._lvars))
+                    if vals is not None:
+                        with self._lock:
+                            self._lvals = {f"LVAR:{a}": v for (a, _, _), v in zip(self._lvars, vals, strict=True)}
                 elif pedido == GRUPO_AVION:
                     titulo = raw[40:40 + 256].split(b"\0", 1)[0].decode("utf-8", errors="replace").strip()
                     with self._lock:

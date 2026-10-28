@@ -20,6 +20,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _grabacion(caso)
     _config_en_vivo(caso)
     _datos_faltantes_y_frames(caso, CFG)
+    _paquete_lvars(caso)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -312,3 +313,14 @@ def _datos_faltantes_y_frames(caso: Callable, CFG: dict) -> None:
         e, _ = ef.paso(d, t)
         vals.append(e["flaps"])
     caso("flaps no titilan con frames repetidos", min(vals[10:]) > 0, f"mínimo {min(vals[10:]):.3f}")
+
+
+def _paquete_lvars(caso: Callable) -> None:
+    import struct
+
+    from sim_lector import leer_valores
+    cab = struct.pack("<IIIIIIIIII", 0, 6, 8, 13, 0, 12, 0, 0, 1, 3)   # ... dwDefineCount = 3
+    bueno = cab + struct.pack("<ddd", 1.0, 2.0, 3.0)
+    corto = cab + struct.pack("<d", 1.0)
+    caso("paquete de L:vars corto se descarta", leer_valores(bueno, 3) == [1.0, 2.0, 3.0]
+         and leer_valores(corto, 3) is None, f"bueno {leer_valores(bueno, 3)} / corto {leer_valores(corto, 3)}")
