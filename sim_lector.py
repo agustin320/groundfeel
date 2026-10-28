@@ -54,6 +54,21 @@ VARIABLES: dict[str, str] = {
     # Tipo de avión (perfiles): 0 pistón, 1 jet, 2 sin motor, 3 helicóptero, 5 turbohélice.
     "ENGINE TYPE": "Enum",
     "NUMBER OF ENGINES": "Number",
+    # Puesta en marcha por etapas y cuatrimotores.
+    "GENERAL ENG STARTER:1": "Bool",
+    "GENERAL ENG COMBUSTION:1": "Bool",
+    "GENERAL ENG STARTER:2": "Bool",
+    "GENERAL ENG COMBUSTION:2": "Bool",
+    "GENERAL ENG STARTER:3": "Bool",
+    "GENERAL ENG COMBUSTION:3": "Bool",
+    "GENERAL ENG STARTER:4": "Bool",
+    "GENERAL ENG COMBUSTION:4": "Bool",
+    "TURB ENG N1:3": "Percent",
+    "TURB ENG REVERSE NOZZLE PERCENT:3": "Percent",
+    "GENERAL ENG PCT MAX RPM:3": "Percent",
+    "TURB ENG N1:4": "Percent",
+    "TURB ENG REVERSE NOZZLE PERCENT:4": "Percent",
+    "GENERAL ENG PCT MAX RPM:4": "Percent",
     # Potencia en aviones a pistón/turbohélice (no tienen N1): % de las RPM máximas.
     "GENERAL ENG PCT MAX RPM:1": "Percent",
     "GENERAL ENG PCT MAX RPM:2": "Percent",

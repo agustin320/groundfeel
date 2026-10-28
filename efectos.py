@@ -45,8 +45,9 @@ class Efectos:
         self.salida_prev = {"joystick": 0, "throttle_1": 0, "throttle_2": 0}
         self.prendido = {"joystick": False, "throttle_1": False, "throttle_2": False}
         self.ritmo_pulsado = 1.0
-        self.n1_motor_prev = {1: 0.0, 2: 0.0}
-        self.t_arranque_motor = {1: -99.0, 2: -99.0}
+        self.n1_motor_prev = {n: 0.0 for n in range(1, 5)}
+        self.t_arranque_motor = {n: -99.0 for n in range(1, 5)}
+        self.arr = {n: {"t_starter": None, "t_ign": -99.0, "comb_prev": False, "v": 0.0} for n in range(1, 5)}
         self.mult_junta = 1.0
         self.en_tierra_prev: bool | None = None
         self.vs_aire = 0.0
@@ -233,11 +234,42 @@ class Efectos:
         return c.get("rpm_idle_pct", 26.0) if int(d.get("ENGINE TYPE", 1)) in (0, 5) else c["n1_idle"]
 
     def _motor(self, d: dict, n: int, t: float, dt: float) -> tuple[float, float]:
-        """(zumbido, reversa) del motor n (1 o 2)."""
+        """(zumbido, reversa) del motor n (1 a 4). Qué palanca lo siente lo decide `_palancas`."""
+        arranque = self._arranque(d, n, t, dt)
+        z, r = self._motor_en_marcha(d, n, t, dt)
+        return max(z, arranque), r
+
+    def _arranque(self, d: dict, n: int, t: float, dt: float) -> float:
+        """Puesta en marcha en etapas: starter (rampa; en pistón, golpes de arranque a 3 Hz), ignición (un golpe) y
+        aceleración hasta el ralentí. En ralentí cede al zumbido continuo. Si se corta, cae suave (arranque abortado).
+        """
+        c, a = self.cfg["arranque"], self.arr[n]
+        starter = bool(d.get(f"GENERAL ENG STARTER:{n}"))
+        comb = bool(d.get(f"GENERAL ENG COMBUSTION:{n}"))
+        idle, pot = self._ralenti(d), self._potencia(d, n)
+        if comb and not a["comb_prev"] and pot < idle - 0.5:
+            a["t_ign"] = t
+        a["comb_prev"] = comb
+        if not starter:
+            a["t_starter"] = None
+        elif a["t_starter"] is None:
+            a["t_starter"] = t
+        v = 0.0
+        if starter and not comb:
+            rampa = _clamp((t - a["t_starter"]) / c["rampa_s"])
+            if int(d.get("ENGINE TYPE", 1)) in (0, 5):
+                v = c["starter"] * rampa * (1.0 if _frac(t * 3.0) < 0.5 else 0.3)
+            else:
+                v = c["starter"] * rampa * (0.85 + 0.15 * random.random())
+        elif comb and pot < idle - 0.5:
+            v = c["aceleracion"] * (0.4 + 0.6 * _clamp(pot / idle))
+        if 0 <= t - a["t_ign"] < 1.5:
+            v = max(v, c["ignicion"] * math.exp(-(t - a["t_ign"]) / 0.3))
+        a["v"] = max(v, a["v"] * math.exp(-dt / c["caida_s"])) if dt > 0 else v
+        return a["v"]
+
+    def _motor_en_marcha(self, d: dict, n: int, t: float, dt: float) -> tuple[float, float]:
         c = self.cfg["motores"]
-        if n > max(1, int(d.get("NUMBER OF ENGINES", 2))):
-            # Monomotor: la segunda palanca acompaña al único motor.
-            n = 1
         n1 = self._potencia(d, n)
         dn1 = (n1 - self.n1_motor_prev[n]) / dt if dt > 0 else 0.0
         self.n1_motor_prev[n] = n1
@@ -262,6 +294,17 @@ class Efectos:
             rev = max(rev, _clamp((n1 - 30) / 45))
         reversa = c["reversa"] * rev * (0.3 + 0.7 * x) * (0.7 + 0.3 * random.random()) if rev > 0.05 else 0.0
         return zumbido, reversa
+
+    def _palancas(self, d: dict, t: float, dt: float) -> tuple[tuple[float, float], tuple[float, float]]:
+        """(zumbido, reversa) de la palanca izquierda y la derecha según cuántos motores tiene el avión.
+
+        1 motor: las dos palancas lo siguen. 2: uno por palanca. 3: el central va a las dos. 4: 1-2 izquierda, 3-4
+        derecha (como los mandos de un cuatrimotor).
+        """
+        n_mot = min(4, max(1, int(d.get("NUMBER OF ENGINES", 2))))
+        mot = {n: self._motor(d, n, t, dt) for n in range(1, n_mot + 1)}
+        grupos = {1: ((1,), (1,)), 2: ((1,), (2,)), 3: ((1, 2), (2, 3)), 4: ((1, 2), (3, 4))}[n_mot]
+        return tuple((max(mot[n][0] for n in g), max(mot[n][1] for n in g)) for g in grupos)  # type: ignore[return-value]
 
     def _frenos(self, d: dict, t: float, dt: float) -> float:
         """Frenado dinámico: golpe inicial (cabeceo), pulsos del antibloqueo, temblor que se hace más lento al perder
@@ -379,8 +422,7 @@ class Efectos:
         if not d or self.t_sim_quieto > 0.3:
             return {e: 0.0 for e in EFECTOS}, {"joystick": 0, "throttle_1": 0, "throttle_2": 0}
 
-        m1, r1 = self._motor(d, 1, t, dt)
-        m2, r2 = self._motor(d, 2, t, dt)
+        (m1, r1), (m2, r2) = self._palancas(d, t, dt)
         fisico = self.cfg.get("rodaje_modelo") == "fisico"
         rodaje = 0.0
         if fisico:

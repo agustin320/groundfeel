@@ -12,6 +12,7 @@ def correr_todo(caso: Callable, correr: Callable, BASE: dict, CFG: dict) -> None
     _nyquist(caso)
     _vuelo(caso, correr)
     _toque(caso, correr, CFG)
+    _arranque(caso, correr, CFG)
 
 
 def _cadencia(caso: Callable) -> None:
@@ -107,3 +108,35 @@ def _toque(caso: Callable, correr: Callable, CFG: dict) -> None:
     caso("silencio en el toque", r0 == 0 and r1 > 0, f"rodadura primeros 0,5 s {r0:.2f} / después {r1:.2f}")
     (b0, _), _, _, (b3, _) = serie(False)
     caso("toque sin datos por pata", b0 > 0.4 and b3 < 0.05, f"mains {b0:.2f} / nariz {b3:.2f}")
+
+
+def _arranque(caso: Callable, correr: Callable, CFG: dict) -> None:
+    from efectos import Efectos
+    apagado = {"TURB ENG N1:1": 0, "TURB ENG N1:2": 0, "TURB ENG N2:1": 0, "TURB ENG N2:2": 0}
+
+    # Arranque del motor 1: starter 2 s (N2 sube a 20), ignición, aceleración hasta idle y en marcha.
+    ef = Efectos(CFG)
+    fases = []
+    for seg, extra in ((2.0, {"GENERAL ENG STARTER:1": 1, "TURB ENG N2:1": 20}),
+                       (0.4, {"GENERAL ENG STARTER:1": 1, "GENERAL ENG COMBUSTION:1": 1, "TURB ENG N2:1": 25,
+                              "TURB ENG N1:1": 5}),
+                       (2.0, {"GENERAL ENG STARTER:1": 1, "GENERAL ENG COMBUSTION:1": 1, "TURB ENG N2:1": 45,
+                              "TURB ENG N1:1": 14})):
+        mx, s, _ = correr(dict(apagado, **extra), seg, ef)
+        fases.append((mx["motores"], s["throttle_1"], s["throttle_2"]))
+    (st, st_t1, st_t2), (ig, _, _), (ac, _, _) = fases
+    caso("arranque en 3 etapas", 0.03 < st < ig and ac > 0.03 and st_t1 > 0 and st_t2 == 0,
+         f"starter {st:.2f} / ignición {ig:.2f} / aceleración {ac:.2f} · palancas {st_t1:.0f}/{st_t2:.0f}")
+
+    # Arranque abortado: se corta el starter sin combustión → cae a 0 en menos de 2 s.
+    ef = Efectos(CFG)
+    correr(dict(apagado, **{"GENERAL ENG STARTER:1": 1, "TURB ENG N2:1": 15}), 2.0, ef)
+    correr(dict(apagado, **{"TURB ENG N2:1": 10}), 1.5, ef)
+    mx_ab, _, _ = correr(dict(apagado, **{"TURB ENG N2:1": 5}), 0.5, ef)
+    caso("arranque abortado se apaga", mx_ab["motores"] < 0.01, f"después de 1,5 s {mx_ab['motores']:.3f}")
+
+    # Cuatrimotor: arrancar el motor 3 mueve la palanca derecha y no la izquierda.
+    cuatro = dict(apagado, **{"NUMBER OF ENGINES": 4, "GENERAL ENG STARTER:3": 1, "TURB ENG N2:3": 20})
+    _, s4, _ = correr(cuatro, 2.0, Efectos(CFG))
+    caso("4 motores: el 3 va a la palanca derecha", s4["throttle_2"] > 0 and s4["throttle_1"] == 0,
+         f"izquierda {s4['throttle_1']:.0f} / derecha {s4['throttle_2']:.0f}")

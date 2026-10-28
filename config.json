@@ -42,6 +42,7 @@
   "flaps": { "movimiento": 0.18 },
   "speedbrake": { "aire": 0.45, "tierra": 0.20, "asimetria_max": 0.10 },
   "sobrevelocidad": { "_nota": "rango_kt: nudos por encima de la máxima en que llega al tope", "rango_kt": 15.0, "maximo": 0.9 },
+  "arranque": { "_nota": "rampa_s: segundos del starter hasta su tope; caida_s: constante de la caída al cortar", "starter": 0.10, "ignicion": 0.35, "aceleracion": 0.14, "rampa_s": 3.0, "caida_s": 0.4 },
   "motores": { "minimo_ralenti": 0.045, "puesta_en_marcha": 0.12, "zumbido_tierra": 0.16, "zumbido_aire": 0.03, "reversa": 0.55, "n1_idle": 20.0 },
   "frenos": { "_nota": "tiron_umbral en ft/s3: qué tan brusco hay que frenar para el golpe inicial",
               "tiron_umbral": 12.0, "golpe_inicial": 0.45, "temblor": 0.28, "antibloqueo": 0.35, "golpe_detencion": 0.25 },
